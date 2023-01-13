@@ -48,5 +48,8 @@
   "lint-staged": {
     "*.js": "eslint",
     "*.cjs": "eslint"
+  },
+  "dependencies": {
+    "yargs": "^17.6.2"
   }
 }

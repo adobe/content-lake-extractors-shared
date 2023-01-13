@@ -1,10 +1,14 @@
 {
-  "reporter": [
-    "lcov",
-    "text"
-  ],
-  "check-coverage": true,
-  "lines": 100,
-  "branches": 100,
-  "statements": 100
+    "reporter": [
+        "lcov",
+        "text"
+    ],
+    "exclude": [
+        "test/*",
+        "src/cli.js"
+    ],
+    "check-coverage": true,
+    "lines": 100,
+    "branches": 100,
+    "statements": 100
 }
