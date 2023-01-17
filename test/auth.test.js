@@ -11,36 +11,79 @@
  */
 
 /* eslint-env mocha */
+/* eslint-disable no-unused-expressions */
 
-import assert from "assert";
-import { ensureAuthenticated } from "../src/auth.js";
-import { MockOauthAuthenticator } from "./mocks/mockauthenticator.js";
-import { wait } from "./util.js";
+import assert from 'assert';
+import { expect } from 'chai';
+import { OauthAuthenticator } from '../src/auth.js';
+import { wait } from './util.js';
 
-describe("Auth Test", function () {
+describe('Auth Test', function () {
   this.timeout(10000);
-  describe("ensureAuthenticated", () => {
-    it("fails if requires reauth", async () => {
-      const mockAuthenticator = new MockOauthAuthenticator();
-      let err;
-      try {
-        await ensureAuthenticated(mockAuthenticator);
-      } catch (e) {
-        err = e;
-      }
-      assert(err);
-    });
 
-    it("can reauthenticate", async () => {
-      const mockAuthenticator = new MockOauthAuthenticator();
-      mockAuthenticator.refreshToken = "valid";
-      await ensureAuthenticated(mockAuthenticator);
-      assert(mockAuthenticator.accessToken === "valid");
+  let refreshCount;
+  let refreshToken;
+  /**
+   * @type {OauthAuthenticator}
+   */
+  let mockAuthenticator;
 
-      const initialExp = mockAuthenticator.expiration.getTime();
-      await wait(6000);
-      await ensureAuthenticated(mockAuthenticator);
-      assert(initialExp !== mockAuthenticator.expiration.getTime());
+  beforeEach(() => {
+    refreshCount = 0;
+    mockAuthenticator = new OauthAuthenticator({
+      refreshTokenUpdateListener: (newToken) => {
+        refreshToken = newToken;
+      },
+      authenticationUrlGenerator: (redirect) => `http://localhost:8080/auth?redirect=${redirect}`,
+      callbackHandler: (params) => {
+        if (params.code === 'valid') {
+          return {
+            refreshToken: 'valid',
+          };
+        }
+        throw new Error('Invalid auth code');
+      },
+      refreshAccessToken: (token) => {
+        if (token === 'valid') {
+          refreshCount += 1;
+          return { accessToken: 'valid', expiration: new Date() };
+        }
+        throw new Error('Invalid refresh token');
+      },
     });
+  });
+
+  it('can check authentication', async () => {
+    assert(mockAuthenticator.requiresReauthentication());
+    mockAuthenticator.refreshToken = 'valid';
+    assert(!mockAuthenticator.requiresReauthentication());
+  });
+
+  it('ensure requires authentication', async () => {
+    assert(mockAuthenticator.requiresReauthentication());
+    let err;
+    try {
+      await mockAuthenticator.ensureAuthenticated();
+    } catch (caught) {
+      err = caught;
+    }
+    expect(err).to.not.be.undefined;
+  });
+
+  it('can perform auth', async () => {
+    expect(mockAuthenticator.requiresReauthentication()).to.eq(true);
+
+    const authUrl = await mockAuthenticator.getAuthenticationUrl('test');
+    expect(authUrl).to.eq('http://localhost:8080/auth?redirect=test');
+
+    await mockAuthenticator.handleCallback({ code: 'valid' });
+    expect(mockAuthenticator.requiresReauthentication()).to.eq(false);
+    expect(refreshToken).to.eq('valid');
+
+    await mockAuthenticator.ensureAuthenticated();
+    expect(refreshCount).to.eq(1);
+    await wait(100);
+    await mockAuthenticator.ensureAuthenticated();
+    expect(refreshCount).to.eq(2);
   });
 });

@@ -50,6 +50,7 @@
     "*.cjs": "eslint"
   },
   "dependencies": {
+    "chai": "^4.3.7",
     "yargs": "^17.6.2"
   }
 }

@@ -12,12 +12,12 @@
 
 /* eslint-env mocha */
 
-import assert from "assert";
-import { extractAssets } from "../src/extractors.js";
-import { MockExtractor } from "./mocks/mockextractor.js";
+import assert from 'assert';
+import { extractAssets } from '../src/extractors.js';
+import { MockExtractor } from './mocks/mockextractor.js';
 
-describe("Extractors Test", () => {
-  it("can extract all", async () => {
+describe('Extractors Test', () => {
+  it('can extract all', async () => {
     let count = 0;
     const mockExtractor = new MockExtractor([
       {
@@ -41,7 +41,9 @@ describe("Extractors Test", () => {
         more: false,
       },
     ]);
-    await extractAssets(mockExtractor, () => count++);
+    await extractAssets(mockExtractor, () => {
+      count += 1;
+    });
     assert(count === 3);
   });
 });

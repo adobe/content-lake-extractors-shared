@@ -15,6 +15,6 @@
  * @param {string} name name of the person to greet
  * @returns {string} a greeting
  */
-export function main(name = "world") {
+export function main(name = 'world') {
   return `Hello, ${name}.`;
 }

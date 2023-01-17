@@ -10,6 +10,8 @@
  * governing permissions and limitations under the License.
  */
 
+/* eslint-disable class-methods-use-this */
+
 /**
  * @implements {import('../src/extractors').Extractor}
  */
@@ -28,21 +30,17 @@ export class MockExtractor {
   }
 
   async getAssets(cursor) {
-    if (!cursor) {
-      cursor = 0;
-    }
-    return this.batches[cursor];
+    return this.batches[cursor || 0];
   }
 
-  async getBinaryRequest(_assetId) {
+  async getBinaryRequest() {
     return {
-      requestType: "http",
-      url: "https://www.adobe.com/content/dam/cc/icons/Adobe_Corporate_Horizontal_Red_HEX.svg",
+      requestType: 'http',
+      url: 'https://www.adobe.com/content/dam/cc/icons/Adobe_Corporate_Horizontal_Red_HEX.svg',
     };
   }
 
-  async getFolders(_parentId) {
+  async getFolders() {
     return [];
   }
-
 }
