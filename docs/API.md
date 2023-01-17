@@ -7,9 +7,6 @@
 <dt><a href="#cli">cli(config)</a></dt>
 <dd><p>Parse the arguments from the current process and execute the extractor function</p>
 </dd>
-<dt><a href="#main">main(name)</a> ⇒ <code>string</code></dt>
-<dd><p>This is the main function</p>
-</dd>
 </dl>
 
 ## Typedefs
@@ -94,18 +91,6 @@ Parse the arguments from the current process and execute the extractor function
 | Param | Type | Description |
 | --- | --- | --- |
 | config | [<code>CliConfig</code>](#CliConfig) | the configuration |
-
-<a name="main"></a>
-
-## main(name) ⇒ <code>string</code>
-This is the main function
-
-**Kind**: global function  
-**Returns**: <code>string</code> - a greeting  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| name | <code>string</code> | name of the person to greet |
 
 <a name="RefreshListenerFn"></a>
 

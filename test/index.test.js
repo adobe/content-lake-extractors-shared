@@ -13,11 +13,16 @@
 /* eslint-env mocha */
 
 import assert from 'assert';
-import { main } from '../src/index.js';
+import { auth, cli, extractors } from '../src/index.js';
 
 describe('Index Tests', () => {
-  it('index function is present', async () => {
-    const result = await main();
-    assert.strictEqual(result, 'Hello, world.');
+  it('export auth is present', async () => {
+    assert.ok(auth);
+  });
+  it('export cli is present', async () => {
+    assert.ok(cli);
+  });
+  it('export extractors is present', async () => {
+    assert.ok(extractors);
   });
 });

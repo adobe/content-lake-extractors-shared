@@ -31,15 +31,19 @@ import * as extract from './extractors.js';
  */
 async function performOauthAuthentication(oauthAuthenticator, port) {
   const server = createServer();
+  let handled = false;
   server.on('request', (request, response) => {
-    const { query } = parse(request.url, true);
-    oauthAuthenticator.handleCallback(query).then(() => {
-      server.closeAllConnections();
-      server.close(() => {
-        resolve();
+    if (request.method === 'GET' && !handled) {
+      handled = true;
+      const { query } = parse(request.url, true);
+      oauthAuthenticator.handleCallback(query).then(() => {
+        server.close(() => {
+          resolve();
+        });
       });
-    });
-    response.end('Authentication complete, you can now close this window');
+      response.end('Authentication complete, you can now close this window');
+      request.socket.unref();
+    }
   });
 
   const authenticationUrl = await oauthAuthenticator.getAuthenticationUrl(
