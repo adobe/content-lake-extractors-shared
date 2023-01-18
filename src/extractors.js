@@ -16,7 +16,7 @@
  * @property {Asset} asset the asset
  * @property {BinaryRequest} binary
  *  a description of the request to retrieve the binary for the asset
- * @property {string} transactionId a unique identifer for a request to ingest an asset
+ * @property {string} jobId a unique identifer for a request to ingest an asset
  */
 
 /**
@@ -65,9 +65,15 @@
  */
 
 /**
+ * @typedef {Object} GetAssetsConfig
+ * @property {any | undefined} cursor the cursor to start at
+ * @property {number | undefined} limit the limit for the number of assets to retrieve
+ */
+
+/**
  * Retrieves a batch of assets from the source
  * @callback GetAssetsFn
- * @param {any | undefined} cursor
+ * @param {GetAssetsConfig | undefined} config
  * @returns {Promise<AssetBatch>}
  */
 

@@ -13,3 +13,6 @@ build:
 	npm run lint
 	npm run test
 	npm run docs
+
+install: build
+	npm link

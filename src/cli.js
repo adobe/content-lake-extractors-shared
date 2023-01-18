@@ -15,7 +15,7 @@ import { parse } from 'url';
 import { createServer } from 'http';
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
-import { existsSync, readFileSync } from 'fs';
+import { existsSync, readFileSync, writeFileSync } from 'fs';
 import { resolve } from 'path';
 
 // eslint-disable-next-line no-unused-vars
@@ -54,11 +54,22 @@ async function performOauthAuthentication(oauthAuthenticator, port) {
   });
 }
 
+function writeConfig(configFile, config) {
+  writeFileSync(configFile, JSON.stringify(config, null, 2));
+}
+
 function parseConfig(config) {
   if (!existsSync(config)) {
     throw new Error(`Invalid configuration: ${resolve(config)} does not exist`);
   }
-  return JSON.parse(readFileSync(config).toString());
+  const parsed = JSON.parse(readFileSync(config).toString());
+
+  parsed.refreshTokenUpdateListener = (refreshToken) => {
+    const newConfig = parseConfig(config);
+    newConfig.refreshToken = refreshToken;
+    writeConfig(config, newConfig);
+  };
+  return parsed;
 }
 
 /**
@@ -100,7 +111,7 @@ export function cli(config) {
     .option('config', {
       describe: 'the configuration JSON file for the extractor',
       requiresArg: true,
-      default: `.env/${name}.json`,
+      default: `.${name}-cfg.json`,
     })
     .command(
       'get-assets',
@@ -165,9 +176,8 @@ export function cli(config) {
         });
       },
       async (argv) => {
-        const authenticator = await getOauthAuthenicator(
-          parseConfig(argv.config),
-        );
+        const parsed = parseConfig(argv.config);
+        const authenticator = await getOauthAuthenicator(parsed);
         await performOauthAuthentication(authenticator, argv.port);
         console.log('Authenticated successfully!');
       },
