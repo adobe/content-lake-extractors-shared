@@ -63,7 +63,7 @@ async function parseConfig(config) {
   if (!existsSync(config)) {
     throw new Error(`Invalid configuration: ${resolve(config)} does not exist`);
   }
-  const parsed = JSON.parse(await readFile(config).toString());
+  const parsed = JSON.parse((await readFile(config)).toString());
 
   parsed.refreshTokenUpdateListener = (refreshToken) => {
     const newConfig = parseConfig(config);

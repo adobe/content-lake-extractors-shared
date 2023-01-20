@@ -36,7 +36,7 @@ describe('CLI Test', () => {
       '--cursor',
       '1',
     ]);
-    assert(res.stderr.toString() === '');
+    assert.strictEqual('', res.stderr.toString());
     assert(res.stdout.toString().includes('Retrieved assets:'));
   });
 
