@@ -15,7 +15,6 @@ import { parse } from 'url';
 import { createServer } from 'http';
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
-import { existsSync } from 'fs';
 import { readFile, writeFile } from 'fs/promises';
 import { resolve } from 'path';
 
@@ -60,17 +59,17 @@ async function writeConfig(configFile, config) {
 }
 
 async function parseConfig(config) {
-  if (!existsSync(config)) {
-    throw new Error(`Invalid configuration: ${resolve(config)} does not exist`);
+  try {
+    const parsed = JSON.parse((await readFile(config)).toString());
+    parsed.refreshTokenUpdateListener = (refreshToken) => {
+      const newConfig = parseConfig(config);
+      newConfig.refreshToken = refreshToken;
+      writeConfig(config, newConfig);
+    };
+    return parsed;
+  } catch (err) {
+    throw new Error(`Failed to parse configuration: ${config}: ${err}`);
   }
-  const parsed = JSON.parse((await readFile(config)).toString());
-
-  parsed.refreshTokenUpdateListener = (refreshToken) => {
-    const newConfig = parseConfig(config);
-    newConfig.refreshToken = refreshToken;
-    writeConfig(config, newConfig);
-  };
-  return parsed;
 }
 
 /**
