@@ -13,28 +13,25 @@
 /**
  * A representation of an asset from the source
  * @typedef {Object} IngestionRequest
- * @property {Asset} asset the asset
+ * @property {AssetData} data the data for the asset
  * @property {BinaryRequest} binary
  *  a description of the request to retrieve the binary for the asset
  * @property {string} jobId a unique identifer for a request to ingest an asset
  */
 
 /**
- * @typedef {Object} Asset A representation of an asset from the source
+ * @typedef {Object} AssetData A representation of an asset from the source
  * @property {string} id the ID of this asset as interpreted by the source system
  * @property {string} sourceType the source from which this asset was retrieved
  * @property {string} sourceId the source from which this asset was retrieved
  * @property {string | undefined} name the name of the asset as interpreted by the source repository
- * @property {string | undefined} version
- *  the current version of this asset as interpreted by the source repository
  * @property {number | undefined} size the size of the original asset in bytes
  * @property {Date | undefined} created the time at which the asset was created in the source
  * @property {string | undefined} createdBy an identifier for the principal which created the asset
  * @property {Date | undefined} lastModified the last time the asset was modified
  * @property {string | undefined} lastModifiedBy
  *  an identifier for the principal which last modified the asset
- * @property {Record<string,any>} taxonomy the taxonomy under which the asset is organized
- * @property {Record<string,any>} metadata the available metadata for the asset from the source
+ * @property {string | undefined} path the path to the asset
  */
 
 /**
