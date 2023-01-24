@@ -30,7 +30,7 @@ commands:
 
 jobs:
   build:
-    executor: node16
+    executor: node18
 
     steps:
       - setup
