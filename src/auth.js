@@ -49,6 +49,8 @@
  *  Handles the callback redirect from an OAuth request
  * @property {RefreshAccessTokenFn} refreshAccessToken
  *  Refreshes the access token using the refresh token
+ * @property {string | undefined} refreshToken
+ *  The initial refresh token
  */
 
 /**
@@ -87,11 +89,12 @@ export class OauthAuthenticator {
   refreshToken;
 
   /**
-   *
+   * Create a new OauthAutheticator
    * @param {OauthAuthenticatorConfig} config
    */
   constructor(config) {
     this.#config = config;
+    this.refreshToken = config.refreshToken;
   }
 
   /**
@@ -149,8 +152,7 @@ export class OauthAuthenticator {
     this.accessToken = credentials.accessToken;
     this.expiration = credentials.expiration;
     if (
-      credentials.refreshToken
-      && this.refreshToken !== credentials.refreshToken
+      credentials.refreshToken && this.refreshToken !== credentials.refreshToken
     ) {
       this.refreshToken = credentials.refreshToken;
       if (this.#config.refreshTokenUpdateListener) {

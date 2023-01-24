@@ -10,11 +10,8 @@
  * governing permissions and limitations under the License.
  */
 
-/**
- * This is the main function
- * @param {string} name name of the person to greet
- * @returns {string} a greeting
- */
-export function main(name = 'world') {
-  return `Hello, ${name}.`;
-}
+import * as auth from './auth.js';
+import * as cli from './cli.js';
+import * as extractors from './extractors.js';
+
+export { auth, cli, extractors };

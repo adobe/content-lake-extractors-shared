@@ -44,6 +44,6 @@ describe('Extractors Test', () => {
     await extractAssets(mockExtractor, () => {
       count += 1;
     });
-    assert(count === 3);
+    assert.strictEqual(count, 3);
   });
 });

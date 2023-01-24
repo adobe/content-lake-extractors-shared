@@ -7,9 +7,6 @@
 <dt><a href="#cli">cli(config)</a></dt>
 <dd><p>Parse the arguments from the current process and execute the extractor function</p>
 </dd>
-<dt><a href="#main">main(name)</a> ⇒ <code>string</code></dt>
-<dd><p>This is the main function</p>
-</dd>
 </dl>
 
 ## Typedefs
@@ -43,7 +40,7 @@
 <dt><a href="#IngestionRequest">IngestionRequest</a> : <code>Object</code></dt>
 <dd><p>A representation of an asset from the source</p>
 </dd>
-<dt><a href="#Asset">Asset</a> : <code>Object</code></dt>
+<dt><a href="#AssetData">AssetData</a> : <code>Object</code></dt>
 <dd><p>A representation of an asset from the source</p>
 </dd>
 <dt><a href="#BinaryRequest">BinaryRequest</a> : <code>Object</code></dt>
@@ -56,6 +53,8 @@
 <dd><p>A representation of a folder in the source system</p>
 </dd>
 <dt><a href="#AssetBatch">AssetBatch</a> : <code>Object</code></dt>
+<dd></dd>
+<dt><a href="#GetAssetsConfig">GetAssetsConfig</a> : <code>Object</code></dt>
 <dd></dd>
 <dt><a href="#GetAssetsFn">GetAssetsFn</a> ⇒ <code><a href="#AssetBatch">Promise.&lt;AssetBatch&gt;</a></code></dt>
 <dd><p>Retrieves a batch of assets from the source</p>
@@ -94,18 +93,6 @@ Parse the arguments from the current process and execute the extractor function
 | Param | Type | Description |
 | --- | --- | --- |
 | config | [<code>CliConfig</code>](#CliConfig) | the configuration |
-
-<a name="main"></a>
-
-## main(name) ⇒ <code>string</code>
-This is the main function
-
-**Kind**: global function  
-**Returns**: <code>string</code> - a greeting  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| name | <code>string</code> | name of the person to greet |
 
 <a name="RefreshListenerFn"></a>
 
@@ -168,6 +155,7 @@ Configuration for an OauthAuthenticator instance
 | authenticationUrlGenerator | [<code>AuthenticationUrlGeneratorFn</code>](#AuthenticationUrlGeneratorFn) | Get a url for authenticating with the Oauth service |
 | callbackHandler | [<code>CallbackHandlerFn</code>](#CallbackHandlerFn) | Handles the callback redirect from an OAuth request |
 | refreshAccessToken | [<code>RefreshAccessTokenFn</code>](#RefreshAccessTokenFn) | Refreshes the access token using the refresh token |
+| refreshToken | <code>string</code> \| <code>undefined</code> | The initial refresh token |
 
 <a name="OauthCredentials"></a>
 
@@ -226,13 +214,13 @@ A representation of an asset from the source
 
 | Name | Type | Description |
 | --- | --- | --- |
-| asset | [<code>Asset</code>](#Asset) | the asset |
+| data | [<code>AssetData</code>](#AssetData) | the data for the asset |
 | binary | [<code>BinaryRequest</code>](#BinaryRequest) | a description of the request to retrieve the binary for the asset |
-| transactionId | <code>string</code> | a unique identifer for a request to ingest an asset |
+| jobId | <code>string</code> | a unique identifer for a request to ingest an asset |
 
-<a name="Asset"></a>
+<a name="AssetData"></a>
 
-## Asset : <code>Object</code>
+## AssetData : <code>Object</code>
 A representation of an asset from the source
 
 **Kind**: global typedef  
@@ -244,14 +232,12 @@ A representation of an asset from the source
 | sourceType | <code>string</code> | the source from which this asset was retrieved |
 | sourceId | <code>string</code> | the source from which this asset was retrieved |
 | name | <code>string</code> \| <code>undefined</code> | the name of the asset as interpreted by the source repository |
-| version | <code>string</code> \| <code>undefined</code> | the current version of this asset as interpreted by the source repository |
 | size | <code>number</code> \| <code>undefined</code> | the size of the original asset in bytes |
 | created | <code>Date</code> \| <code>undefined</code> | the time at which the asset was created in the source |
 | createdBy | <code>string</code> \| <code>undefined</code> | an identifier for the principal which created the asset |
 | lastModified | <code>Date</code> \| <code>undefined</code> | the last time the asset was modified |
 | lastModifiedBy | <code>string</code> \| <code>undefined</code> | an identifier for the principal which last modified the asset |
-| taxonomy | <code>Record.&lt;string, any&gt;</code> | the taxonomy under which the asset is organized |
-| metadata | <code>Record.&lt;string, any&gt;</code> | the available metadata for the asset from the source |
+| path | <code>string</code> \| <code>undefined</code> | the path to the asset |
 
 <a name="BinaryRequest"></a>
 
@@ -299,9 +285,20 @@ A representation of a folder in the source system
 
 | Name | Type | Description |
 | --- | --- | --- |
-| assets | [<code>Array.&lt;Asset&gt;</code>](#Asset) | the retrieved assets |
+| assets | <code>Array.&lt;Asset&gt;</code> | the retrieved assets |
 | more | <code>boolean</code> | if more assets are available |
 | cursor | <code>any</code> | the cursor for retrieving the next batch of assets, should be treated as opaque |
+
+<a name="GetAssetsConfig"></a>
+
+## GetAssetsConfig : <code>Object</code>
+**Kind**: global typedef  
+**Properties**
+
+| Name | Type | Description |
+| --- | --- | --- |
+| cursor | <code>any</code> \| <code>undefined</code> | the cursor to start at |
+| limit | <code>number</code> \| <code>undefined</code> | the limit for the number of assets to retrieve |
 
 <a name="GetAssetsFn"></a>
 
@@ -312,7 +309,7 @@ Retrieves a batch of assets from the source
 
 | Param | Type |
 | --- | --- |
-| cursor | <code>any</code> \| <code>undefined</code> | 
+| config | [<code>GetAssetsConfig</code>](#GetAssetsConfig) \| <code>undefined</code> | 
 
 <a name="GetBinaryRequestFn"></a>
 
@@ -356,5 +353,5 @@ Gets the folders which are children of the specified parent
 
 | Param | Type | Description |
 | --- | --- | --- |
-| asset | [<code>Asset</code>](#Asset) | the asset for which to invoke the callback |
+| asset | <code>Asset</code> | the asset for which to invoke the callback |
 

@@ -36,7 +36,7 @@ describe('CLI Test', () => {
       '--cursor',
       '1',
     ]);
-    assert(res.stderr.toString() === '');
+    assert.strictEqual('', res.stderr.toString());
     assert(res.stdout.toString().includes('Retrieved assets:'));
   });
 
@@ -47,7 +47,7 @@ describe('CLI Test', () => {
       '--config',
       'notafile.json',
     ]);
-    assert(res.stderr.toString().includes('notafile.json does not exist'));
+    assert(res.stderr.toString().includes('Error: Failed to parse configuration: notafile.json'));
   });
 
   it('can get binary request', async () => {
