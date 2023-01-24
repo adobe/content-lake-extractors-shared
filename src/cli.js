@@ -15,7 +15,7 @@ import { parse } from 'url';
 import { createServer } from 'http';
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
-import { existsSync, readFileSync } from 'fs';
+import { readFile, writeFile } from 'fs/promises';
 import { resolve } from 'path';
 
 // eslint-disable-next-line no-unused-vars
@@ -54,11 +54,22 @@ async function performOauthAuthentication(oauthAuthenticator, port) {
   });
 }
 
-function parseConfig(config) {
-  if (!existsSync(config)) {
-    throw new Error(`Invalid configuration: ${resolve(config)} does not exist`);
+async function writeConfig(configFile, config) {
+  await writeFile(configFile, JSON.stringify(config, null, 2));
+}
+
+async function parseConfig(config) {
+  try {
+    const parsed = JSON.parse((await readFile(config)).toString());
+    parsed.refreshTokenUpdateListener = (refreshToken) => {
+      const newConfig = parseConfig(config);
+      newConfig.refreshToken = refreshToken;
+      writeConfig(config, newConfig);
+    };
+    return parsed;
+  } catch (err) {
+    throw new Error(`Failed to parse configuration: ${config}: ${err}`);
   }
-  return JSON.parse(readFileSync(config).toString());
 }
 
 /**
@@ -100,7 +111,7 @@ export function cli(config) {
     .option('config', {
       describe: 'the configuration JSON file for the extractor',
       requiresArg: true,
-      default: `.env/${name}.json`,
+      default: `.${name}-cfg.json`,
     })
     .command(
       'get-assets',
@@ -112,7 +123,7 @@ export function cli(config) {
         });
       },
       async (argv) => {
-        const extractor = await getExtractor(parseConfig(argv.config));
+        const extractor = await getExtractor(await parseConfig(argv.config));
         const res = await extractor.getAssets(argv.cursor);
         console.log('Retrieved assets:');
         console.log(res);
@@ -130,7 +141,7 @@ export function cli(config) {
         });
       },
       async (argv) => {
-        const extractor = await getExtractor(parseConfig(argv.config));
+        const extractor = await getExtractor(await parseConfig(argv.config));
         const res = await extractor.getBinaryRequest(argv['asset-id']);
         console.log('Retrieved asset binary request:');
         console.log(res);
@@ -147,7 +158,7 @@ export function cli(config) {
         });
       },
       async (argv) => {
-        const extractor = await getExtractor(parseConfig(argv.config));
+        const extractor = await getExtractor(await parseConfig(argv.config));
         const res = await extractor.getFolders(argv['parent-id']);
         console.log('Retrieved folders:');
         console.log(res);
@@ -165,9 +176,8 @@ export function cli(config) {
         });
       },
       async (argv) => {
-        const authenticator = await getOauthAuthenicator(
-          parseConfig(argv.config),
-        );
+        const parsed = await parseConfig(argv.config);
+        const authenticator = await getOauthAuthenicator(parsed);
         await performOauthAuthentication(authenticator, argv.port);
         console.log('Authenticated successfully!');
       },

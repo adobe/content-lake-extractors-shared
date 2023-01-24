@@ -39,3 +39,13 @@ $ npm test
 ```bash
 $ npm run lint
 ```
+
+### Run all
+
+Optionally you can use Make to run all the local build commands:
+
+```bash
+$ make
+```
+
+Make is available on most *nix environments can be installed on Mac via [homebrew](https://formulae.brew.sh/formula/make)

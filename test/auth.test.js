@@ -14,7 +14,6 @@
 /* eslint-disable no-unused-expressions */
 
 import assert from 'assert';
-import { expect } from 'chai';
 import { OauthAuthenticator } from '../src/auth.js';
 import { wait } from './util.js';
 
@@ -67,23 +66,23 @@ describe('Auth Test', function () {
     } catch (caught) {
       err = caught;
     }
-    expect(err).to.not.be.undefined;
+    assert.ok(err);
   });
 
   it('can perform auth', async () => {
-    expect(mockAuthenticator.requiresReauthentication()).to.eq(true);
+    assert.ok(mockAuthenticator.requiresReauthentication());
 
     const authUrl = await mockAuthenticator.getAuthenticationUrl('test');
-    expect(authUrl).to.eq('http://localhost:8080/auth?redirect=test');
+    assert.strictEqual(authUrl, 'http://localhost:8080/auth?redirect=test');
 
     await mockAuthenticator.handleCallback({ code: 'valid' });
-    expect(mockAuthenticator.requiresReauthentication()).to.eq(false);
-    expect(refreshToken).to.eq('valid');
+    assert.strictEqual(mockAuthenticator.requiresReauthentication(), false);
+    assert.strictEqual(refreshToken, 'valid');
 
     await mockAuthenticator.ensureAuthenticated();
-    expect(refreshCount).to.eq(1);
+    assert.strictEqual(refreshCount, 1);
     await wait(100);
     await mockAuthenticator.ensureAuthenticated();
-    expect(refreshCount).to.eq(2);
+    assert.strictEqual(refreshCount, 2);
   });
 });
