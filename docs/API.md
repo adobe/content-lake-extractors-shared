@@ -1,3 +1,11 @@
+## Classes
+
+<dl>
+<dt><a href="#IngestorClient">IngestorClient</a></dt>
+<dd><p>The ingestor client sends asset data to the Content Lake ingestion service to be ingested</p>
+</dd>
+</dl>
+
 ## Functions
 
 <dl>
@@ -68,6 +76,8 @@
 <dt><a href="#Extractor">Extractor</a></dt>
 <dd></dd>
 <dt><a href="#AssetCallback">AssetCallback</a> ⇒ <code>Promise.&lt;void&gt;</code></dt>
+<dd></dd>
+<dt><a href="#IngestorConfig">IngestorConfig</a></dt>
 <dd></dd>
 </dl>
 
@@ -285,7 +295,7 @@ A representation of a folder in the source system
 
 | Name | Type | Description |
 | --- | --- | --- |
-| assets | <code>Array.&lt;Asset&gt;</code> | the retrieved assets |
+| assets | [<code>Array.&lt;AssetData&gt;</code>](#AssetData) | the retrieved assets |
 | more | <code>boolean</code> | if more assets are available |
 | cursor | <code>any</code> | the cursor for retrieving the next batch of assets, should be treated as opaque |
 
@@ -354,4 +364,16 @@ Gets the folders which are children of the specified parent
 | Param | Type | Description |
 | --- | --- | --- |
 | asset | <code>Asset</code> | the asset for which to invoke the callback |
+
+<a name="IngestorConfig"></a>
+
+## IngestorConfig
+**Kind**: global typedef  
+**Properties**
+
+| Name | Type | Description |
+| --- | --- | --- |
+| url | <code>string</code> | the URL for calling the ingestor |
+| apiKey | <code>string</code> | the API Key used to call the ingestor |
+| jobId | <code>string</code> | the id of the current job |
 
