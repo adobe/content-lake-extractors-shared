@@ -104,7 +104,9 @@ async function parseConfig(config) {
  * @param {CliConfig} config the configuration
  */
 export function cli(config) {
-  const { name, args, getExtractor, getOauthAuthenicator } = config;
+  const {
+    name, args, getExtractor, getOauthAuthenicator,
+  } = config;
   // eslint-disable-next-line no-unused-vars
   const cmd = yargs(hideBin(args))
     .scriptName(`content-lake-extractor-${name}`)
