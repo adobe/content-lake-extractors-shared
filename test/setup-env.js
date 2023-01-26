@@ -11,4 +11,5 @@
  */
 // eslint-disable-next-line no-console
 console.log('Forcing HTTP/1.1 for Helix-Fetch');
-process.env.HELIX_FETCH_FORCE_HTTP1 = 'true';
+process.env.HELIX_FETCH_FORCE_HTTP1 = true;
+process.env.HELIX_PIPELINE_FORCE_HTTP1 = true;

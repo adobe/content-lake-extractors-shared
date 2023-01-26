@@ -55,7 +55,7 @@
 
 /**
  * @typedef {Object} AssetBatch
- * @property {Array<Asset>} assets the retrieved assets
+ * @property {Array<AssetData>} assets the retrieved assets
  * @property {boolean} more if more assets are available
  * @property {any} cursor
  *  the cursor for retrieving the next batch of assets, should be treated as opaque
@@ -103,29 +103,5 @@
  * @param {Asset} asset the asset for which to invoke the callback
  * @returns {Promise<void>} a promise which resolves once the callback is finished
  */
-
-/**
- * Extract all of the assets from the source and call the callback
- * @param {Extractor} extractor the extractor with which to extract the assets
- * @param {AssetCallback} cb the callback to execute for each asset
- */
-// eslint-disable no-await-in-loop
-export async function extractAssets(extractor, cb) {
-  let more = true;
-  let cursor;
-  while (more) {
-    // eslint-disable-next-line no-await-in-loop
-    const batch = await extractor.getAssets(cursor);
-
-    const results = [];
-    for (const asset of batch.assets) {
-      results.push(cb(asset));
-    }
-    // eslint-disable-next-line no-await-in-loop
-    await Promise.all(results);
-    cursor = batch.cursor;
-    more = batch.more;
-  }
-}
 
 export default {};

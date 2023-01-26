@@ -13,7 +13,9 @@
 /* eslint-env mocha */
 
 import assert from 'assert';
-import { auth, cli, extractors } from '../src/index.js';
+import {
+  auth, cli, extractors, ingestor,
+} from '../src/index.js';
 
 describe('Index Tests', () => {
   it('export auth is present', async () => {
@@ -24,5 +26,8 @@ describe('Index Tests', () => {
   });
   it('export extractors is present', async () => {
     assert.ok(extractors);
+  });
+  it('export extractors is present', async () => {
+    assert.ok(extractors, ingestor);
   });
 });

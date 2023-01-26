@@ -13,5 +13,8 @@
 import * as auth from './auth.js';
 import * as cli from './cli.js';
 import * as extractors from './extractors.js';
+import * as ingestor from './ingestor.js';
 
-export { auth, cli, extractors };
+export {
+  auth, cli, extractors, ingestor,
+};
