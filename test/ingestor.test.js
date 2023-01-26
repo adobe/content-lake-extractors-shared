@@ -25,10 +25,14 @@ describe('Ingestor Client Tests', function () {
     {
       assets: [
         {
-          assetId: 1,
+          id: 1,
+          sourceId: 1,
+          sourceType: 'mock',
         },
         {
-          assetId: 2,
+          id: 2,
+          sourceId: 1,
+          sourceType: 'mock',
         },
       ],
       more: true,
@@ -37,7 +41,9 @@ describe('Ingestor Client Tests', function () {
     {
       assets: [
         {
-          assetId: 3,
+          id: 3,
+          sourceId: 1,
+          sourceType: 'mock',
         },
       ],
       more: false,

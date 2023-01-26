@@ -13,6 +13,7 @@
 import { timeoutSignal, fetch as originalFetch } from '@adobe/fetch';
 import { forEachLimit } from 'async';
 import fetchBuilder from 'fetch-retry';
+import { randomUUID } from 'crypto';
 
 // eslint-disable-next-line no-unused-vars
 import * as extractors from './extractors.js';
@@ -25,6 +26,11 @@ const fetch = fetchBuilder(originalFetch);
  * @property {string} apiKey the API Key used to call the ingestor
  * @property {string} jobId the id of the current job
  */
+
+// Constants for retry configuration
+const SEC_IN_MS = 1000;
+const DEFAULT_RETRIES = 3;
+const DEFAULT_TIMEOUT = 5000;
 
 /**
  * The ingestor client sends asset data to the Content Lake ingestion service to be ingested
@@ -54,14 +60,22 @@ export class IngestorClient {
    * @param {extractors.BinaryRequest} binaryRequest the reference to the binary to ingest
    */
   async submit(data, binaryRequest) {
-    const signal = timeoutSignal(5000);
+    const signal = timeoutSignal(DEFAULT_TIMEOUT);
     const start = Date.now();
     const body = {
       jobId: this.#config.jobId,
       data,
       binaryRequest,
     };
-    this.#log.debug('Submitting for ingestion', body);
+
+    const requestInfo = (({ id: assetId, sourceId, sourceType } = data) => ({
+      assetId,
+      sourceId,
+      sourceType,
+      jobId: this.#config.jobId,
+      requestId: randomUUID(),
+    }))();
+    this.#log.debug('Submitting for ingestion', requestInfo);
     const res = await fetch(this.#config.url, {
       headers: {
         'X-API-Key': this.#config.apiKey,
@@ -69,28 +83,31 @@ export class IngestorClient {
       method: 'POST',
       signal,
       body: JSON.stringify(body),
+      retries: DEFAULT_RETRIES,
       retryDelay: (attempt, _err, response) => {
         let delay;
         if (response.headers.has('Retry-After')) {
-          delay = response.headers.get('Retry-After') * 1000;
+          delay = response.headers.get('Retry-After') * SEC_IN_MS;
         } else {
-          delay = attempt ** 2 * 1000;
+          // calculate an exponential backoff, for some reason eslint prefers ** to Math.pow
+          delay = attempt ** 2 * SEC_IN_MS;
         }
         this.#log.info('Retrying request', {
           attempt,
           delay,
           status: `${response.status}: ${response.statusText}`,
           url: response.url,
+          ...requestInfo,
         });
         return delay;
       },
-      retryOn: [429, 502, 503],
+      retryOn: [429, 500, 502, 503],
     });
     this.#log.info('Asset submitted successfully', {
       status: `${res.status}: ${res.statusText}`,
-      ...body,
       duration: Date.now() - start,
       url: this.#config.url,
+      ...requestInfo,
     });
   }
 
@@ -106,6 +123,7 @@ export class IngestorClient {
     this.#log.info('Submitting asset batch', {
       count: batch.assets.length,
       limit,
+      jobId: this.#config.jobId,
     });
     await forEachLimit(batch.assets, limit || 1, async (data) => {
       const binaryRequest = await extractor.getBinaryRequest(data.assetId);
