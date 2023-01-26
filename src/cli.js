@@ -55,14 +55,17 @@ async function performOauthAuthentication(oauthAuthenticator, port) {
 }
 
 async function writeConfig(configFile, config) {
-  await writeFile(configFile, JSON.stringify(config, null, 2));
+  await writeFile(configFile, JSON.stringify(config));
 }
 
 async function parseConfig(config) {
+  async function doParse() {
+    return JSON.parse((await readFile(config)).toString());
+  }
   try {
-    const parsed = JSON.parse((await readFile(config)).toString());
-    parsed.refreshTokenUpdateListener = (refreshToken) => {
-      const newConfig = parseConfig(config);
+    const parsed = await doParse();
+    parsed.refreshTokenUpdateListener = async (refreshToken) => {
+      const newConfig = await doParse();
       newConfig.refreshToken = refreshToken;
       writeConfig(config, newConfig);
     };
@@ -101,9 +104,7 @@ async function parseConfig(config) {
  * @param {CliConfig} config the configuration
  */
 export function cli(config) {
-  const {
-    name, args, getExtractor, getOauthAuthenicator,
-  } = config;
+  const { name, args, getExtractor, getOauthAuthenicator } = config;
   // eslint-disable-next-line no-unused-vars
   const cmd = yargs(hideBin(args))
     .scriptName(`content-lake-extractor-${name}`)
