@@ -32,9 +32,6 @@
 <dt><a href="#RefreshAccessTokenFn">RefreshAccessTokenFn</a> ⇒ <code><a href="#OauthCredentials">Promise.&lt;OauthCredentials&gt;</a></code></dt>
 <dd><p>Refreshes the access token using the refresh token</p>
 </dd>
-<dt><a href="#OauthAuthenticatorConfig">OauthAuthenticatorConfig</a></dt>
-<dd><p>Configuration for an OauthAuthenticator instance</p>
-</dd>
 <dt><a href="#OauthCredentials">OauthCredentials</a></dt>
 <dd></dd>
 <dt><a href="#GetExtractorFn">GetExtractorFn</a> ⇒ <code>Promise.&lt;extract.Extractor&gt;</code></dt>
@@ -150,22 +147,6 @@ Refreshes the access token using the refresh token
 | Param | Type | Description |
 | --- | --- | --- |
 | refreshToken | <code>string</code> | the refresh token |
-
-<a name="OauthAuthenticatorConfig"></a>
-
-## OauthAuthenticatorConfig
-Configuration for an OauthAuthenticator instance
-
-**Kind**: global typedef  
-**Properties**
-
-| Name | Type | Description |
-| --- | --- | --- |
-| refreshTokenUpdateListener | [<code>RefreshListenerFn</code>](#RefreshListenerFn) \| <code>undefined</code> | Listener for updates to the refresh token. |
-| authenticationUrlGenerator | [<code>AuthenticationUrlGeneratorFn</code>](#AuthenticationUrlGeneratorFn) | Get a url for authenticating with the Oauth service |
-| callbackHandler | [<code>CallbackHandlerFn</code>](#CallbackHandlerFn) | Handles the callback redirect from an OAuth request |
-| refreshAccessToken | [<code>RefreshAccessTokenFn</code>](#RefreshAccessTokenFn) | Refreshes the access token using the refresh token |
-| refreshToken | <code>string</code> \| <code>undefined</code> | The initial refresh token |
 
 <a name="OauthCredentials"></a>
 
