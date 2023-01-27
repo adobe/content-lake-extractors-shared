@@ -126,7 +126,7 @@ export class IngestorClient {
       jobId: this.#config.jobId,
     });
     await forEachLimit(batch.assets, limit || 1, async (data) => {
-      const binaryRequest = await extractor.getBinaryRequest(data.assetId);
+      const binaryRequest = await extractor.getBinaryRequest(data.id);
       await this.submit(data, binaryRequest);
     });
     return batch.cursor;
