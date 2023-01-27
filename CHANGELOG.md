@@ -1,3 +1,10 @@
+## [1.1.1](https://github.com/adobe/content-lake-extractors-shared/compare/v1.1.0...v1.1.1) (2023-01-27)
+
+
+### Bug Fixes
+
+* misc bug fixed found while testing w/ dropbox extractor ([#9](https://github.com/adobe/content-lake-extractors-shared/issues/9)) ([ce5e475](https://github.com/adobe/content-lake-extractors-shared/commit/ce5e475c70071ebd6289998db4c2dbe96ded088f))
+
 # [1.1.0](https://github.com/adobe/content-lake-extractors-shared/compare/v1.0.0...v1.1.0) (2023-01-26)
 
 
