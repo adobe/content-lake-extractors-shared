@@ -14,7 +14,11 @@
 
 import assert from 'assert';
 import { mockClient } from 'aws-sdk-client-mock';
-import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import {
+  GetObjectCommand,
+  ListObjectsCommand,
+  S3Client,
+} from '@aws-sdk/client-s3';
 import { Readable } from 'stream';
 import { ConfigurationManager } from '../src/config.js';
 
@@ -27,22 +31,43 @@ describe('Configuration Manager', () => {
     stream.push(null);
     s3Mock
       .on(GetObjectCommand, {
-        Key: 'test',
+        Key: 'test/test',
         Bucket: 'content-lake-extractors-configuration',
       })
       .resolves({
         Body: stream,
       });
+
+    s3Mock
+      .on(ListObjectsCommand, {
+        Prefix: 'test/',
+        Bucket: 'content-lake-extractors-configuration',
+      })
+      .resolves({
+        IsTruncated: false,
+        Contents: [
+          {
+            Key: 'test',
+          },
+        ],
+      });
   });
   it('can get configuration', async () => {
-    const cfgMgr = new ConfigurationManager();
+    const cfgMgr = new ConfigurationManager('test');
     const config = await cfgMgr.getConfiguration('test');
     assert.ok(config);
     assert.strictEqual(config.message, 'Hello World');
   });
 
+  it('can list configurations', async () => {
+    const cfgMgr = new ConfigurationManager('test');
+    const configurations = await cfgMgr.listConfigurations();
+    assert.ok(configurations);
+    assert.strictEqual(configurations.length, 1);
+  });
+
   it('can put configuration', async () => {
-    const cfgMgr = new ConfigurationManager();
+    const cfgMgr = new ConfigurationManager('test');
     await cfgMgr.putConfiguration('test', { message: 'Hello' });
   });
 });
