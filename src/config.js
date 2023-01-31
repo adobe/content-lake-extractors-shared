@@ -61,7 +61,6 @@ export class ConfigurationManager {
       Key: id,
       Body: JSON.stringify(configuration),
     });
-    const res = await this.#client.send(command);
-    console.log(res);
+    await this.#client.send(command);
   }
 }
