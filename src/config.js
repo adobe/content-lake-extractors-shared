@@ -14,6 +14,7 @@ import {
   S3Client,
   GetObjectCommand,
   PutObjectCommand,
+  ListObjectsCommand,
 } from '@aws-sdk/client-s3';
 
 const BUCKET_NAME = 'content-lake-extractors-configuration';
@@ -21,12 +22,16 @@ const BUCKET_NAME = 'content-lake-extractors-configuration';
 export class ConfigurationManager {
   #client;
 
+  #extractor;
+
   /**
    * Creates a Configuration Manager
-   * @param {Object} config the configuration
+   * @param {string} extractor the name of the extractor
+   * @param {Object | undefined} config the configuration
    */
-  constructor(config) {
+  constructor(extractor, config) {
     this.#client = new S3Client({ region: 'us-east-1', ...config });
+    this.#extractor = extractor;
   }
 
   /**
@@ -36,7 +41,7 @@ export class ConfigurationManager {
   async getConfiguration(id) {
     const command = new GetObjectCommand({
       Bucket: BUCKET_NAME,
-      Key: id,
+      Key: `${this.#extractor}/${id}`,
     });
     try {
       const res = await this.#client.send(command);
@@ -51,6 +56,31 @@ export class ConfigurationManager {
   }
 
   /**
+   * Lists the configurations for the extractor
+   * @returns {Promise<string[]>} a promise with the array of keys
+   */
+  async listConfigurations() {
+    const configurations = [];
+    let truncated = true;
+    const params = {
+      Bucket: BUCKET_NAME,
+      Prefix: `${this.#extractor}/`,
+    };
+    while (truncated) {
+      // eslint-disable-next-line no-await-in-loop
+      const response = await this.#client.send(new ListObjectsCommand(params));
+      response.Contents.forEach((item) => {
+        configurations.push(item.Key);
+      });
+      truncated = response.IsTruncated;
+      if (truncated) {
+        params.Marker = response.Contents.slice(-1)[0].Key;
+      }
+    }
+    return configurations;
+  }
+
+  /**
    * Puts or creates the specified configuration
    * @param {string} id the id of the extractor configuration to persist
    * @param {Object} configuration the configuration to persist
@@ -58,7 +88,7 @@ export class ConfigurationManager {
   async putConfiguration(id, configuration) {
     const command = new PutObjectCommand({
       Bucket: BUCKET_NAME,
-      Key: id,
+      Key: `${this.#extractor}/${id}`,
       Body: JSON.stringify(configuration),
     });
     await this.#client.send(command);

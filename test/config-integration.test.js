@@ -18,6 +18,7 @@ import { ConfigurationManager } from '../src/config.js';
 dotenv.config();
 
 describe('Configuration Manager Integration Tests', async () => {
+  const extractor = 'it';
   let mgrCfg;
   before(function () {
     if (!process.env.aws_access_key_id) {
@@ -31,7 +32,7 @@ describe('Configuration Manager Integration Tests', async () => {
     };
   });
   it('can get non-existent config', async () => {
-    const cfgMgr = new ConfigurationManager(mgrCfg);
+    const cfgMgr = new ConfigurationManager(extractor, mgrCfg);
     const config = await cfgMgr.getConfiguration('doesnotexist');
     assert.ok(!config);
   });
@@ -39,7 +40,7 @@ describe('Configuration Manager Integration Tests', async () => {
   it('rethrows unexpected exception', async () => {
     const newConfig = JSON.parse(JSON.stringify(mgrCfg));
     newConfig.credentials.accessKeyId = 'invalid';
-    const cfgMgr = new ConfigurationManager(newConfig);
+    const cfgMgr = new ConfigurationManager(extractor, newConfig);
     let caught;
     try {
       await cfgMgr.getConfiguration('test');
@@ -50,15 +51,21 @@ describe('Configuration Manager Integration Tests', async () => {
   });
 
   it('can get', async () => {
-    const cfgMgr = new ConfigurationManager(mgrCfg);
+    const cfgMgr = new ConfigurationManager(extractor, mgrCfg);
     await cfgMgr.putConfiguration('test', { message: 'Hello' });
     const config = await cfgMgr.getConfiguration('test');
     assert.ok(config);
     assert.strictEqual('Hello', config.message);
   });
 
+  it('can list', async () => {
+    const cfgMgr = new ConfigurationManager(extractor, mgrCfg);
+    const configs = await cfgMgr.listConfigurations();
+    assert.ok(configs.length > 0);
+  });
+
   it('can put', async () => {
-    const cfgMgr = new ConfigurationManager(mgrCfg);
+    const cfgMgr = new ConfigurationManager(extractor, mgrCfg);
     await cfgMgr.putConfiguration('test', { message: 'Hello' });
     await cfgMgr.putConfiguration('test', { message: 'Hello2' });
   });
