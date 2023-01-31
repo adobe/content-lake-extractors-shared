@@ -39,21 +39,6 @@
  */
 
 /**
- * Configuration for an OauthAuthenticator instance
- * @typedef OauthAuthenticatorConfig
- * @property {RefreshListenerFn | undefined} refreshTokenUpdateListener
- *  Listener for updates to the refresh token.
- * @property {AuthenticationUrlGeneratorFn} authenticationUrlGenerator
- *  Get a url for authenticating with the Oauth service
- * @property {CallbackHandlerFn} callbackHandler
- *  Handles the callback redirect from an OAuth request
- * @property {RefreshAccessTokenFn} refreshAccessToken
- *  Refreshes the access token using the refresh token
- * @property {string | undefined} refreshToken
- *  The initial refresh token
- */
-
-/**
  * @typedef OauthCredentials
  * @property {string | undefined} accessToken
  *  The current access token or undefined if no token is available
@@ -65,10 +50,24 @@
 
 export class OauthAuthenticator {
   /**
-   * the configuration object
-   * @type OauthAuthenticatorConfig
+   * @type {AuthenticationUrlGeneratorFn}
    */
-  #config;
+  #authenticationUrlGenerator;
+
+  /**
+   * @type {CallbackHandlerFn}
+   */
+  #callbackHandler;
+
+  /**
+   * @type {RefreshListenerFn}
+   */
+  #refreshTokenUpdateListener;
+
+  /**
+   * @type {RefreshAccessTokenFn}
+   */
+  #refreshAccessToken;
 
   /**
    * the current access token or undefined
@@ -90,11 +89,10 @@ export class OauthAuthenticator {
 
   /**
    * Create a new OauthAutheticator
-   * @param {OauthAuthenticatorConfig} config
+   * @param {string | undefined} refreshToken
    */
-  constructor(config) {
-    this.#config = config;
-    this.refreshToken = config.refreshToken;
+  constructor(refreshToken) {
+    this.refreshToken = refreshToken;
   }
 
   /**
@@ -109,9 +107,7 @@ export class OauthAuthenticator {
     // add 5sec buffer
     const compare = new Date(new Date().getTime() + 5000);
     if (!this.accessToken || compare > this.expiration) {
-      const credentials = await this.#config.refreshAccessToken(
-        this.refreshToken,
-      );
+      const credentials = await this.#refreshAccessToken(this.refreshToken);
       await this.updateTokens(credentials);
     }
   }
@@ -123,7 +119,7 @@ export class OauthAuthenticator {
    *    a promise which resolves to the URL to which to take the user to authenticate
    */
   async getAuthenticationUrl(redirectUri) {
-    return this.#config.authenticationUrlGenerator(redirectUri);
+    return this.#authenticationUrlGenerator(redirectUri);
   }
 
   /**
@@ -132,7 +128,7 @@ export class OauthAuthenticator {
    * @param {Record<string,string>} query the query parameters passed to the callback URL
    */
   async handleCallback(query) {
-    const credentials = await this.#config.callbackHandler(query);
+    const credentials = await this.#callbackHandler(query);
     await this.updateTokens(credentials);
   }
 
@@ -152,13 +148,57 @@ export class OauthAuthenticator {
     this.accessToken = credentials.accessToken;
     this.expiration = credentials.expiration;
     if (
-      credentials.refreshToken && this.refreshToken !== credentials.refreshToken
+      credentials.refreshToken
+      && this.refreshToken !== credentials.refreshToken
     ) {
       this.refreshToken = credentials.refreshToken;
-      if (this.#config.refreshTokenUpdateListener) {
-        await this.#config.refreshTokenUpdateListener(this.refreshToken);
+      if (this.#refreshTokenUpdateListener) {
+        await this.#refreshTokenUpdateListener(this.refreshToken);
       }
     }
+  }
+
+  /**
+   * Builder method for setting the authenticationUrlGenerator
+   * @param {AuthenticationUrlGeneratorFn} authenticationUrlGenerator a function for generating
+   *    an authenticated url
+   * @returns {OauthAuthenticator} the OauthAuthenticator instance
+   */
+  withAuthenticationUrlGenerator(authenticationUrlGenerator) {
+    this.#authenticationUrlGenerator = authenticationUrlGenerator;
+    return this;
+  }
+
+  /**
+   * Builder method for setting the callbackHandler
+   * @param {AuthenticationUrlGeneratorFn} callbackHandler a function handing the callback
+   * @returns {OauthAuthenticator} the OauthAuthenticator instance
+   */
+  withCallbackHandler(callbackHandler) {
+    this.#callbackHandler = callbackHandler;
+    return this;
+  }
+
+  /**
+   * Builder method for setting the refreshTokenUpdateListener
+   * @param {RefreshAccessTokenFn} refreshAccessToken a function to
+   *    call when the refresh token changes
+   * @returns {OauthAuthenticator} the OauthAuthenticator instance
+   */
+  withRefreshAccessToken(refreshAccessToken) {
+    this.#refreshAccessToken = refreshAccessToken;
+    return this;
+  }
+
+  /**
+   * Builder method for setting the refreshTokenUpdateListener
+   * @param {RefreshListenerFn} refreshTokenUpdateListener a function to
+   *    call when the refresh token changes
+   * @returns {OauthAuthenticator} the OauthAuthenticator instance
+   */
+  withRefreshTokenUpdateListener(refreshTokenUpdateListener) {
+    this.#refreshTokenUpdateListener = refreshTokenUpdateListener;
+    return this;
   }
 }
 
