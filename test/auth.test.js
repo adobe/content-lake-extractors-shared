@@ -29,27 +29,28 @@ describe('Auth Test', function () {
 
   beforeEach(() => {
     refreshCount = 0;
-    mockAuthenticator = new OauthAuthenticator({
-      refreshTokenUpdateListener: (newToken) => {
-        refreshToken = newToken;
-      },
-      authenticationUrlGenerator: (redirect) => `http://localhost:8080/auth?redirect=${redirect}`,
-      callbackHandler: (params) => {
+    mockAuthenticator = new OauthAuthenticator()
+      .withAuthenticationUrlGenerator(
+        (redirect) => `http://localhost:8080/auth?redirect=${redirect}`,
+      )
+      .withCallbackHandler((params) => {
         if (params.code === 'valid') {
           return {
             refreshToken: 'valid',
           };
         }
         throw new Error('Invalid auth code');
-      },
-      refreshAccessToken: (token) => {
+      })
+      .withRefreshAccessToken((token) => {
         if (token === 'valid') {
           refreshCount += 1;
           return { accessToken: 'valid', expiration: new Date() };
         }
         throw new Error('Invalid refresh token');
-      },
-    });
+      })
+      .withRefreshTokenUpdateListener((newToken) => {
+        refreshToken = newToken;
+      });
   });
 
   it('can check authentication', async () => {
