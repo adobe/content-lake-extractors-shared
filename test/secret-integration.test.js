@@ -23,13 +23,13 @@ describe('Secrets Manager Integration Tests', async function () {
   const extractor = 'it';
   let mgrCfg;
   before(function () {
-    if (!process.env.aws_access_key_id) {
+    if (!process.env.AWS_ACCESS_KEY_ID) {
       this.skip();
     }
     mgrCfg = {
       credentials: {
-        accessKeyId: process.env.aws_access_key_id,
-        secretAccessKey: process.env.aws_secret_access_key,
+        accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+        secretAccessKey: process.env.AWS_ACCESS_SECRET_KEY,
       },
     };
   });
