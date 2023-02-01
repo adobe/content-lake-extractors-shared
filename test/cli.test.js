@@ -75,4 +75,17 @@ describe('CLI Test', () => {
     assert(res.stderr.toString() === '');
     assert(res.stdout.toString().includes('Retrieved folders:'));
   });
+
+  it('can skip authentication', async () => {
+    const res = spawnSync('node', [
+      'test/mocks/mockcli.js',
+      'authenticate',
+      '--config',
+      'test/mocks/config.json',
+      '--port',
+      '3000',
+    ]);
+    assert(res.stderr.toString() === '');
+    assert(res.stdout.toString().includes('skipping authentication!'));
+  });
 });
