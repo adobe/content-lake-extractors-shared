@@ -1,3 +1,16 @@
+# [1.3.0](https://github.com/adobe/content-lake-extractors-shared/compare/v1.2.0...v1.3.0) (2023-02-01)
+
+
+### Bug Fixes
+
+* fixing GH build ([b02b811](https://github.com/adobe/content-lake-extractors-shared/commit/b02b8115129f99a7f97bc397c1db978eb5107f01))
+* fixing secrets ([a180822](https://github.com/adobe/content-lake-extractors-shared/commit/a1808226e89824f269b0dbdef33b26026d500c08))
+
+
+### Features
+
+* Secret manager ([#14](https://github.com/adobe/content-lake-extractors-shared/issues/14)) ([3876175](https://github.com/adobe/content-lake-extractors-shared/commit/387617526cce3b46ea7d2c36a84df0d55ff0f6fa))
+
 # [1.2.0](https://github.com/adobe/content-lake-extractors-shared/compare/v1.1.1...v1.2.0) (2023-01-31)
 
 
