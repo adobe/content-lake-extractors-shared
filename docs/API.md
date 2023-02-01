@@ -15,6 +15,12 @@
 <dt><a href="#cli">cli(config)</a></dt>
 <dd><p>Parse the arguments from the current process and execute the extractor function</p>
 </dd>
+<dt><a href="#sendProblem">sendProblem(problem)</a> ⇒ <code>Response</code></dt>
+<dd><p>Creates an application/problem+json response</p>
+</dd>
+<dt><a href="#handleErrorAsProblem">handleErrorAsProblem(err, instance)</a> ⇒</dt>
+<dd><p>Attempts to send a reasonable problem h</p>
+</dd>
 </dl>
 
 ## Typedefs
@@ -76,6 +82,9 @@
 <dd></dd>
 <dt><a href="#IngestorConfig">IngestorConfig</a></dt>
 <dd></dd>
+<dt><a href="#Handler">Handler</a> ⇒ <code>Promise.&lt;Response&gt;</code></dt>
+<dd><p>Function for handling a routes inside Frankin / Content Lake services</p>
+</dd>
 </dl>
 
 <a name="performOauthAuthentication"></a>
@@ -100,6 +109,32 @@ Parse the arguments from the current process and execute the extractor function
 | Param | Type | Description |
 | --- | --- | --- |
 | config | [<code>CliConfig</code>](#CliConfig) | the configuration |
+
+<a name="sendProblem"></a>
+
+## sendProblem(problem) ⇒ <code>Response</code>
+Creates an application/problem+json response
+
+**Kind**: global function  
+**Returns**: <code>Response</code> - the problem response  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| problem | <code>Object</code> | the problem json |
+| problem.status | <code>number</code> | the status code for the problem |
+
+<a name="handleErrorAsProblem"></a>
+
+## handleErrorAsProblem(err, instance) ⇒
+Attempts to send a reasonable problem h
+
+**Kind**: global function  
+**Returns**: Response  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| err | <code>\*</code> | the error to handle |
+| instance | <code>string</code> | an identifier for this error instance  to enable tracking back in the logs |
 
 <a name="RefreshListenerFn"></a>
 
@@ -357,4 +392,18 @@ Gets the folders which are children of the specified parent
 | url | <code>string</code> | the URL for calling the ingestor |
 | apiKey | <code>string</code> | the API Key used to call the ingestor |
 | jobId | <code>string</code> | the id of the current job |
+
+<a name="Handler"></a>
+
+## Handler ⇒ <code>Promise.&lt;Response&gt;</code>
+Function for handling a routes inside Frankin / Content Lake services
+
+**Kind**: global typedef  
+**Returns**: <code>Promise.&lt;Response&gt;</code> - the response from the request  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| req | <code>Request</code> | the request |
+| context | <code>UniversalContext</code> | the context of the request |
+| params | <code>Record.&lt;string, string&gt;</code> | the parameters parsed from the request |
 

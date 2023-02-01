@@ -14,20 +14,36 @@
 
 import assert from 'assert';
 import {
-  auth, cli, extractors, ingestor,
+  auth,
+  cli,
+  configMgr,
+  extractors,
+  ingestor,
+  secretMgr,
 } from '../src/index.js';
 
 describe('Index Tests', () => {
   it('export auth is present', async () => {
     assert.ok(auth);
   });
+
   it('export cli is present', async () => {
     assert.ok(cli);
   });
+
+  it('export cli is present', async () => {
+    assert.ok(configMgr);
+  });
+
   it('export extractors is present', async () => {
     assert.ok(extractors);
   });
-  it('export extractors is present', async () => {
-    assert.ok(extractors, ingestor);
+
+  it('export ingestor is present', async () => {
+    assert.ok(ingestor);
+  });
+
+  it('export secret is present', async () => {
+    assert.ok(secretMgr);
   });
 });

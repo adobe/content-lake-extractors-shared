@@ -103,5 +103,3 @@
  * @param {Asset} asset the asset for which to invoke the callback
  * @returns {Promise<void>} a promise which resolves once the callback is finished
  */
-
-export default {};
