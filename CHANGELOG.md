@@ -1,3 +1,10 @@
+## [1.4.2](https://github.com/adobe/content-lake-extractors-shared/compare/v1.4.1...v1.4.2) (2023-02-01)
+
+
+### Bug Fixes
+
+* add capability for extractors to skip oauth authentication flow. ([#15](https://github.com/adobe/content-lake-extractors-shared/issues/15)) ([d453e49](https://github.com/adobe/content-lake-extractors-shared/commit/d453e49337b6b918a8b1e9c4ea1cc0d7c33d8fba))
+
 ## [1.4.1](https://github.com/adobe/content-lake-extractors-shared/compare/v1.4.0...v1.4.1) (2023-02-01)
 
 
