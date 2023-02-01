@@ -180,6 +180,10 @@ export function cli(config) {
       },
       async (argv) => {
         const parsed = await parseConfig(argv.config);
+        if (!getOauthAuthenicator) {
+          console.log('Extractor does not support OAuth, skipping authentication!');
+          return;
+        }
         const authenticator = await getOauthAuthenicator(parsed);
         await performOauthAuthentication(authenticator, argv.port);
         console.log('Authenticated successfully!');
