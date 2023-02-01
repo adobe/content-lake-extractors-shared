@@ -1,3 +1,10 @@
+## [1.4.1](https://github.com/adobe/content-lake-extractors-shared/compare/v1.4.0...v1.4.1) (2023-02-01)
+
+
+### Bug Fixes
+
+* reverting package name change ([bd32a37](https://github.com/adobe/content-lake-extractors-shared/commit/bd32a37bcd1aaaf2166b82687dcb406507647991))
+
 # [1.4.0](https://github.com/adobe/content-lake-shared/compare/v1.3.0...v1.4.0) (2023-02-01)
 
 
