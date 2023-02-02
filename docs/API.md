@@ -288,6 +288,7 @@ A representation of an asset from the source
 | lastModified | <code>Date</code> \| <code>undefined</code> | the last time the asset was modified |
 | lastModifiedBy | <code>string</code> \| <code>undefined</code> | an identifier for the principal which last modified the asset |
 | path | <code>string</code> \| <code>undefined</code> | the path to the asset |
+| [binary] | [<code>BinaryRequest</code>](#BinaryRequest) \| <code>undefined</code> | If provided, information about the request  that can be sent to retrieve the asset's binary data. If missing, the ingestion process will  make a second call to the extractor to retrieve this information. |
 
 <a name="BinaryRequest"></a>
 

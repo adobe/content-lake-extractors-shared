@@ -165,6 +165,6 @@ export class IngestorClient {
     await forEachLimit(resolved, 2, async (asset) => {
       await this.submit(asset.data, asset.binary);
     });
-    return batch.cursor;
+    return { cursor: batch.cursor, more: batch.more };
   }
 }

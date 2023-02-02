@@ -61,7 +61,9 @@ describe('Ingestor Client Tests', function () {
       apiKey: 'test-api-key',
       jobId: 'test-job-id',
     }).withLog(console);
-    await client.submitBatch(mockExtractor);
+    const res = await client.submitBatch(mockExtractor);
+    assert.ok(res.more);
+    assert.ok(res.cursor);
     assert.ok(scope.isDone());
   });
 
