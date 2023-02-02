@@ -1,3 +1,10 @@
+## [1.6.2](https://github.com/adobe/content-lake-extractors-shared/compare/v1.6.1...v1.6.2) (2023-02-02)
+
+
+### Bug Fixes
+
+* re-adding response parsing to function support ([3b9b5c5](https://github.com/adobe/content-lake-extractors-shared/commit/3b9b5c54922553985726980ded9fc655c99eefeb))
+
 ## [1.6.1](https://github.com/adobe/content-lake-extractors-shared/compare/v1.6.0...v1.6.1) (2023-02-02)
 
 
