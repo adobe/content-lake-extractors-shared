@@ -15,6 +15,9 @@
 <dt><a href="#cli">cli(config)</a></dt>
 <dd><p>Parse the arguments from the current process and execute the extractor function</p>
 </dd>
+<dt><a href="#extractCredentials">extractCredentials(env)</a> ⇒</dt>
+<dd><p>Loads the configuration keys from an environment variable map</p>
+</dd>
 <dt><a href="#sendProblem">sendProblem(problem)</a> ⇒ <code>Response</code></dt>
 <dd><p>Creates an application/problem+json response</p>
 </dd>
@@ -80,11 +83,21 @@
 <dd></dd>
 <dt><a href="#AssetCallback">AssetCallback</a> ⇒ <code>Promise.&lt;void&gt;</code></dt>
 <dd></dd>
+<dt><a href="#InvocationResponse">InvocationResponse</a></dt>
+<dd></dd>
 <dt><a href="#IngestorConfig">IngestorConfig</a></dt>
+<dd></dd>
+<dt><a href="#Problem">Problem</a></dt>
 <dd></dd>
 <dt><a href="#Handler">Handler</a> ⇒ <code>Promise.&lt;Response&gt;</code></dt>
 <dd><p>Function for handling a routes inside Frankin / Content Lake services</p>
 </dd>
+<dt><a href="#SettingsObject">SettingsObject</a> : <code>Object</code></dt>
+<dd></dd>
+<dt><a href="#QueryOptions">QueryOptions</a> : <code>Object</code></dt>
+<dd></dd>
+<dt><a href="#QueryResult">QueryResult</a> : <code>Object</code></dt>
+<dd></dd>
 </dl>
 
 <a name="performOauthAuthentication"></a>
@@ -110,6 +123,18 @@ Parse the arguments from the current process and execute the extractor function
 | --- | --- | --- |
 | config | [<code>CliConfig</code>](#CliConfig) | the configuration |
 
+<a name="extractCredentials"></a>
+
+## extractCredentials(env) ⇒
+Loads the configuration keys from an environment variable map
+
+**Kind**: global function  
+**Returns**: the configuration to use  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| env | <code>Record.&lt;string, string&gt;</code> | the environment variables map |
+
 <a name="sendProblem"></a>
 
 ## sendProblem(problem) ⇒ <code>Response</code>
@@ -120,8 +145,7 @@ Creates an application/problem+json response
 
 | Param | Type | Description |
 | --- | --- | --- |
-| problem | <code>Object</code> | the problem json |
-| problem.status | <code>number</code> | the status code for the problem |
+| problem | [<code>Problem</code>](#Problem) | the problem json |
 
 <a name="handleErrorAsProblem"></a>
 
@@ -381,6 +405,17 @@ Gets the folders which are children of the specified parent
 | --- | --- | --- |
 | asset | <code>Asset</code> | the asset for which to invoke the callback |
 
+<a name="InvocationResponse"></a>
+
+## InvocationResponse
+**Kind**: global typedef  
+**Properties**
+
+| Name | Type |
+| --- | --- |
+| status | <code>number</code> | 
+| data | <code>Object</code> \| <code>undefined</code> | 
+
 <a name="IngestorConfig"></a>
 
 ## IngestorConfig
@@ -392,6 +427,19 @@ Gets the folders which are children of the specified parent
 | url | <code>string</code> | the URL for calling the ingestor |
 | apiKey | <code>string</code> | the API Key used to call the ingestor |
 | jobId | <code>string</code> | the id of the current job |
+
+<a name="Problem"></a>
+
+## Problem
+**Kind**: global typedef  
+**Properties**
+
+| Name | Type |
+| --- | --- |
+| status | <code>number</code> | 
+| title | <code>string</code> \| <code>undefined</code> | 
+| detail | <code>any</code> | 
+| instance | <code>string</code> \| <code>undefined</code> | 
 
 <a name="Handler"></a>
 
@@ -406,4 +454,41 @@ Function for handling a routes inside Frankin / Content Lake services
 | req | <code>Request</code> | the request |
 | context | <code>UniversalContext</code> | the context of the request |
 | params | <code>Record.&lt;string, string&gt;</code> | the parameters parsed from the request |
+
+<a name="SettingsObject"></a>
+
+## SettingsObject : <code>Object</code>
+**Kind**: global typedef  
+**Properties**
+
+| Name | Type |
+| --- | --- |
+| instanceId | <code>string</code> | 
+| tenantId | <code>string</code> | 
+| extractorType | <code>string</code> | 
+
+<a name="QueryOptions"></a>
+
+## QueryOptions : <code>Object</code>
+**Kind**: global typedef  
+**Properties**
+
+| Name | Type |
+| --- | --- |
+| tenantId | <code>string</code> \| <code>undefined</code> | 
+| extractorType | <code>string</code> \| <code>undefined</code> | 
+| cursor | <code>any</code> | 
+| limit | <code>number</code> \| <code>undefined</code> | 
+
+<a name="QueryResult"></a>
+
+## QueryResult : <code>Object</code>
+**Kind**: global typedef  
+**Properties**
+
+| Name | Type |
+| --- | --- |
+| items | [<code>Array.&lt;SettingsObject&gt;</code>](#SettingsObject) | 
+| count | <code>number</code> | 
+| cursor | <code>any</code> | 
 

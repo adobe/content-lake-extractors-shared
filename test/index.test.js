@@ -16,10 +16,10 @@ import assert from 'assert';
 import {
   auth,
   cli,
-  configMgr,
+  contextHelper,
   extractors,
   ingestor,
-  secretMgr,
+  secrets,
 } from '../src/index.js';
 
 describe('Index Tests', () => {
@@ -31,8 +31,8 @@ describe('Index Tests', () => {
     assert.ok(cli);
   });
 
-  it('export cli is present', async () => {
-    assert.ok(configMgr);
+  it('export contextHelper is present', async () => {
+    assert.ok(contextHelper);
   });
 
   it('export extractors is present', async () => {
@@ -44,6 +44,6 @@ describe('Index Tests', () => {
   });
 
   it('export secret is present', async () => {
-    assert.ok(secretMgr);
+    assert.ok(secrets);
   });
 });

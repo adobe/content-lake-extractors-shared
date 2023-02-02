@@ -128,4 +128,22 @@ describe('Ingestor Client Tests', function () {
     await client.submitBatch(mockExtractor);
     assert.ok(scope.isDone());
   });
+
+  it('Can can handle failure', async () => {
+    const scope = nock(TEST_INGESTOR_URL)
+      .post('/')
+      .matchHeader('x-api-key', 'test-api-key')
+      .reply(400, 'Your request is bad and you should feel bad')
+      .post('/')
+      .matchHeader('x-api-key', 'test-api-key')
+      .twice()
+      .reply(200, 'Ok');
+    const client = new IngestorClient({
+      url: `${TEST_INGESTOR_URL}/`,
+      apiKey: 'test-api-key',
+      jobId: 'test-job-id',
+    });
+    await client.submitBatch(mockExtractor);
+    assert.ok(!scope.isDone());
+  });
 });

@@ -43,19 +43,32 @@ const STATUS_MESSAGES = {
 };
 
 /**
+ * @typedef Problem
+ * @property {number} status
+ * @property {string| undefined} title
+ * @property {any} detail
+ * @property {string|undefined} instance
+ */
+
+/**
  * Creates an application/problem+json response
- * @param {Object} problem the problem json
- * @param {number} problem.status the status code for the problem
+ * @param {Problem} problem the problem json
  * @returns {Response} the problem response
  */
 export function sendProblem(problem) {
   const { status } = problem;
-  return new Response(JSON.stringify(problem), {
-    headers: {
-      'Content-Type': 'application/problem+json',
+  return new Response(
+    JSON.stringify({
+      title: STATUS_MESSAGES[problem.status] || 'Unknown Problem',
+      ...problem,
+    }),
+    {
+      headers: {
+        'Content-Type': 'application/problem+json',
+      },
+      status,
     },
-    status,
-  });
+  );
 }
 
 /**
@@ -154,11 +167,11 @@ export class Router {
     const { method } = request;
     const { suffix } = context.pathInfo;
     if (this.methods[request.method]) {
-      log.debug('Handing request', { method, suffix });
+      log.debug('Handing request', { method, suffix, context });
       const match = this.methods[method].match(context.pathInfo.suffix);
-      if (match) {
+      if (match && match.node.handler) {
         try {
-          return match.node.handler(request, context, match.params);
+          return await match.node.handler(request, context, match.param);
         } catch (err) {
           const instance = randomUUID();
           log.warn('Caught exception from handler', {

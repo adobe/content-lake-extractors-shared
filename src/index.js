@@ -12,8 +12,10 @@
 
 export * as auth from './auth.js';
 export * as cli from './cli.js';
-export * as configMgr from './config.js';
+export * as contextHelper from './context.js';
 export * as extractors from './extractors.js';
+export * as functions from './functions.js';
 export * as rest from './rest.js';
 export * as ingestor from './ingestor.js';
-export * as secretMgr from './secret.js';
+export * as secrets from './secret.js';
+export * as settings from './settings.js';

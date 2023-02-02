@@ -12,59 +12,55 @@
 
 /* eslint-env mocha */
 import assert from 'assert';
-import { randomUUID } from 'crypto';
 import * as dotenv from 'dotenv';
-import { SecretsManager } from '../src/secret.js';
 import { extractCredentials } from '../src/context.js';
+import { FunctionRunner } from '../src/functions.js';
 
 dotenv.config();
 
-describe('Secrets Manager Integration Tests', async function () {
+describe('Functions Integration Tests', async function () {
   this.timeout(60000);
-  const extractor = 'it';
   before(function () {
     if (!process.env.AWS_ACCESS_KEY_ID) {
       this.skip();
     }
   });
-  it('fails on non-existing secret', async () => {
-    const mgr = new SecretsManager(
-      extractor,
-      extractCredentials(process.env),
+  it('can invoke function', async () => {
+    const runner = new FunctionRunner(extractCredentials(process.env));
+    const res = await runner.invokeFunctionWithResponse(
+      'helix-services--content-lake-echo-test',
+      {
+        message: 'ping',
+        nested: {
+          value: true,
+        },
+        another: 'key',
+      },
     );
-    let caught;
-    try {
-      await mgr.getSecret('not-a-secret');
-    } catch (err) {
-      caught = err;
-    }
-    assert.ok(caught);
+    assert.ok(res);
   });
 
-  it('can create, get and delete secret', async () => {
-    const secretId = randomUUID();
-    const mgr = new SecretsManager(
-      extractor,
-      extractCredentials(process.env),
-    );
+  it('can invoke function via event', async () => {
+    const runner = new FunctionRunner(extractCredentials(process.env));
+    await runner.invokeFunction('helix-services--content-lake-echo-test', {
+      message: 'ping',
+      nested: {
+        value: true,
+      },
+      another: 'key',
+    });
+  });
+
+  it('event fails if not function', async () => {
+    const runner = new FunctionRunner(extractCredentials(process.env));
     let caught;
     try {
-      await mgr.getSecret(secretId);
+      await runner.invokeFunction('helix-services--i-dont-exist', {
+        Descartes: false,
+      });
     } catch (err) {
       caught = err;
     }
     assert.ok(caught);
-
-    await mgr.putSecret(secretId, 'value1');
-
-    let value = await mgr.getSecret(secretId);
-    assert.strictEqual(value, 'value1');
-
-    await mgr.putSecret(secretId, 'value2');
-
-    value = await mgr.getSecret(secretId);
-    assert.strictEqual(value, 'value2');
-
-    await mgr.deleteSecret(secretId);
   });
 });

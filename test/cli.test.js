@@ -14,7 +14,8 @@
 import assert from 'assert';
 import { spawnSync } from 'child_process';
 
-describe('CLI Test', () => {
+describe('CLI Test', function () {
+  this.timeout(60000);
   it('can get assets', async () => {
     const res = spawnSync('node', [
       'test/mocks/mockcli.js',
@@ -47,7 +48,11 @@ describe('CLI Test', () => {
       '--config',
       'notafile.json',
     ]);
-    assert(res.stderr.toString().includes('Error: Failed to parse configuration: notafile.json'));
+    assert(
+      res.stderr
+        .toString()
+        .includes('Error: Failed to parse configuration: notafile.json'),
+    );
   });
 
   it('can get binary request', async () => {

@@ -12,6 +12,7 @@
 
 import {
   CreateSecretCommand,
+  DeleteSecretCommand,
   DescribeSecretCommand,
   GetSecretValueCommand,
   PutSecretValueCommand,
@@ -59,6 +60,18 @@ export class SecretsManager {
         }),
       );
     }
+  }
+
+  /**
+   * Deletes the specified secret
+   * @param {string} id  the id of the secret to delete
+   */
+  async deleteSecret(id) {
+    await this.#client.send(
+      new DeleteSecretCommand({
+        SecretId: `${this.#extractor}-${id}`,
+      }),
+    );
   }
 
   /**
