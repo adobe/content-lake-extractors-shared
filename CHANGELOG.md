@@ -1,3 +1,10 @@
+## [1.6.1](https://github.com/adobe/content-lake-extractors-shared/compare/v1.6.0...v1.6.1) (2023-02-02)
+
+
+### Bug Fixes
+
+* fixing return type of ingestor ([47d04a5](https://github.com/adobe/content-lake-extractors-shared/commit/47d04a56d2679fa97c3d0be99ab71bdea55c14f4))
+
 # [1.6.0](https://github.com/adobe/content-lake-extractors-shared/compare/v1.5.0...v1.6.0) (2023-02-02)
 
 
