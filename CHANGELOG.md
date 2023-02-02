@@ -1,3 +1,10 @@
+# [1.6.0](https://github.com/adobe/content-lake-extractors-shared/compare/v1.5.0...v1.6.0) (2023-02-02)
+
+
+### Features
+
+* modify ingestor so that second call to get asset binary info is optional. ([#17](https://github.com/adobe/content-lake-extractors-shared/issues/17)) ([bbeea03](https://github.com/adobe/content-lake-extractors-shared/commit/bbeea0367d16c5966812644692b6388ef959cab0))
+
 # [1.5.0](https://github.com/adobe/content-lake-extractors-shared/compare/v1.4.2...v1.5.0) (2023-02-02)
 
 
