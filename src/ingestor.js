@@ -148,7 +148,12 @@ export class IngestorClient {
       jobId: this.#config.jobId,
     });
     const resolved = await mapLimit(batch.assets, limit || 1, async (data) => {
-      const binary = await extractor.getBinaryRequest(data.id);
+      let { binary } = data;
+      // some extractors may be able to provide binary information with the asset
+      // itself, eliminating the need to perform a second request
+      if (!binary) {
+        binary = await extractor.getBinaryRequest(data.id);
+      }
       return { data, binary };
     });
 

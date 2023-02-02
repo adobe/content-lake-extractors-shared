@@ -65,6 +65,39 @@ describe('Ingestor Client Tests', function () {
     assert.ok(scope.isDone());
   });
 
+  it('Can support inline binary info', async () => {
+    const inlineExtractor = new MockExtractor([
+      {
+        assets: [
+          {
+            id: 1,
+            sourceId: 1,
+            sourceType: 'mock',
+            binary: {
+              requestType: 'http',
+              url: 'https://www.adobe.com/content/dam/cc/icons/Adobe_Corporate_Horizontal_Red_HEX.svg',
+            },
+          },
+        ],
+        more: false,
+      },
+    ]);
+    inlineExtractor.getBinaryRequest = async () => {
+      throw new Error('unit test error!');
+    };
+    const scope = nock(TEST_INGESTOR_URL)
+      .post('/')
+      .matchHeader('x-api-key', 'test-api-key')
+      .reply(200, 'Ok');
+    const client = new IngestorClient({
+      url: `${TEST_INGESTOR_URL}/`,
+      apiKey: 'test-api-key',
+      jobId: 'test-job-id',
+    }).withLog(console);
+    await client.submitBatch(inlineExtractor);
+    assert.ok(scope.isDone());
+  });
+
   it('Can set cursor', async () => {
     const scope = nock(TEST_INGESTOR_URL)
       .post('/')
