@@ -32,6 +32,9 @@
  * @property {string | undefined} lastModifiedBy
  *  an identifier for the principal which last modified the asset
  * @property {string | undefined} path the path to the asset
+ * @property {BinaryRequest | undefined} [binary] If provided, information about the request
+ *  that can be sent to retrieve the asset's binary data. If missing, the ingestion process will
+ *  make a second call to the extractor to retrieve this information.
  */
 
 /**
