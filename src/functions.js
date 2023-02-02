@@ -63,6 +63,11 @@ export class FunctionRunner {
     if (typeof data === 'string') {
       data = JSON.parse(data);
     }
+    if (data.status >= 400) {
+      const err = new Error('Invalid response from upstream', data);
+      err.status = 502;
+      throw err;
+    }
     return {
       status: result.StatusCode,
       data,
