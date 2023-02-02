@@ -1,3 +1,10 @@
+# [1.5.0](https://github.com/adobe/content-lake-extractors-shared/compare/v1.4.2...v1.5.0) (2023-02-02)
+
+
+### Features
+
+* added support for settings / secrets and made fixes based on requirments to support dropbox ([2d5d694](https://github.com/adobe/content-lake-extractors-shared/commit/2d5d694150385e8300efb90fd68ed497287fd35b))
+
 ## [1.4.2](https://github.com/adobe/content-lake-extractors-shared/compare/v1.4.1...v1.4.2) (2023-02-01)
 
 
