@@ -1,3 +1,10 @@
+## [1.7.2](https://github.com/adobe/content-lake-extractors-shared/compare/v1.7.1...v1.7.2) (2023-02-03)
+
+
+### Bug Fixes
+
+* adding error handling when getting the binary request ([7096b29](https://github.com/adobe/content-lake-extractors-shared/commit/7096b29bbc5d790b0d41113bc765dbb0b545ec37))
+
 ## [1.7.1](https://github.com/adobe/content-lake-extractors-shared/compare/v1.7.0...v1.7.1) (2023-02-03)
 
 
