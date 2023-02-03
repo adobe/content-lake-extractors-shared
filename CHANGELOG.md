@@ -1,3 +1,10 @@
+## [1.6.3](https://github.com/adobe/content-lake-extractors-shared/compare/v1.6.2...v1.6.3) (2023-02-03)
+
+
+### Bug Fixes
+
+* improving logging ([231e605](https://github.com/adobe/content-lake-extractors-shared/commit/231e605289379770c482af156e50e4e3ddd95412))
+
 ## [1.6.2](https://github.com/adobe/content-lake-extractors-shared/compare/v1.6.1...v1.6.2) (2023-02-02)
 
 
