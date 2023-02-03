@@ -1,3 +1,10 @@
+## [1.7.1](https://github.com/adobe/content-lake-extractors-shared/compare/v1.7.0...v1.7.1) (2023-02-03)
+
+
+### Bug Fixes
+
+* fixing exponential backoff to backoff for a more reasonable amount of time and to not start with a zero delay ([d5cb534](https://github.com/adobe/content-lake-extractors-shared/commit/d5cb534c2833cb20503f3f59f401ff9fad0e504a))
+
 # [1.7.0](https://github.com/adobe/content-lake-extractors-shared/compare/v1.6.3...v1.7.0) (2023-02-03)
 
 
