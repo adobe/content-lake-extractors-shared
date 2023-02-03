@@ -10,7 +10,7 @@
  * governing permissions and limitations under the License.
  */
 
-import { timeoutSignal, fetch as originalFetch } from '@adobe/fetch';
+import { fetch as originalFetch } from '@adobe/fetch';
 import { forEachLimit, mapLimit } from 'async';
 import fetchBuilder from 'fetch-retry';
 import { randomUUID } from 'crypto';
@@ -39,7 +39,6 @@ const fetch = fetchBuilder(originalFetch);
 const SEC_IN_MS = 1000;
 const DEFAULT_INGEST_LIMIT = 2;
 const DEFAULT_RETRIES = 3;
-const DEFAULT_TIMEOUT = SEC_IN_MS * 30;
 
 /**
  * The ingestor client sends asset data to the Content Lake ingestion service to be ingested
@@ -69,7 +68,6 @@ export class IngestorClient {
    * @param {extractors.BinaryRequest} binary the reference to the binary to ingest
    */
   async submit(data, binary) {
-    const signal = timeoutSignal(DEFAULT_TIMEOUT);
     const start = Date.now();
     const body = {
       jobId: this.#config.jobId,
@@ -94,7 +92,6 @@ export class IngestorClient {
         'Content-Type': 'application/json',
       },
       method: 'POST',
-      signal,
       body: JSON.stringify(body),
       retries: DEFAULT_RETRIES,
       retryDelay: (attempt, err, response) => {
