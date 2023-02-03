@@ -1,3 +1,10 @@
+# [1.7.0](https://github.com/adobe/content-lake-extractors-shared/compare/v1.6.3...v1.7.0) (2023-02-03)
+
+
+### Features
+
+* adding control of the limits for ingesting and getting binaries ([1f6ef20](https://github.com/adobe/content-lake-extractors-shared/commit/1f6ef209c738c07b088754129fa75fefca1d21b5))
+
 ## [1.6.3](https://github.com/adobe/content-lake-extractors-shared/compare/v1.6.2...v1.6.3) (2023-02-03)
 
 
