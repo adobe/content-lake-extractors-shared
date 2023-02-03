@@ -142,11 +142,14 @@ export class IngestorClient {
    */
   async submitBatch(extractor, cursor, limit) {
     const batch = await extractor.getAssets(cursor);
-    this.#log.info('Retrieving binary requests', {
+    const batchInfo = {
+      skipped: batch.skipped,
+      more: batch.more,
       count: batch.assets.length,
       limit,
       jobId: this.#config.jobId,
-    });
+    };
+    this.#log.info('Retrieving binary requests', batchInfo);
     const resolved = await mapLimit(batch.assets, limit || 1, async (data) => {
       let { binary } = data;
       // some extractors may be able to provide binary information with the asset
@@ -157,14 +160,12 @@ export class IngestorClient {
       return { data, binary };
     });
 
-    this.#log.info('Sending asets', {
-      count: batch.assets.length,
-      limit,
-      jobId: this.#config.jobId,
-    });
+    this.#log.info('Sending assets', batchInfo);
     await forEachLimit(resolved, 2, async (asset) => {
       await this.submit(asset.data, asset.binary);
     });
+
+    this.#log.info('Assets sent', batchInfo);
     return { cursor: batch.cursor, more: batch.more };
   }
 }
