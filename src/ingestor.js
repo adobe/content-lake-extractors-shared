@@ -156,19 +156,28 @@ export class IngestorClient {
       jobId: this.#config.jobId,
     };
     this.#log.info('Retrieving binary requests', batchInfo);
-    const resolved = await mapLimit(
-      batch.assets,
-      options?.binaryRequestLimit || 1,
-      async (data) => {
-        let { binary } = data;
-        // some extractors may be able to provide binary information with the asset
-        // itself, eliminating the need to perform a second request
-        if (!binary) {
-          binary = await extractor.getBinaryRequest(data.id);
-        }
-        return { data, binary };
-      },
-    );
+    const resolved = (
+      await mapLimit(
+        batch.assets,
+        options?.binaryRequestLimit || 1,
+        async (data) => {
+          let { binary } = data;
+          // some extractors may be able to provide binary information with the asset
+          // itself, eliminating the need to perform a second request
+          if (!binary) {
+            try {
+              binary = await extractor.getBinaryRequest(data.id);
+            } catch (err) {
+              this.#log.warn('Failed to retrieve binary', {
+                batchInfo,
+                assetId: data.assetId,
+              });
+            }
+          }
+          return { data, binary };
+        },
+      )
+    ).filter((it) => it.binary);
 
     this.#log.info('Sending assets', batchInfo);
     await forEachLimit(
