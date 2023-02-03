@@ -125,7 +125,9 @@ describe('Ingestor Client Tests', function () {
       apiKey: 'test-api-key',
       jobId: 'test-job-id',
     }).withLog(console);
-    await client.submitBatch(mockExtractor, undefined, 2);
+    await client.submitBatch(mockExtractor, undefined, {
+      binaryRequestLimit: 2,
+    });
     assert.ok(scope.isDone());
   });
 

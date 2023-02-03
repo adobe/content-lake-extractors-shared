@@ -87,6 +87,8 @@
 <dd></dd>
 <dt><a href="#IngestorConfig">IngestorConfig</a></dt>
 <dd></dd>
+<dt><a href="#SubmitBatchOptions">SubmitBatchOptions</a></dt>
+<dd></dd>
 <dt><a href="#Problem">Problem</a></dt>
 <dd></dd>
 <dt><a href="#Handler">Handler</a> ⇒ <code>Promise.&lt;Response&gt;</code></dt>
@@ -428,6 +430,17 @@ Gets the folders which are children of the specified parent
 | url | <code>string</code> | the URL for calling the ingestor |
 | apiKey | <code>string</code> | the API Key used to call the ingestor |
 | jobId | <code>string</code> | the id of the current job |
+
+<a name="SubmitBatchOptions"></a>
+
+## SubmitBatchOptions
+**Kind**: global typedef  
+**Properties**
+
+| Name | Type | Description |
+| --- | --- | --- |
+| binaryRequestLimit | <code>number</code> \| <code>undefined</code> | the limit to the number of parallel requests  to get the binary |
+| ingestLimit | <code>number</code> \| <code>undefined</code> | the limit to the number of parallel requests  to ingest assets |
 
 <a name="Problem"></a>
 

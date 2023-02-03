@@ -27,8 +27,17 @@ const fetch = fetchBuilder(originalFetch);
  * @property {string} jobId the id of the current job
  */
 
+/**
+ * @typedef SubmitBatchOptions
+ * @property {number | undefined} binaryRequestLimit the limit to the number of parallel requests
+ *  to get the binary
+ * @property {number | undefined} ingestLimit the limit to the number of parallel requests
+ *  to ingest assets
+ */
+
 // Constants for retry configuration
 const SEC_IN_MS = 1000;
+const DEFAULT_INGEST_LIMIT = 2;
 const DEFAULT_RETRIES = 3;
 const DEFAULT_TIMEOUT = SEC_IN_MS * 30;
 
@@ -137,33 +146,41 @@ export class IngestorClient {
    * Extract all of the assets from the source and call the callback
    * @param {extractors.Extractor} extractor the extractor from which to get the batch
    * @param {any | undefined} cursor the current cursor
-   * @param {number | undefined} limit the limit for the number of concurrent requests
+   * @param {SubmitBatchOptions | undefined} options the limit for the number of concurrent requests
    * @returns {any} the next cursor or undefined if no more assets are available
    */
-  async submitBatch(extractor, cursor, limit) {
+  async submitBatch(extractor, cursor, options) {
     const batch = await extractor.getAssets(cursor);
     const batchInfo = {
       skipped: batch.skipped,
       more: batch.more,
       count: batch.assets.length,
-      limit,
+      limit: options?.binaryRequestLimit,
       jobId: this.#config.jobId,
     };
     this.#log.info('Retrieving binary requests', batchInfo);
-    const resolved = await mapLimit(batch.assets, limit || 1, async (data) => {
-      let { binary } = data;
-      // some extractors may be able to provide binary information with the asset
-      // itself, eliminating the need to perform a second request
-      if (!binary) {
-        binary = await extractor.getBinaryRequest(data.id);
-      }
-      return { data, binary };
-    });
+    const resolved = await mapLimit(
+      batch.assets,
+      options?.binaryRequestLimit || 1,
+      async (data) => {
+        let { binary } = data;
+        // some extractors may be able to provide binary information with the asset
+        // itself, eliminating the need to perform a second request
+        if (!binary) {
+          binary = await extractor.getBinaryRequest(data.id);
+        }
+        return { data, binary };
+      },
+    );
 
     this.#log.info('Sending assets', batchInfo);
-    await forEachLimit(resolved, 2, async (asset) => {
-      await this.submit(asset.data, asset.binary);
-    });
+    await forEachLimit(
+      resolved,
+      options?.ingestLimit || DEFAULT_INGEST_LIMIT,
+      async (asset) => {
+        await this.submit(asset.data, asset.binary);
+      },
+    );
 
     this.#log.info('Assets sent', batchInfo);
     return { cursor: batch.cursor, more: batch.more };
