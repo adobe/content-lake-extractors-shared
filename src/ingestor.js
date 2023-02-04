@@ -66,8 +66,9 @@ export class IngestorClient {
    * Submits the data and binary reference for ingestion
    * @param {extractors.AssetData} data the asset data to ingest
    * @param {extractors.BinaryRequest} binary the reference to the binary to ingest
+   * @param {string | undefined} batchId the current batchId
    */
-  async submit(data, binary) {
+  async submit(data, binary, batchId) {
     const start = Date.now();
     const body = {
       jobId: this.#config.jobId,
@@ -75,12 +76,19 @@ export class IngestorClient {
       binary,
     };
 
-    const requestInfo = (({ id: assetId, sourceId, sourceType } = data) => ({
+    const requestInfo = (({
+      id: assetId,
+      sourceId,
+      sourceType,
+      name: assetName,
+    } = data) => ({
+      assetName,
       assetId,
       sourceId,
       sourceType,
       jobId: this.#config.jobId,
       requestId: randomUUID(),
+      batchId,
     }))();
     this.#log.debug('Submitting for ingestion', {
       url: this.#config.url,
@@ -147,6 +155,7 @@ export class IngestorClient {
    * @returns {any} the next cursor or undefined if no more assets are available
    */
   async submitBatch(extractor, cursor, options) {
+    const batchId = randomUUID();
     const batch = await extractor.getAssets(cursor);
     const batchInfo = {
       skipped: batch.skipped,
@@ -154,7 +163,9 @@ export class IngestorClient {
       count: batch.assets.length,
       limit: options?.binaryRequestLimit,
       jobId: this.#config.jobId,
+      batchId,
     };
+    let start = Date.now();
     this.#log.info('Retrieving binary requests', batchInfo);
     const resolved = (
       await mapLimit(
@@ -178,17 +189,24 @@ export class IngestorClient {
         },
       )
     ).filter((it) => it.binary);
+    this.#log.info('Retrieved binary requests', {
+      ...batchInfo,
+      duration: Date.now() - start,
+    });
 
+    start = Date.now();
     this.#log.info('Sending assets', batchInfo);
     await forEachLimit(
       resolved,
       options?.ingestLimit || DEFAULT_INGEST_LIMIT,
       async (asset) => {
-        await this.submit(asset.data, asset.binary);
+        await this.submit(asset.data, asset.binary, batchId);
       },
     );
-
-    this.#log.info('Assets sent', batchInfo);
+    this.#log.info('Assets sent', {
+      ...batchInfo,
+      duration: Date.now() - start,
+    });
     return { cursor: batch.cursor, more: batch.more };
   }
 }
