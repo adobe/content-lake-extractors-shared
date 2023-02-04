@@ -1,3 +1,10 @@
+## [1.7.3](https://github.com/adobe/content-lake-extractors-shared/compare/v1.7.2...v1.7.3) (2023-02-04)
+
+
+### Bug Fixes
+
+* improving logging of durations ([9969eb2](https://github.com/adobe/content-lake-extractors-shared/commit/9969eb2e2ed006e204aab15a712e5f41bcf436a5))
+
 ## [1.7.2](https://github.com/adobe/content-lake-extractors-shared/compare/v1.7.1...v1.7.2) (2023-02-03)
 
 
