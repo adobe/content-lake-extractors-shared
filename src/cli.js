@@ -145,7 +145,7 @@ export function cli(config) {
       },
       async (argv) => {
         const extractor = await getExtractor(await parseConfig(argv.config));
-        const res = await extractor.getBinaryRequest(argv['asset-id']);
+        const res = await extractor.getBinaryRequest(argv['asset-id'], argv);
         console.log('Retrieved asset binary request:');
         console.log(res);
       },
