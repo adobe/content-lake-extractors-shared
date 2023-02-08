@@ -22,16 +22,25 @@ import {
 export class SecretsManager {
   #client;
 
-  #extractor;
+  #namespace;
 
   /**
    * Creates a Configuration Manager
-   * @param {string} extractor the name of the extractor
+   * @param {string} namespace the namespace for the secret
    * @param {Object | undefined} config the configuration
    */
-  constructor(extractor, config) {
+  constructor(namespace, config) {
     this.#client = new SecretsManagerClient({ region: 'us-east-1', ...config });
-    this.#extractor = extractor;
+    this.#namespace = namespace;
+  }
+
+  /**
+   *
+   * @param {string} id the id of the secret
+   * @returns {string} the full key for accessing the secret
+   */
+  #makeKey(id) {
+    return `${this.#namespace}-${id}`;
   }
 
   /**
@@ -39,7 +48,7 @@ export class SecretsManager {
    * @param {string} id the id of the secret to create
    */
   async #upsertSecret(id, secret) {
-    const SecretId = `${this.#extractor}-${id}`;
+    const SecretId = this.#makeKey(id);
     try {
       await this.#client.send(
         new DescribeSecretCommand({
@@ -55,7 +64,7 @@ export class SecretsManager {
     } catch (err) {
       await this.#client.send(
         new CreateSecretCommand({
-          Name: `${this.#extractor}-${id}`,
+          Name: SecretId,
           SecretString: secret,
         }),
       );
@@ -69,7 +78,7 @@ export class SecretsManager {
   async deleteSecret(id) {
     await this.#client.send(
       new DeleteSecretCommand({
-        SecretId: `${this.#extractor}-${id}`,
+        SecretId: this.#makeKey(id),
       }),
     );
   }
@@ -80,7 +89,7 @@ export class SecretsManager {
    */
   async getSecret(id) {
     const command = new GetSecretValueCommand({
-      SecretId: `${this.#extractor}-${id}`,
+      SecretId: this.#makeKey(id),
     });
     const res = await this.#client.send(command);
     return res.SecretString;
