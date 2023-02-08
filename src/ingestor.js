@@ -181,7 +181,7 @@ export class IngestorClient {
           // itself, eliminating the need to perform a second request
           if (!binary) {
             try {
-              binary = await extractor.getBinaryRequest(data.id);
+              binary = await extractor.getBinaryRequest(data.id, data);
             } catch (err) {
               this.#log.warn('Failed to retrieve binary', {
                 batchInfo,
