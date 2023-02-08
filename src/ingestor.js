@@ -156,6 +156,7 @@ export class IngestorClient {
    */
   async submitBatch(extractor, cursor, options) {
     const batchId = randomUUID();
+    const batchStart = Date.now();
     const batch = await extractor.getAssets(cursor);
     const batchInfo = {
       skipped: batch.skipped,
@@ -165,8 +166,11 @@ export class IngestorClient {
       jobId: this.#config.jobId,
       batchId,
     };
-    let start = Date.now();
-    this.#log.info('Retrieving binary requests', batchInfo);
+    this.#log.info('Retrieved batch', {
+      ...batchInfo,
+      getBatchDuration: Date.now() - batchStart,
+    });
+    const binaryStart = Date.now();
     const resolved = (
       await mapLimit(
         batch.assets,
@@ -191,10 +195,10 @@ export class IngestorClient {
     ).filter((it) => it.binary);
     this.#log.info('Retrieved binary requests', {
       ...batchInfo,
-      duration: Date.now() - start,
+      getBinariesDuration: Date.now() - binaryStart,
     });
 
-    start = Date.now();
+    const ingestionStart = Date.now();
     this.#log.info('Sending assets', batchInfo);
     await forEachLimit(
       resolved,
@@ -203,9 +207,10 @@ export class IngestorClient {
         await this.submit(asset.data, asset.binary, batchId);
       },
     );
-    this.#log.info('Assets sent', {
+    this.#log.info('Assets ingested', {
       ...batchInfo,
-      duration: Date.now() - start,
+      ingestionDuration: Date.now() - ingestionStart,
+      batchDuration: Date.now() - batchStart,
     });
     return { cursor: batch.cursor, more: batch.more };
   }

@@ -22,7 +22,7 @@
 <dd><p>Creates an application/problem+json response</p>
 </dd>
 <dt><a href="#handleErrorAsProblem">handleErrorAsProblem(err, instance)</a> ⇒</dt>
-<dd><p>Attempts to send a reasonable problem h</p>
+<dd><p>Attempts to send a reasonable problem response</p>
 </dd>
 </dl>
 
@@ -94,7 +94,7 @@
 <dt><a href="#Handler">Handler</a> ⇒ <code>Promise.&lt;Response&gt;</code></dt>
 <dd><p>Function for handling a routes inside Frankin / Content Lake services</p>
 </dd>
-<dt><a href="#SettingsObject">SettingsObject</a> : <code>Object</code></dt>
+<dt><a href="#SettingsObject">SettingsObject</a> : <code>Objects</code></dt>
 <dd></dd>
 <dt><a href="#QueryOptions">QueryOptions</a> : <code>Object</code></dt>
 <dd></dd>
@@ -152,7 +152,7 @@ Creates an application/problem+json response
 <a name="handleErrorAsProblem"></a>
 
 ## handleErrorAsProblem(err, instance) ⇒
-Attempts to send a reasonable problem h
+Attempts to send a reasonable problem response
 
 **Kind**: global function  
 **Returns**: Response  
@@ -471,15 +471,15 @@ Function for handling a routes inside Frankin / Content Lake services
 
 <a name="SettingsObject"></a>
 
-## SettingsObject : <code>Object</code>
+## SettingsObject : <code>Objects</code>
 **Kind**: global typedef  
 **Properties**
 
 | Name | Type |
 | --- | --- |
-| instanceId | <code>string</code> | 
-| tenantId | <code>string</code> | 
-| extractorType | <code>string</code> | 
+| sourceId | <code>string</code> | 
+| spaceId | <code>string</code> | 
+| sourceType | <code>string</code> | 
 
 <a name="QueryOptions"></a>
 
@@ -489,8 +489,8 @@ Function for handling a routes inside Frankin / Content Lake services
 
 | Name | Type |
 | --- | --- |
-| tenantId | <code>string</code> \| <code>undefined</code> | 
-| extractorType | <code>string</code> \| <code>undefined</code> | 
+| spaceId | <code>string</code> \| <code>undefined</code> | 
+| sourceType | <code>string</code> \| <code>undefined</code> | 
 | cursor | <code>any</code> | 
 | limit | <code>number</code> \| <code>undefined</code> | 
 
