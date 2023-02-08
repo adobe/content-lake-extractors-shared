@@ -72,7 +72,7 @@ export function sendProblem(problem) {
 }
 
 /**
- * Attempts to send a reasonable problem response
+ * Attempts to send a reasonable problem h
  * @param {*} err the error to handle
  * @param {string} instance an identifier for this error instance
  *  to enable tracking back in the logs

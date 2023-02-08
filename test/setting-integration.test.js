@@ -19,13 +19,6 @@ import { extractCredentials } from '../src/context.js';
 
 dotenv.config();
 
-function loadSettings() {
-  return {
-    ...extractCredentials(process.env),
-    tableName: 'adobe-content-lake-extractors-dev',
-  };
-}
-
 describe('Settings Store Integration Tests', async function () {
   this.timeout(60000);
   const instances = [];
@@ -35,13 +28,13 @@ describe('Settings Store Integration Tests', async function () {
     }
   });
   after(async () => {
-    const store = new SettingsStore(loadSettings());
+    const store = new SettingsStore(extractCredentials(process.env));
     for (const instance of instances) {
       await store.deleteSettings(instance);
     }
   });
   it('fails on non-existant config', async () => {
-    const store = new SettingsStore(loadSettings());
+    const store = new SettingsStore(extractCredentials(process.env));
     let caught;
     try {
       await store.getConfiguration('doesnotexist');
@@ -52,93 +45,47 @@ describe('Settings Store Integration Tests', async function () {
   });
 
   it('can create, get and delete settings', async () => {
-    const sourceId = randomUUID();
-    instances.push(sourceId);
-    const store = new SettingsStore(loadSettings());
-    let value = await store.getSettings(sourceId);
+    const instanceId = randomUUID();
+    instances.push(instanceId);
+    const store = new SettingsStore(extractCredentials(process.env));
+    let value = await store.getSettings(instanceId);
     assert.ok(!value);
 
     await store.putSettings({
-      sourceId,
-      sourceType: 'test',
-      spaceId: 'test',
+      instanceId,
+      extractorType: 'test',
+      tenantId: 'test',
     });
 
-    value = await store.getSettings(sourceId);
+    value = await store.getSettings(instanceId);
     assert.ok(value);
-    assert.strictEqual(value.sourceId, sourceId);
-    assert.strictEqual(value.sourceType, 'test');
+    assert.strictEqual(value.instanceId, instanceId);
+    assert.strictEqual(value.extractorType, 'test');
 
-    value.sourceType = 'test2';
+    value.extractorType = 'test2';
 
     await store.putSettings(value);
 
-    value = await store.getSettings(sourceId);
-    assert.strictEqual(value.sourceType, 'test2');
+    value = await store.getSettings(instanceId);
+    assert.strictEqual(value.extractorType, 'test2');
 
-    await store.deleteSettings(sourceId);
-    value = await store.getSettings(sourceId);
-    assert.ok(!value);
-  });
-
-  it('can change default table', async () => {
-    const sourceId = randomUUID();
-    instances.push(sourceId);
-    const store = new SettingsStore(loadSettings());
-    await store.putSettings({
-      sourceId,
-      sourceType: 'test',
-      spaceId: 'test',
-    });
-    const value = await store.getSettings(sourceId);
-    assert.ok(value);
-    const defaultStore = new SettingsStore(extractCredentials(process.env));
-    const defaultValue = await defaultStore.getSettings(sourceId);
-    assert.ok(!defaultValue);
-  });
-
-  it('can create, get and delete settings', async () => {
-    const sourceId = randomUUID();
-    instances.push(sourceId);
-    const store = new SettingsStore(loadSettings());
-    let value = await store.getSettings(sourceId);
-    assert.ok(!value);
-
-    await store.putSettings({
-      sourceId,
-      sourceType: 'test',
-      spaceId: 'test',
-    });
-
-    value = await store.getSettings(sourceId);
-    assert.ok(value);
-    assert.strictEqual(value.sourceId, sourceId);
-    assert.strictEqual(value.sourceType, 'test');
-
-    value.sourceType = 'test2';
-
-    await store.putSettings(value);
-
-    value = await store.getSettings(sourceId);
-    assert.strictEqual(value.sourceType, 'test2');
-
-    await store.deleteSettings(sourceId);
-    value = await store.getSettings(sourceId);
+    await store.deleteSettings(instanceId);
+    value = await store.getSettings(instanceId);
     assert.ok(!value);
   });
 
   describe('search', () => {
-    const store = new SettingsStore(loadSettings());
+    const store = new SettingsStore(extractCredentials(process.env));
     before(async () => {
       const values = ['test1', 'test2', 'test3'];
-      for (const spaceId of values) {
-        for (const sourceType of values) {
-          const sourceId = randomUUID();
-          instances.push(sourceId);
+      for (const tenantId of values) {
+        for (const extractorType of values) {
+          const instanceId = randomUUID();
+          instances.push(instanceId);
           await store.putSettings({
-            sourceId,
-            sourceType,
-            spaceId,
+            instanceId,
+            extractorType,
+            tenantId,
           });
         }
       }
@@ -156,20 +103,20 @@ describe('Settings Store Integration Tests', async function () {
     });
 
     it('can search by tenant', async () => {
-      const res = await store.findSettings({ spaceId: 'test1' });
+      const res = await store.findSettings({ tenantId: 'test1' });
       assert.ok(res);
       assert.ok(res.count > 0);
     });
 
     it('can search by extractorType', async () => {
-      const res = await store.findSettings({ sourceType: 'test1' });
+      const res = await store.findSettings({ extractorType: 'test1' });
       assert.ok(res);
       assert.ok(res.count > 0);
     });
 
     it('can limit results', async () => {
       const res = await store.findSettings({
-        sourceType: 'test1',
+        extractorType: 'test1',
         limit: 1,
       });
       assert.ok(res);
@@ -180,14 +127,14 @@ describe('Settings Store Integration Tests', async function () {
     it('can page results', async () => {
       let pages = 0;
       let res = await store.findSettings({
-        sourceType: 'test1',
+        extractorType: 'test1',
         limit: 1,
       });
       let { cursor } = res;
       while (cursor) {
         pages += 1;
         res = await store.findSettings({
-          sourceType: 'test1',
+          extractorType: 'test1',
           limit: 1,
           cursor,
         });

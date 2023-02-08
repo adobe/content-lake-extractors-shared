@@ -19,16 +19,16 @@ import {
 } from '@aws-sdk/client-dynamodb';
 
 /**
- * @typedef {Objects} SettingsObject
- * @property {string} sourceId
- * @property {string} spaceId
- * @property {string} sourceType
+ * @typedef {Object} SettingsObject
+ * @property {string} instanceId
+ * @property {string} tenantId
+ * @property {string} extractorType
  */
 
 /**
  * @typedef {Object} QueryOptions
- * @property {string | undefined} spaceId
- * @property {string | undefined} sourceType
+ * @property {string | undefined} tenantId
+ * @property {string | undefined} extractorType
  * @property {any} cursor
  * @property {number | undefined} limit
  */
@@ -72,15 +72,15 @@ export class SettingsStore {
 
   /**
    * Deletes the settings
-   * @param {string} sourceId the sourceId
+   * @param {string} instanceId the instanceid
    */
-  async deleteSettings(sourceId) {
+  async deleteSettings(instanceId) {
     await this.#client.send(
       new DeleteItemCommand({
         TableName: this.#table,
         Key: {
-          sourceId: {
-            S: sourceId,
+          instanceId: {
+            S: instanceId,
           },
         },
       }),
@@ -89,16 +89,16 @@ export class SettingsStore {
 
   /**
    * Gets the specified settings
-   * @param {string} sourceId the sourceId of the extractor settings to retrieve
+   * @param {string} instanceId the id of the extractor settings to retrieve
    * @returns {Promise<SettingsObject>} the settings
    */
-  async getSettings(sourceId) {
+  async getSettings(instanceId) {
     const res = await this.#client.send(
       new GetItemCommand({
         TableName: this.#table,
         Key: {
-          sourceId: {
-            S: sourceId,
+          instanceId: {
+            S: instanceId,
           },
         },
       }),
@@ -116,23 +116,25 @@ export class SettingsStore {
       TableName: this.#table,
     };
 
-    let field = 'sourceId';
-    if (options.sourceType) {
-      field = 'sourceType';
-      cmdInput.IndexName = 'sourceType-index';
-      cmdInput.KeyConditionExpression = `${field}=:sourceType`;
+    let field = 'instanceId';
+    if (options.extractorType) {
+      field = 'extractorType';
+      cmdInput.IndexName = 'extractorType-index';
+      cmdInput.KeyConditionExpression = `${field}=:extractorType`;
       cmdInput.ExpressionAttributeValues = {
-        ':sourceType': { S: options.sourceType },
+        ':extractorType': { S: options.extractorType },
       };
-    } else if (options.spaceId) {
-      field = 'spaceId';
-      cmdInput.IndexName = 'spaceId-index';
-      cmdInput.KeyConditionExpression = `${field}=:spaceId`;
+    } else if (options.tenantId) {
+      field = 'tenantId';
+      cmdInput.IndexName = 'tenantId-index';
+      cmdInput.KeyConditionExpression = `${field}=:tenantId`;
       cmdInput.ExpressionAttributeValues = {
-        ':spaceId': { S: options.spaceId },
+        ':tenantId': { S: options.tenantId },
       };
     } else {
-      const err = new Error('Either [sourceType] or [spaceId] are required');
+      const err = new Error(
+        'Either [extractorType] or [tenantId] are required',
+      );
       err.status = 400;
       throw err;
     }
