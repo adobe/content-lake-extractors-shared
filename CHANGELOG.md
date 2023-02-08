@@ -1,3 +1,10 @@
+# [1.8.0](https://github.com/adobe/content-lake-extractors-shared/compare/v1.7.3...v1.8.0) (2023-02-08)
+
+
+### Features
+
+* pass all asset data into getBinaryRequest method. ([#21](https://github.com/adobe/content-lake-extractors-shared/issues/21)) ([cdb06bf](https://github.com/adobe/content-lake-extractors-shared/commit/cdb06bf4a56221cb77ba868fb0a0f7f904041560))
+
 ## [1.7.3](https://github.com/adobe/content-lake-extractors-shared/compare/v1.7.2...v1.7.3) (2023-02-04)
 
 
