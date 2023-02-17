@@ -165,10 +165,13 @@ export class Router {
   async handle(request, context) {
     const log = context.log || console;
     const { method } = request;
-    const { suffix } = context.pathInfo;
+    let suffix = context.pathInfo?.suffix;
+    if (!suffix || suffix === '') {
+      suffix = '/';
+    }
     if (this.methods[request.method]) {
-      log.debug('Handing request', { method, suffix, context });
-      const match = this.methods[method].match(context.pathInfo.suffix);
+      log.debug('Handing request', { method, suffix });
+      const match = this.methods[method].match(suffix);
       if (match && match.node.handler) {
         try {
           return await match.node.handler(request, context, match.param);

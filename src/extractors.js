@@ -21,7 +21,7 @@
 
 /**
  * @typedef {Object} AssetData A representation of an asset from the source
- * @property {string} id the ID of this asset as interpreted by the source system
+ * @property {string} sourceAssetId the ID of this asset as interpreted by the source system
  * @property {string} sourceType the source from which this asset was retrieved
  * @property {string} sourceId the source from which this asset was retrieved
  * @property {string | undefined} name the name of the asset as interpreted by the source repository

@@ -125,4 +125,30 @@ describe('REST Support Tests', () => {
     );
     assert.strictEqual('Internal Server Error', body.title);
   });
+
+  it('uses / for suffix if not set', async () => {
+    Promise.all(
+      [undefined, ''].map(async (suffix) => {
+        const router = new Router().get('/', () => new Response('GET'));
+        const response = await router.handle(
+          new Request('https://localhost/', { method: 'GET' }),
+          mockContext(suffix),
+        );
+        assert.equal(response.status, 200);
+      }),
+    );
+  });
+  it('doesnt fail if pathInfo not defined', async () => {
+    const router = new Router().get('/', () => new Response('GET'));
+    const response = await router.handle(
+      new Request('https://localhost/', { method: 'GET' }),
+      {
+        env: {},
+        invocation: {
+          id: randomUUID(),
+        },
+      },
+    );
+    assert.equal(response.status, 200);
+  });
 });
