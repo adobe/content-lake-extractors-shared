@@ -1,6 +1,6 @@
 # Content Lake - Extractors Shared
 
-> Shared libraries for extractors
+Shared libraries for extractors
 
 ## Status
 [![codecov](https://img.shields.io/codecov/c/github/adobe/content-lake-extractors-shared.svg)](https://codecov.io/gh/adobe/content-lake-extractors-shared)
