@@ -1,3 +1,10 @@
+## [1.8.1](https://github.com/adobe/content-lake-extractors-shared/compare/v1.8.0...v1.8.1) (2023-02-17)
+
+
+### Bug Fixes
+
+* trivial change to trigger build ([bbfa2d0](https://github.com/adobe/content-lake-extractors-shared/commit/bbfa2d0624e564460bfaf41cdaf3daf446fe8ffd))
+
 # [1.8.0](https://github.com/adobe/content-lake-extractors-shared/compare/v1.7.3...v1.8.0) (2023-02-08)
 
 
