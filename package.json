@@ -58,7 +58,7 @@
     "*.cjs": "eslint"
   },
   "dependencies": {
-    "@adobe/fetch": "^3.3.1",
+    "@adobe/fetch": "^4.0.0",
     "@aws-sdk/client-dynamodb": "^3.262.0",
     "@aws-sdk/client-lambda": "^3.262.0",
     "@aws-sdk/client-secrets-manager": "^3.262.0",
