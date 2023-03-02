@@ -24,7 +24,9 @@ const fetch = fetchBuilder(originalFetch);
  * @typedef IngestorConfig the confiuration for the ingestor client
  * @property {string} url the URL for calling the ingestor
  * @property {string} apiKey the API Key used to call the ingestor
+ * @property {string} companyId the id of the company for which this asset should be ingested
  * @property {string} jobId the id of the current job
+ * @property {string} spaceId the id of the space into which this asset should be ingested
  */
 
 /**
@@ -70,8 +72,12 @@ export class IngestorClient {
    */
   async submit(data, binary, batchId) {
     const start = Date.now();
+
+    const { spaceId, companyId, jobId } = this.#config;
     const body = {
-      jobId: this.#config.jobId,
+      jobId,
+      companyId,
+      spaceId,
       data,
       binary,
     };
@@ -86,7 +92,9 @@ export class IngestorClient {
       assetId,
       sourceId,
       sourceType,
-      jobId: this.#config.jobId,
+      jobId,
+      companyId,
+      spaceId,
       requestId: randomUUID(),
       batchId,
     }))();
