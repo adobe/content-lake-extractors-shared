@@ -1,3 +1,10 @@
+# [1.9.0](https://github.com/adobe/content-lake-extractors-shared/compare/v1.8.1...v1.9.0) (2023-03-03)
+
+
+### Features
+
+* adding the company and space id to the ingestor request ([#25](https://github.com/adobe/content-lake-extractors-shared/issues/25)) ([5302664](https://github.com/adobe/content-lake-extractors-shared/commit/53026644f7b9a008c6052fe8fc6d4a092da6e7b3))
+
 ## [1.8.1](https://github.com/adobe/content-lake-extractors-shared/compare/v1.8.0...v1.8.1) (2023-02-17)
 
 
