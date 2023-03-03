@@ -280,7 +280,7 @@ A representation of an asset from the source
 
 | Name | Type | Description |
 | --- | --- | --- |
-| id | <code>string</code> | the ID of this asset as interpreted by the source system |
+| sourceAssetId | <code>string</code> | the ID of this asset as interpreted by the source system |
 | sourceType | <code>string</code> | the source from which this asset was retrieved |
 | sourceId | <code>string</code> | the source from which this asset was retrieved |
 | name | <code>string</code> \| <code>undefined</code> | the name of the asset as interpreted by the source repository |
@@ -429,7 +429,9 @@ Gets the folders which are children of the specified parent
 | --- | --- | --- |
 | url | <code>string</code> | the URL for calling the ingestor |
 | apiKey | <code>string</code> | the API Key used to call the ingestor |
+| companyId | <code>string</code> | the id of the company for which this asset should be ingested |
 | jobId | <code>string</code> | the id of the current job |
+| spaceId | <code>string</code> | the id of the space into which this asset should be ingested |
 
 <a name="SubmitBatchOptions"></a>
 
