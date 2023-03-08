@@ -17,15 +17,10 @@ import { extractCredentials } from '../src/context.js';
 import { FunctionRunner } from '../src/functions.js';
 
 dotenv.config();
+const TEST_TIMEOUT = 60000;
 
-describe('Functions Integration Tests', async function () {
-  this.timeout(60000);
-  before(function () {
-    if (!process.env.AWS_ACCESS_KEY_ID) {
-      this.skip();
-    }
-  });
-  it('can invoke function', async () => {
+describe('Functions Integration Tests', async () => {
+  it('can invoke function with result', async () => {
     const runner = new FunctionRunner(extractCredentials(process.env));
     const res = await runner.invokeFunctionWithResponse(
       'helix-services--content-lake-echo-test',
@@ -38,7 +33,25 @@ describe('Functions Integration Tests', async function () {
       },
     );
     assert.ok(res);
-  });
+  }).timeout(TEST_TIMEOUT);
+
+  it('can handle error response', async () => {
+    const runner = new FunctionRunner(extractCredentials(process.env));
+    let caught;
+    try {
+      await runner.invokeFunctionWithResponse(
+        'helix-services--content-lake-echo-test',
+        {
+          status: 400,
+        },
+      );
+    } catch (err) {
+      caught = err;
+    }
+    assert.ok(caught);
+    assert.equal(caught.status, 502);
+    assert.ok(caught.detail);
+  }).timeout(TEST_TIMEOUT);
 
   it('can invoke function via event', async () => {
     const runner = new FunctionRunner(extractCredentials(process.env));
@@ -49,7 +62,7 @@ describe('Functions Integration Tests', async function () {
       },
       another: 'key',
     });
-  });
+  }).timeout(TEST_TIMEOUT);
 
   it('event fails if not function', async () => {
     const runner = new FunctionRunner(extractCredentials(process.env));
@@ -62,5 +75,5 @@ describe('Functions Integration Tests', async function () {
       caught = err;
     }
     assert.ok(caught);
-  });
+  }).timeout(TEST_TIMEOUT);
 });

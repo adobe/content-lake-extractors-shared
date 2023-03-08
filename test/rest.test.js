@@ -14,7 +14,7 @@
 import assert from 'assert';
 import { Request, Response } from '@adobe/fetch';
 import { randomUUID } from 'crypto';
-import { Router } from '../src/rest.js';
+import { Router, sendProblem } from '../src/rest.js';
 
 function mockContext(suffix) {
   return {
@@ -138,6 +138,7 @@ describe('REST Support Tests', () => {
       }),
     );
   });
+
   it('doesnt fail if pathInfo not defined', async () => {
     const router = new Router().get('/', () => new Response('GET'));
     const response = await router.handle(
@@ -150,5 +151,19 @@ describe('REST Support Tests', () => {
       },
     );
     assert.equal(response.status, 200);
+  });
+});
+
+describe('sendProblem Tests', () => {
+  it('can send unknown problem', async () => {
+    const response = sendProblem({ status: 418 });
+    assert.strictEqual(response.status, 418);
+    assert.strictEqual(
+      'application/problem+json',
+      response.headers.get('Content-Type'),
+    );
+    const body = await response.json();
+
+    assert.strictEqual('Unknown Problem', body.title);
   });
 });

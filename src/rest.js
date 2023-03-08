@@ -59,8 +59,9 @@ export function sendProblem(problem) {
   const { status } = problem;
   return new Response(
     JSON.stringify({
-      title: STATUS_MESSAGES[problem.status] || 'Unknown Problem',
       ...problem,
+      title:
+        problem.title || STATUS_MESSAGES[problem.status] || 'Unknown Problem',
     }),
     {
       headers: {
@@ -85,8 +86,8 @@ export function handleErrorAsProblem(err, instance) {
   }
   return sendProblem({
     status,
-    title: err.title || STATUS_MESSAGES[status],
-    details: err.details || err.message,
+    title: err.title,
+    detail: err.detail || err.message,
     instance,
   });
 }

@@ -9,14 +9,11 @@
 ## Functions
 
 <dl>
-<dt><a href="#performOauthAuthentication">performOauthAuthentication(oauthAuthenticator, port)</a></dt>
-<dd><p>Performs an authentication with th</p>
-</dd>
-<dt><a href="#cli">cli(config)</a></dt>
-<dd><p>Parse the arguments from the current process and execute the extractor function</p>
-</dd>
 <dt><a href="#extractCredentials">extractCredentials(env)</a> ⇒</dt>
 <dd><p>Loads the configuration keys from an environment variable map</p>
+</dd>
+<dt><a href="#IngestorClient.">IngestorClient.(data, keys, toMerge)</a></dt>
+<dd><p>Filters the data to the specified keys and then merges with the toMerge object.</p>
 </dd>
 <dt><a href="#sendProblem">sendProblem(problem)</a> ⇒ <code>Response</code></dt>
 <dd><p>Creates an application/problem+json response</p>
@@ -43,51 +40,34 @@
 </dd>
 <dt><a href="#OauthCredentials">OauthCredentials</a></dt>
 <dd></dd>
-<dt><a href="#GetExtractorFn">GetExtractorFn</a> ⇒ <code>Promise.&lt;extract.Extractor&gt;</code></dt>
-<dd><p>a function to get the extractor from the configuration</p>
-</dd>
-<dt><a href="#GetOauthAuthenicatorFn">GetOauthAuthenicatorFn</a> ⇒ <code>Promise.&lt;(auth.OauthAuthenticator|undefined)&gt;</code></dt>
-<dd><p>the authenticator if oauth authentication is requred</p>
-</dd>
-<dt><a href="#CliConfig">CliConfig</a></dt>
-<dd></dd>
-<dt><a href="#IngestionRequest">IngestionRequest</a> : <code>Object</code></dt>
-<dd><p>A representation of an asset from the source</p>
-</dd>
-<dt><a href="#AssetData">AssetData</a> : <code>Object</code></dt>
-<dd><p>A representation of an asset from the source</p>
-</dd>
-<dt><a href="#BinaryRequest">BinaryRequest</a> : <code>Object</code></dt>
-<dd><p>A description of the request to make to retrieve an asset binary</p>
-</dd>
-<dt><a href="#HttpBinaryRequest">HttpBinaryRequest</a> : <code><a href="#BinaryRequest">BinaryRequest</a></code></dt>
-<dd><p>A description of a HTTP request to make to retrieve an asset binary</p>
-</dd>
-<dt><a href="#Folder">Folder</a> : <code>Object</code></dt>
-<dd><p>A representation of a folder in the source system</p>
-</dd>
-<dt><a href="#AssetBatch">AssetBatch</a> : <code>Object</code></dt>
-<dd></dd>
-<dt><a href="#GetAssetsConfig">GetAssetsConfig</a> : <code>Object</code></dt>
-<dd></dd>
-<dt><a href="#GetAssetsFn">GetAssetsFn</a> ⇒ <code><a href="#AssetBatch">Promise.&lt;AssetBatch&gt;</a></code></dt>
-<dd><p>Retrieves a batch of assets from the source</p>
-</dd>
-<dt><a href="#GetBinaryRequestFn">GetBinaryRequestFn</a> ⇒ <code><a href="#BinaryRequest">Promise.&lt;BinaryRequest&gt;</a></code></dt>
-<dd><p>Gets the request descriptor to retrieve the asset</p>
-</dd>
-<dt><a href="#GetFoldersFn">GetFoldersFn</a> ⇒ <code>Promise.&lt;Array.&lt;Folder&gt;&gt;</code></dt>
-<dd><p>Gets the folders which are children of the specified parent</p>
-</dd>
-<dt><a href="#Extractor">Extractor</a></dt>
-<dd></dd>
-<dt><a href="#AssetCallback">AssetCallback</a> ⇒ <code>Promise.&lt;void&gt;</code></dt>
-<dd></dd>
 <dt><a href="#InvocationResponse">InvocationResponse</a></dt>
 <dd></dd>
+<dt><a href="#IngestionRequest">IngestionRequest</a> : <code>Object</code></dt>
+<dd></dd>
+<dt><a href="#SourceData">SourceData</a> : <code>Object</code></dt>
+<dd><p>The data extracted from the source</p>
+</dd>
+<dt><a href="#BinaryRequest">BinaryRequest</a> : <code>Object</code></dt>
+<dd><p>A description of a HTTP request to make to retrieve a binary</p>
+</dd>
 <dt><a href="#IngestorConfig">IngestorConfig</a></dt>
 <dd></dd>
 <dt><a href="#SubmitBatchOptions">SubmitBatchOptions</a></dt>
+<dd></dd>
+<dt><a href="#SourceDataBatch">SourceDataBatch</a> : <code>Object</code></dt>
+<dd></dd>
+<dt><a href="#GetSourceDataBatchConfig">GetSourceDataBatchConfig</a> : <code>Object</code></dt>
+<dd></dd>
+<dt><a href="#SourceDataBatchFn">SourceDataBatchFn</a> ⇒ <code><a href="#SourceDataBatch">Promise.&lt;SourceDataBatch&gt;</a></code></dt>
+<dd><p>Retrieves a batch of data to ingest from the source</p>
+</dd>
+<dt><a href="#SourceDataFn">SourceDataFn</a> ⇒ <code><a href="#SourceData">Promise.&lt;SourceData&gt;</a></code></dt>
+<dd><p>Retrieves the data for a single record from the source</p>
+</dd>
+<dt><a href="#GetBinaryRequestFn">GetBinaryRequestFn</a> ⇒ <code><a href="#BinaryRequest">Promise.&lt;BinaryRequest&gt;</a></code></dt>
+<dd><p>Gets the request descriptor to retrieve the binary</p>
+</dd>
+<dt><a href="#Extractor">Extractor</a></dt>
 <dd></dd>
 <dt><a href="#Problem">Problem</a></dt>
 <dd></dd>
@@ -102,29 +82,6 @@
 <dd></dd>
 </dl>
 
-<a name="performOauthAuthentication"></a>
-
-## performOauthAuthentication(oauthAuthenticator, port)
-Performs an authentication with th
-
-**Kind**: global function  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| oauthAuthenticator | <code>auth.OauthAuthenticator</code> | the authenticator with which to perform the authentication |
-| port | <code>number</code> | the port number to use when setting up the server on localhost |
-
-<a name="cli"></a>
-
-## cli(config)
-Parse the arguments from the current process and execute the extractor function
-
-**Kind**: global function  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| config | [<code>CliConfig</code>](#CliConfig) | the configuration |
-
 <a name="extractCredentials"></a>
 
 ## extractCredentials(env) ⇒
@@ -136,6 +93,19 @@ Loads the configuration keys from an environment variable map
 | Param | Type | Description |
 | --- | --- | --- |
 | env | <code>Record.&lt;string, string&gt;</code> | the environment variables map |
+
+<a name="IngestorClient."></a>
+
+## IngestorClient.(data, keys, toMerge)
+Filters the data to the specified keys and then merges with the toMerge object.
+
+**Kind**: global function  
+
+| Param | Type |
+| --- | --- |
+| data | <code>Record.&lt;string, any&gt;</code> | 
+| keys | <code>Array.&lt;string&gt;</code> | 
+| toMerge | <code>Record.&lt;string, any&gt;</code> | 
 
 <a name="sendProblem"></a>
 
@@ -221,59 +191,33 @@ Refreshes the access token using the refresh token
 | expiration | <code>Date</code> \| <code>undefined</code> | The date at which the access token will expire |
 | refreshToken | <code>string</code> \| <code>undefined</code> | The current, long lived refresh token or undefined if no token is available |
 
-<a name="GetExtractorFn"></a>
+<a name="InvocationResponse"></a>
 
-## GetExtractorFn ⇒ <code>Promise.&lt;extract.Extractor&gt;</code>
-a function to get the extractor from the configuration
-
-**Kind**: global typedef  
-
-| Param | Type |
-| --- | --- |
-| config | <code>any</code> | 
-
-<a name="GetOauthAuthenicatorFn"></a>
-
-## GetOauthAuthenicatorFn ⇒ <code>Promise.&lt;(auth.OauthAuthenticator\|undefined)&gt;</code>
-the authenticator if oauth authentication is requred
-
-**Kind**: global typedef  
-
-| Param | Type |
-| --- | --- |
-| config | <code>any</code> | 
-
-<a name="CliConfig"></a>
-
-## CliConfig
+## InvocationResponse
 **Kind**: global typedef  
 **Properties**
 
-| Name | Type | Description |
-| --- | --- | --- |
-| args | <code>Array.&lt;string&gt;</code> | the arguments from the command line |
-| name | <code>string</code> | the name of the extractor |
-| getExtractor | [<code>GetExtractorFn</code>](#GetExtractorFn) | a function to get the extractor from the configuration |
-| getOauthAuthenicator | [<code>GetOauthAuthenicatorFn</code>](#GetOauthAuthenicatorFn) | the authenticator if oauth authentication is requred |
+| Name | Type |
+| --- | --- |
+| status | <code>number</code> | 
+| data | <code>Object</code> \| <code>undefined</code> | 
 
 <a name="IngestionRequest"></a>
 
 ## IngestionRequest : <code>Object</code>
-A representation of an asset from the source
-
 **Kind**: global typedef  
 **Properties**
 
 | Name | Type | Description |
 | --- | --- | --- |
-| data | [<code>AssetData</code>](#AssetData) | the data for the asset |
+| data | [<code>SourceData</code>](#SourceData) | the data extracted from the source |
 | binary | [<code>BinaryRequest</code>](#BinaryRequest) | a description of the request to retrieve the binary for the asset |
-| jobId | <code>string</code> | a unique identifer for a request to ingest an asset |
+| batchId | <code>string</code> \| <code>undefined</code> | an identifier for the current batch |
 
-<a name="AssetData"></a>
+<a name="SourceData"></a>
 
-## AssetData : <code>Object</code>
-A representation of an asset from the source
+## SourceData : <code>Object</code>
+The data extracted from the source
 
 **Kind**: global typedef  
 **Properties**
@@ -295,19 +239,7 @@ A representation of an asset from the source
 <a name="BinaryRequest"></a>
 
 ## BinaryRequest : <code>Object</code>
-A description of the request to make to retrieve an asset binary
-
-**Kind**: global typedef  
-**Properties**
-
-| Name | Type | Description |
-| --- | --- | --- |
-| requestType | <code>string</code> | the type of the request to make to retrieve the binary |
-
-<a name="HttpBinaryRequest"></a>
-
-## HttpBinaryRequest : [<code>BinaryRequest</code>](#BinaryRequest)
-A description of a HTTP request to make to retrieve an asset binary
+A description of a HTTP request to make to retrieve a binary
 
 **Kind**: global typedef  
 **Properties**
@@ -315,109 +247,7 @@ A description of a HTTP request to make to retrieve an asset binary
 | Name | Type | Description |
 | --- | --- | --- |
 | url | <code>string</code> | the url to connect to in order to retrieve the binary |
-| headers | <code>Record.&lt;string, string&gt;</code> \| <code>undefined</code> | headers to send with the request to retrieve the binary |
-
-<a name="Folder"></a>
-
-## Folder : <code>Object</code>
-A representation of a folder in the source system
-
-**Kind**: global typedef  
-**Properties**
-
-| Name | Type | Description |
-| --- | --- | --- |
-| id | <code>any</code> | the id of the folder |
-| name | <code>string</code> | the user-visible name of the folder |
-
-<a name="AssetBatch"></a>
-
-## AssetBatch : <code>Object</code>
-**Kind**: global typedef  
-**Properties**
-
-| Name | Type | Description |
-| --- | --- | --- |
-| assets | [<code>Array.&lt;AssetData&gt;</code>](#AssetData) | the retrieved assets |
-| more | <code>boolean</code> | if more assets are available |
-| cursor | <code>any</code> | the cursor for retrieving the next batch of assets, should be treated as opaque |
-
-<a name="GetAssetsConfig"></a>
-
-## GetAssetsConfig : <code>Object</code>
-**Kind**: global typedef  
-**Properties**
-
-| Name | Type | Description |
-| --- | --- | --- |
-| cursor | <code>any</code> \| <code>undefined</code> | the cursor to start at |
-| limit | <code>number</code> \| <code>undefined</code> | the limit for the number of assets to retrieve |
-
-<a name="GetAssetsFn"></a>
-
-## GetAssetsFn ⇒ [<code>Promise.&lt;AssetBatch&gt;</code>](#AssetBatch)
-Retrieves a batch of assets from the source
-
-**Kind**: global typedef  
-
-| Param | Type |
-| --- | --- |
-| config | [<code>GetAssetsConfig</code>](#GetAssetsConfig) \| <code>undefined</code> | 
-
-<a name="GetBinaryRequestFn"></a>
-
-## GetBinaryRequestFn ⇒ [<code>Promise.&lt;BinaryRequest&gt;</code>](#BinaryRequest)
-Gets the request descriptor to retrieve the asset
-
-**Kind**: global typedef  
-
-| Param | Type |
-| --- | --- |
-| assetId | <code>string</code> | 
-
-<a name="GetFoldersFn"></a>
-
-## GetFoldersFn ⇒ <code>Promise.&lt;Array.&lt;Folder&gt;&gt;</code>
-Gets the folders which are children of the specified parent
-
-**Kind**: global typedef  
-
-| Param | Type |
-| --- | --- |
-| parentId | <code>string</code> \| <code>undefined</code> | 
-
-<a name="Extractor"></a>
-
-## Extractor
-**Kind**: global typedef  
-**Properties**
-
-| Name | Type | Description |
-| --- | --- | --- |
-| getAssets | [<code>GetAssetsFn</code>](#GetAssetsFn) | Retrieves a batch of assets from the source |
-| getBinaryRequest | [<code>GetBinaryRequestFn</code>](#GetBinaryRequestFn) | Gets the request descriptor to retrieve the asset |
-| getFolders | [<code>GetFoldersFn</code>](#GetFoldersFn) | Gets the folders which are children of the specified parent |
-
-<a name="AssetCallback"></a>
-
-## AssetCallback ⇒ <code>Promise.&lt;void&gt;</code>
-**Kind**: global typedef  
-**Returns**: <code>Promise.&lt;void&gt;</code> - a promise which resolves once the callback is finished  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| asset | <code>Asset</code> | the asset for which to invoke the callback |
-
-<a name="InvocationResponse"></a>
-
-## InvocationResponse
-**Kind**: global typedef  
-**Properties**
-
-| Name | Type |
-| --- | --- |
-| status | <code>number</code> | 
-| data | <code>Object</code> \| <code>undefined</code> | 
+| [headers] | <code>Record.&lt;string, string&gt;</code> \| <code>undefined</code> | headers to send with the request to retrieve the binary |
 
 <a name="IngestorConfig"></a>
 
@@ -429,9 +259,9 @@ Gets the folders which are children of the specified parent
 | --- | --- | --- |
 | url | <code>string</code> | the URL for calling the ingestor |
 | apiKey | <code>string</code> | the API Key used to call the ingestor |
-| companyId | <code>string</code> | the id of the company for which this asset should be ingested |
+| companyId | <code>string</code> | the id of the company for which this should be ingested |
 | jobId | <code>string</code> | the id of the current job |
-| spaceId | <code>string</code> | the id of the space into which this asset should be ingested |
+| spaceId | <code>string</code> | the id of the space into which this should be ingested |
 
 <a name="SubmitBatchOptions"></a>
 
@@ -442,7 +272,75 @@ Gets the folders which are children of the specified parent
 | Name | Type | Description |
 | --- | --- | --- |
 | binaryRequestLimit | <code>number</code> \| <code>undefined</code> | the limit to the number of parallel requests  to get the binary |
-| ingestLimit | <code>number</code> \| <code>undefined</code> | the limit to the number of parallel requests  to ingest assets |
+| ingestLimit | <code>number</code> \| <code>undefined</code> | the limit to the number of parallel requests  to ingest |
+
+<a name="SourceDataBatch"></a>
+
+## SourceDataBatch : <code>Object</code>
+**Kind**: global typedef  
+**Properties**
+
+| Name | Type | Description |
+| --- | --- | --- |
+| data | [<code>Array.&lt;SourceData&gt;</code>](#SourceData) | the retrieved data from the source |
+| more | <code>boolean</code> | if more data is available from the source |
+| cursor | <code>any</code> | the cursor for retrieving the next batch, should be treated as an opaque value |
+
+<a name="GetSourceDataBatchConfig"></a>
+
+## GetSourceDataBatchConfig : <code>Object</code>
+**Kind**: global typedef  
+**Properties**
+
+| Name | Type | Description |
+| --- | --- | --- |
+| cursor | <code>any</code> \| <code>undefined</code> | the cursor to resume the request from a point |
+| limit | <code>number</code> \| <code>undefined</code> | the limit for the number to retrieve |
+
+<a name="SourceDataBatchFn"></a>
+
+## SourceDataBatchFn ⇒ [<code>Promise.&lt;SourceDataBatch&gt;</code>](#SourceDataBatch)
+Retrieves a batch of data to ingest from the source
+
+**Kind**: global typedef  
+
+| Param | Type |
+| --- | --- |
+| config | [<code>GetSourceDataBatchConfig</code>](#GetSourceDataBatchConfig) | 
+
+<a name="SourceDataFn"></a>
+
+## SourceDataFn ⇒ [<code>Promise.&lt;SourceData&gt;</code>](#SourceData)
+Retrieves the data for a single record from the source
+
+**Kind**: global typedef  
+
+| Param | Type |
+| --- | --- |
+| assetSourceId | <code>string</code> | 
+
+<a name="GetBinaryRequestFn"></a>
+
+## GetBinaryRequestFn ⇒ [<code>Promise.&lt;BinaryRequest&gt;</code>](#BinaryRequest)
+Gets the request descriptor to retrieve the binary
+
+**Kind**: global typedef  
+
+| Param | Type |
+| --- | --- |
+| data | [<code>SourceData</code>](#SourceData) | 
+
+<a name="Extractor"></a>
+
+## Extractor
+**Kind**: global typedef  
+**Properties**
+
+| Name | Type | Description |
+| --- | --- | --- |
+| getSourceData | [<code>SourceDataFn</code>](#SourceDataFn) | Retrieves a batch of data from the source |
+| getSourceDataBatch | [<code>SourceDataBatchFn</code>](#SourceDataBatchFn) | Retrieves a batch of data from the source |
+| getBinaryRequest | [<code>GetBinaryRequestFn</code>](#GetBinaryRequestFn) | Gets the request descriptor to retrieve the binar |
 
 <a name="Problem"></a>
 

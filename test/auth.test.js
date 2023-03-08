@@ -17,9 +17,7 @@ import assert from 'assert';
 import { OauthAuthenticator } from '../src/auth.js';
 import { wait } from './util.js';
 
-describe('Auth Test', function () {
-  this.timeout(10000);
-
+describe('Auth Test', () => {
   let refreshCount;
   let refreshToken;
   /**

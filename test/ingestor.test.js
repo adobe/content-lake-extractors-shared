@@ -23,14 +23,14 @@ describe('Ingestor Client Tests', function () {
   this.timeout(10000);
   const mockExtractor = new MockExtractor([
     {
-      assets: [
+      data: [
         {
-          id: 1,
+          sourceAssetId: 1,
           sourceId: 1,
           sourceType: 'mock',
         },
         {
-          id: 2,
+          sourceAssetId: 2,
           sourceId: 1,
           sourceType: 'mock',
         },
@@ -39,9 +39,9 @@ describe('Ingestor Client Tests', function () {
       cursor: 1,
     },
     {
-      assets: [
+      data: [
         {
-          id: 3,
+          sourceAssetId: 3,
           sourceId: 1,
           sourceType: 'mock',
         },
@@ -67,10 +67,34 @@ describe('Ingestor Client Tests', function () {
     assert.ok(scope.isDone());
   });
 
+  it('Handles binary request failure', async () => {
+    const inlineExtractor = new MockExtractor([
+      {
+        data: [
+          {
+            id: 1,
+            sourceId: 1,
+            sourceType: 'mock',
+          },
+        ],
+        more: false,
+      },
+    ]);
+    inlineExtractor.getBinaryRequest = async () => {
+      throw new Error('FAIL');
+    };
+    const client = new IngestorClient({
+      url: `${TEST_INGESTOR_URL}/`,
+      apiKey: 'test-api-key',
+      jobId: 'test-job-id',
+    }).withLog(console);
+    await client.submitBatch(inlineExtractor);
+  });
+
   it('Can support inline binary info', async () => {
     const inlineExtractor = new MockExtractor([
       {
-        assets: [
+        data: [
           {
             id: 1,
             sourceId: 1,

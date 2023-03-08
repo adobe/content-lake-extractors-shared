@@ -11,9 +11,7 @@
  */
 
 export * as auth from './auth.js';
-export * as cli from './cli.js';
 export * as contextHelper from './context.js';
-export * as extractors from './extractors.js';
 export * as functions from './functions.js';
 export * as rest from './rest.js';
 export * as ingestor from './ingestor.js';
