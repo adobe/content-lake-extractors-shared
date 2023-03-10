@@ -1,6 +1,6 @@
 {
-  "name": "@adobe/content-lake-extractors-shared",
-  "version": "1.9.0",
+  "name": "@adobe/content-lake-shared",
+  "version": "2.0.0",
   "description": "Content Lake - Shared",
   "main": "src/index.js",
   "type": "module",
@@ -14,14 +14,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/adobe/content-lake-extractors-shared"
+    "url": "https://github.com/adobe/content-lake-shared"
   },
   "author": "",
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/adobe/content-lake-extractors-shared/issues"
+    "url": "https://github.com/adobe/content-lake-shared/issues"
   },
-  "homepage": "https://github.com/adobe/content-lake-extractors-shared#readme",
+  "homepage": "https://github.com/adobe/content-lake-shared#readme",
   "mocha": {
     "require": "test/setup-env.js",
     "recursive": "true",
@@ -64,7 +64,6 @@
     "@aws-sdk/client-secrets-manager": "^3.262.0",
     "async": "^3.2.4",
     "fetch-retry": "^5.0.3",
-    "routington": "^1.0.3",
-    "yargs": "^17.6.2"
+    "routington": "^1.0.3"
   }
 }

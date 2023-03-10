@@ -15,9 +15,7 @@
 import assert from 'assert';
 import {
   auth,
-  cli,
   contextHelper,
-  extractors,
   ingestor,
   secrets,
 } from '../src/index.js';
@@ -27,16 +25,8 @@ describe('Index Tests', () => {
     assert.ok(auth);
   });
 
-  it('export cli is present', async () => {
-    assert.ok(cli);
-  });
-
   it('export contextHelper is present', async () => {
     assert.ok(contextHelper);
-  });
-
-  it('export extractors is present', async () => {
-    assert.ok(extractors);
   });
 
   it('export ingestor is present', async () => {

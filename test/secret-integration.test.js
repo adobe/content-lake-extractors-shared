@@ -19,8 +19,7 @@ import { extractCredentials } from '../src/context.js';
 
 dotenv.config();
 
-describe('Secrets Manager Integration Tests', async function () {
-  this.timeout(60000);
+describe('Secrets Manager Integration Tests', async () => {
   const extractor = 'it';
   before(function () {
     if (!process.env.AWS_ACCESS_KEY_ID) {
@@ -28,10 +27,7 @@ describe('Secrets Manager Integration Tests', async function () {
     }
   });
   it('fails on non-existing secret', async () => {
-    const mgr = new SecretsManager(
-      extractor,
-      extractCredentials(process.env),
-    );
+    const mgr = new SecretsManager(extractor, extractCredentials(process.env));
     let caught;
     try {
       await mgr.getSecret('not-a-secret');
@@ -43,10 +39,7 @@ describe('Secrets Manager Integration Tests', async function () {
 
   it('can create, get and delete secret', async () => {
     const secretId = randomUUID();
-    const mgr = new SecretsManager(
-      extractor,
-      extractCredentials(process.env),
-    );
+    const mgr = new SecretsManager(extractor, extractCredentials(process.env));
     let caught;
     try {
       await mgr.getSecret(secretId);
@@ -66,5 +59,5 @@ describe('Secrets Manager Integration Tests', async function () {
     assert.strictEqual(value, 'value2');
 
     await mgr.deleteSecret(secretId);
-  });
+  }).timeout(2000);
 });

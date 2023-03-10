@@ -12,35 +12,32 @@
 
 /* eslint-disable class-methods-use-this */
 
-/**
- * @implements {import('../src/extractors').Extractor}
- */
 export class MockExtractor {
-  /**
-   * @type {Array<import('../../src/extractors').AssetBatch>}
-   */
-  batches;
+  binaryRequestFunction = () => Promise.resolve({
+    requestType: 'http',
+    url: 'https://www.adobe.com/content/dam/cc/icons/Adobe_Corporate_Horizontal_Red_HEX.svg',
+  });
 
-  /**
-   *
-   * @param {Array<import('../../src/extractors').AssetBatch>} batches
-   */
+  batches = [];
+
+  data = {};
+
   constructor(batches) {
     this.batches = batches;
+    batches.forEach((batch) => batch.data.forEach((data) => {
+      this.data[data.sourceAssetId] = data;
+    }));
   }
 
-  async getAssets(cursor) {
-    return this.batches[cursor || 0];
+  async getSourceData(sourceAssetId) {
+    return Promise.resolve(this.data[sourceAssetId]);
+  }
+
+  async getSourceDataBatch(config) {
+    return Promise.resolve(this.batches[config.cursor || 0]);
   }
 
   async getBinaryRequest() {
-    return {
-      requestType: 'http',
-      url: 'https://www.adobe.com/content/dam/cc/icons/Adobe_Corporate_Horizontal_Red_HEX.svg',
-    };
-  }
-
-  async getFolders() {
-    return [];
+    return this.binaryRequestFunction();
   }
 }

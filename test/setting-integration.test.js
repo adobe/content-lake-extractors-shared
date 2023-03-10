@@ -26,14 +26,8 @@ function loadSettings() {
   };
 }
 
-describe('Settings Store Integration Tests', async function () {
-  this.timeout(60000);
+describe('Settings Store Integration Tests', async () => {
   const instances = [];
-  before(function () {
-    if (!process.env.AWS_ACCESS_KEY_ID) {
-      this.skip();
-    }
-  });
   after(async () => {
     const store = new SettingsStore(loadSettings());
     for (const instance of instances) {
