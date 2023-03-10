@@ -44,6 +44,8 @@
 <dd></dd>
 <dt><a href="#IngestionRequest">IngestionRequest</a> : <code>Object</code></dt>
 <dd></dd>
+<dt><a href="#IngestionResponse">IngestionResponse</a> : <code>Object</code></dt>
+<dd></dd>
 <dt><a href="#SourceData">SourceData</a> : <code>Object</code></dt>
 <dd><p>The data extracted from the source</p>
 </dd>
@@ -51,23 +53,6 @@
 <dd><p>A description of a HTTP request to make to retrieve a binary</p>
 </dd>
 <dt><a href="#IngestorConfig">IngestorConfig</a></dt>
-<dd></dd>
-<dt><a href="#SubmitBatchOptions">SubmitBatchOptions</a></dt>
-<dd></dd>
-<dt><a href="#SourceDataBatch">SourceDataBatch</a> : <code>Object</code></dt>
-<dd></dd>
-<dt><a href="#GetSourceDataBatchConfig">GetSourceDataBatchConfig</a> : <code>Object</code></dt>
-<dd></dd>
-<dt><a href="#SourceDataBatchFn">SourceDataBatchFn</a> ⇒ <code><a href="#SourceDataBatch">Promise.&lt;SourceDataBatch&gt;</a></code></dt>
-<dd><p>Retrieves a batch of data to ingest from the source</p>
-</dd>
-<dt><a href="#SourceDataFn">SourceDataFn</a> ⇒ <code><a href="#SourceData">Promise.&lt;SourceData&gt;</a></code></dt>
-<dd><p>Retrieves the data for a single record from the source</p>
-</dd>
-<dt><a href="#GetBinaryRequestFn">GetBinaryRequestFn</a> ⇒ <code><a href="#BinaryRequest">Promise.&lt;BinaryRequest&gt;</a></code></dt>
-<dd><p>Gets the request descriptor to retrieve the binary</p>
-</dd>
-<dt><a href="#Extractor">Extractor</a></dt>
 <dd></dd>
 <dt><a href="#Problem">Problem</a></dt>
 <dd></dd>
@@ -79,6 +64,10 @@
 <dt><a href="#QueryOptions">QueryOptions</a> : <code>Object</code></dt>
 <dd></dd>
 <dt><a href="#QueryResult">QueryResult</a> : <code>Object</code></dt>
+<dd></dd>
+<dt><a href="#TraverserResult">TraverserResult</a></dt>
+<dd></dd>
+<dt><a href="#TraverserConfig">TraverserConfig</a></dt>
 <dd></dd>
 </dl>
 
@@ -214,6 +203,17 @@ Refreshes the access token using the refresh token
 | binary | [<code>BinaryRequest</code>](#BinaryRequest) | a description of the request to retrieve the binary for the asset |
 | batchId | <code>string</code> \| <code>undefined</code> | an identifier for the current batch |
 
+<a name="IngestionResponse"></a>
+
+## IngestionResponse : <code>Object</code>
+**Kind**: global typedef  
+**Properties**
+
+| Name | Type | Description |
+| --- | --- | --- |
+| accepted | <code>boolean</code> | true if the asset was accepted by the ingestion service |
+| [reason] | <code>any</code> | the reason the asset was not accepted |
+
 <a name="SourceData"></a>
 
 ## SourceData : <code>Object</code>
@@ -257,90 +257,12 @@ A description of a HTTP request to make to retrieve a binary
 
 | Name | Type | Description |
 | --- | --- | --- |
-| url | <code>string</code> | the URL for calling the ingestor |
 | apiKey | <code>string</code> | the API Key used to call the ingestor |
 | companyId | <code>string</code> | the id of the company for which this should be ingested |
 | jobId | <code>string</code> | the id of the current job |
+| [log] | <code>any</code> | the logger |
 | spaceId | <code>string</code> | the id of the space into which this should be ingested |
-
-<a name="SubmitBatchOptions"></a>
-
-## SubmitBatchOptions
-**Kind**: global typedef  
-**Properties**
-
-| Name | Type | Description |
-| --- | --- | --- |
-| binaryRequestLimit | <code>number</code> \| <code>undefined</code> | the limit to the number of parallel requests  to get the binary |
-| ingestLimit | <code>number</code> \| <code>undefined</code> | the limit to the number of parallel requests  to ingest |
-
-<a name="SourceDataBatch"></a>
-
-## SourceDataBatch : <code>Object</code>
-**Kind**: global typedef  
-**Properties**
-
-| Name | Type | Description |
-| --- | --- | --- |
-| data | [<code>Array.&lt;SourceData&gt;</code>](#SourceData) | the retrieved data from the source |
-| more | <code>boolean</code> | if more data is available from the source |
-| cursor | <code>any</code> | the cursor for retrieving the next batch, should be treated as an opaque value |
-
-<a name="GetSourceDataBatchConfig"></a>
-
-## GetSourceDataBatchConfig : <code>Object</code>
-**Kind**: global typedef  
-**Properties**
-
-| Name | Type | Description |
-| --- | --- | --- |
-| cursor | <code>any</code> \| <code>undefined</code> | the cursor to resume the request from a point |
-| limit | <code>number</code> \| <code>undefined</code> | the limit for the number to retrieve |
-
-<a name="SourceDataBatchFn"></a>
-
-## SourceDataBatchFn ⇒ [<code>Promise.&lt;SourceDataBatch&gt;</code>](#SourceDataBatch)
-Retrieves a batch of data to ingest from the source
-
-**Kind**: global typedef  
-
-| Param | Type |
-| --- | --- |
-| config | [<code>GetSourceDataBatchConfig</code>](#GetSourceDataBatchConfig) | 
-
-<a name="SourceDataFn"></a>
-
-## SourceDataFn ⇒ [<code>Promise.&lt;SourceData&gt;</code>](#SourceData)
-Retrieves the data for a single record from the source
-
-**Kind**: global typedef  
-
-| Param | Type |
-| --- | --- |
-| assetSourceId | <code>string</code> | 
-
-<a name="GetBinaryRequestFn"></a>
-
-## GetBinaryRequestFn ⇒ [<code>Promise.&lt;BinaryRequest&gt;</code>](#BinaryRequest)
-Gets the request descriptor to retrieve the binary
-
-**Kind**: global typedef  
-
-| Param | Type |
-| --- | --- |
-| data | [<code>SourceData</code>](#SourceData) | 
-
-<a name="Extractor"></a>
-
-## Extractor
-**Kind**: global typedef  
-**Properties**
-
-| Name | Type | Description |
-| --- | --- | --- |
-| getSourceData | [<code>SourceDataFn</code>](#SourceDataFn) | Retrieves a batch of data from the source |
-| getSourceDataBatch | [<code>SourceDataBatchFn</code>](#SourceDataBatchFn) | Retrieves a batch of data from the source |
-| getBinaryRequest | [<code>GetBinaryRequestFn</code>](#GetBinaryRequestFn) | Gets the request descriptor to retrieve the binar |
+| url | <code>string</code> | the URL for calling the ingestor |
 
 <a name="Problem"></a>
 
@@ -405,4 +327,35 @@ Function for handling a routes inside Frankin / Content Lake services
 | items | [<code>Array.&lt;SettingsObject&gt;</code>](#SettingsObject) | 
 | count | <code>number</code> | 
 | cursor | <code>any</code> | 
+
+<a name="TraverserResult"></a>
+
+## TraverserResult
+**Kind**: global typedef  
+**Properties**
+
+| Name | Type |
+| --- | --- |
+| duration | <code>number</code> | 
+| errors | <code>Array.&lt;{method: string, node: any, error: Error}&gt;</code> | 
+| processed | <code>number</code> | 
+| traversed | <code>number</code> | 
+
+<a name="TraverserConfig"></a>
+
+## TraverserConfig
+**Kind**: global typedef  
+**Properties**
+
+| Name | Type |
+| --- | --- |
+| [formatForLog] | <code>function</code> | 
+| getChildrenFn | <code>function</code> | 
+| hasChildrenFn | <code>function</code> | 
+| log | <code>any</code> | 
+| [processBatchSize] | <code>number</code> | 
+| processFn | <code>function</code> | 
+| shouldProcessFn | <code>function</code> | 
+| [traversalBatchSize] | <code>number</code> | 
+| [waitDuration] | <code>number</code> | 
 

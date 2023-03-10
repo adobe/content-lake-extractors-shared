@@ -17,3 +17,4 @@ export * as rest from './rest.js';
 export * as ingestor from './ingestor.js';
 export * as secrets from './secret.js';
 export * as settings from './settings.js';
+export * as traversal from './traversal.js';
