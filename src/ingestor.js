@@ -11,11 +11,9 @@
  */
 
 import { fetch as originalFetch } from '@adobe/fetch';
-import { forEachLimit, mapLimit } from 'async';
 import fetchBuilder from 'fetch-retry';
 import { randomUUID } from 'crypto';
 
-const DEFAULT_BINARY_REQUEST_LIMIT = 1;
 const fetch = fetchBuilder(originalFetch);
 
 /**
@@ -24,6 +22,12 @@ const fetch = fetchBuilder(originalFetch);
  * @property {BinaryRequest} binary
  *  a description of the request to retrieve the binary for the asset
  * @property {string | undefined} batchId an identifier for the current batch
+ */
+
+/**
+ * @typedef {Object} IngestionResponse
+ * @property {boolean} accepted true if the asset was accepted by the ingestion service
+ * @property {any} [reason] the reason the asset was not accepted
  */
 
 /**
@@ -54,69 +58,16 @@ const fetch = fetchBuilder(originalFetch);
 
 /**
  * @typedef IngestorConfig the configuration for the ingestor client
- * @property {string} url the URL for calling the ingestor
  * @property {string} apiKey the API Key used to call the ingestor
  * @property {string} companyId the id of the company for which this should be ingested
  * @property {string} jobId the id of the current job
+ * @property {any} [log] the logger
  * @property {string} spaceId the id of the space into which this should be ingested
- */
-
-/**
- * @typedef SubmitBatchOptions
- * @property {number | undefined} binaryRequestLimit the limit to the number of parallel requests
- *  to get the binary
- * @property {number | undefined} ingestLimit the limit to the number of parallel requests
- *  to ingest
- */
-
-/**
- * @typedef {Object} SourceDataBatch
- * @property {Array<SourceData>} data the retrieved data from the source
- * @property {boolean} more if more data is available from the source
- * @property {any} cursor
- *  the cursor for retrieving the next batch, should be treated as an opaque value
- */
-
-/**
- * @typedef {Object} GetSourceDataBatchConfig
- * @property {any | undefined} cursor the cursor to resume the request from a point
- * @property {number | undefined} limit the limit for the number to retrieve
- */
-
-/**
- * Retrieves a batch of data to ingest from the source
- * @callback SourceDataBatchFn
- * @param {GetSourceDataBatchConfig} config
- * @returns {Promise<SourceDataBatch>}
- */
-
-/**
- * Retrieves the data for a single record from the source
- * @callback SourceDataFn
- * @param {string} assetSourceId
- * @returns {Promise<SourceData>}
- */
-
-/**
- * Gets the request descriptor to retrieve the binary
- * @callback GetBinaryRequestFn
- * @param {SourceData} data
- * @returns {Promise<BinaryRequest>}
- */
-
-/**
- * @typedef Extractor Extracts data and binary requests from a source
- * @property {SourceDataFn} getSourceData
- *  Retrieves a batch of data from the source
- * @property {SourceDataBatchFn} getSourceDataBatch
- *  Retrieves a batch of data from the source
- * @property {GetBinaryRequestFn} getBinaryRequest
- *  Gets the request descriptor to retrieve the binar
+ * @property {string} url the URL for calling the ingestor
  */
 
 // Constants for retry configuration
 const SEC_IN_MS = 1000;
-const DEFAULT_INGEST_LIMIT = 2;
 const DEFAULT_RETRIES = 3;
 
 /**
@@ -133,12 +84,7 @@ export class IngestorClient {
    */
   constructor(config) {
     this.#config = config;
-    this.#log = console;
-  }
-
-  withLog(logger) {
-    this.log = logger;
-    return this;
+    this.#log = config.log || console;
   }
 
   /**
@@ -158,6 +104,7 @@ export class IngestorClient {
   /**
    * Submits the request for ingestion
    * @param {IngestionRequest} request the request containing the data to ingest
+   * @returns {Promise<IngestionResponse>} the response from the ingestion service
    */
   async submit(request) {
     const start = Date.now();
@@ -167,7 +114,7 @@ export class IngestorClient {
 
     const requestInfo = IngestorClient.#filterAndMerge(
       request.data,
-      ['assetSourceId', 'sourceId', 'sourceType', 'name'],
+      ['sourceAssetId', 'sourceId', 'sourceType', 'name'],
       {
         jobId,
         companyId,
@@ -217,11 +164,12 @@ export class IngestorClient {
     });
     if (res.ok) {
       this.#log.info('Asset submitted successfully', {
-        status: `${res.status}: ${res.statusText}`,
+        responseStatus: res.status,
         duration: Date.now() - start,
         url: this.#config.url,
         ...requestInfo,
       });
+      return { accepted: true };
     } else {
       let responseBody = await res.text();
       try {
@@ -229,86 +177,21 @@ export class IngestorClient {
       } catch (err) {
         // no need, response was not json
       }
-      this.#log.warn('Failed to submit asset', {
-        responseStatus: `${res.status}: ${res.statusText}`,
+      this.#log.warn('Failed to submit asset for ingeston', {
+        responseStatus: res.status,
         responseBody,
         responseheaders: Object.fromEntries(res.headers),
         duration: Date.now() - start,
         url: this.#config.url,
         ...requestInfo,
       });
-    }
-  }
-
-  /**
-   * Extract all of the assets from the source and call the callback
-   * @param {Extractor} extractor the extractor from which to get the batch
-   * @param {any | undefined} cursor the current cursor
-   * @param {SubmitBatchOptions | undefined} options the limit for the number of concurrent requests
-   * @returns {any} the next cursor or undefined if no more assets are available
-   */
-  async submitBatch(extractor, cursor, options) {
-    const batchId = randomUUID();
-    const batchStart = Date.now();
-    const batch = await extractor.getSourceDataBatch({ cursor });
-    const batchInfo = {
-      skipped: batch.skipped,
-      more: batch.more,
-      count: batch.data.length,
-      limit: options?.binaryRequestLimit,
-      jobId: this.#config.jobId,
-      batchId,
-    };
-    this.#log.info('Retrieved batch', {
-      ...batchInfo,
-      getBatchDuration: Date.now() - batchStart,
-    });
-    const binaryStart = Date.now();
-    const resolved = (
-      await mapLimit(
-        batch.data,
-        options?.binaryRequestLimit || DEFAULT_BINARY_REQUEST_LIMIT,
-        async (data) => {
-          let { binary } = data;
-          // some extractors may be able to provide binary information with the asset
-          // itself, eliminating the need to perform a second request
-          if (!binary) {
-            try {
-              binary = await extractor.getBinaryRequest(data);
-            } catch (err) {
-              this.#log.warn(
-                'Failed to retrieve binary',
-                IngestorClient.#filterAndMerge(
-                  data,
-                  ['assetSourceId', 'sourceId', 'sourceType', 'name'],
-                  batchInfo,
-                ),
-              );
-            }
-          }
-          return { data, binary };
+      return {
+        accepted: false,
+        reason: {
+          responseStatus: res.status,
+          responseBody,
         },
-      )
-    ).filter((it) => it.binary);
-    this.#log.info('Retrieved binary requests', {
-      ...batchInfo,
-      getBinariesDuration: Date.now() - binaryStart,
-    });
-
-    const ingestionStart = Date.now();
-    this.#log.info('Sending assets', batchInfo);
-    await forEachLimit(
-      resolved,
-      options?.ingestLimit || DEFAULT_INGEST_LIMIT,
-      async (item) => {
-        await this.submit({ ...item, batchId });
-      },
-    );
-    this.#log.info('Assets ingested', {
-      ...batchInfo,
-      ingestionDuration: Date.now() - ingestionStart,
-      batchDuration: Date.now() - batchStart,
-    });
-    return { cursor: batch.cursor, more: batch.more };
+      };
+    }
   }
 }
