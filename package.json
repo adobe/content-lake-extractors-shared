@@ -1,7 +1,7 @@
 {
-  "name": "@adobe/content-lake-shared",
+  "name": "@adobe/content-lake-extractors-shared",
   "version": "2.0.0",
-  "description": "Content Lake - Shared",
+  "description": "Content Lake - Extractors Shared",
   "main": "src/index.js",
   "type": "module",
   "scripts": {
@@ -14,14 +14,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/adobe/content-lake-shared"
+    "url": "https://github.com/adobe/content-lake-extractors-shared"
   },
   "author": "",
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/adobe/content-lake-shared/issues"
+    "url": "https://github.com/adobe/content-lake-extractors-shared/issues"
   },
-  "homepage": "https://github.com/adobe/content-lake-shared#readme",
+  "homepage": "https://github.com/adobe/content-lake-extractors-shared#readme",
   "mocha": {
     "require": "test/setup-env.js",
     "recursive": "true",
@@ -58,12 +58,11 @@
     "*.cjs": "eslint"
   },
   "dependencies": {
+    "@adobe/content-lake-commons": "file:../content-lake-commons",
     "@adobe/fetch": "^3.3.1",
     "@aws-sdk/client-dynamodb": "^3.262.0",
     "@aws-sdk/client-lambda": "^3.262.0",
-    "@aws-sdk/client-secrets-manager": "^3.262.0",
     "async": "^3.2.4",
-    "fetch-retry": "^5.0.3",
-    "routington": "^1.0.3"
+    "fetch-retry": "^5.0.3"
   }
 }

@@ -10,40 +10,63 @@
  * governing permissions and limitations under the License.
  */
 
+/* eslint-disable max-classes-per-file */
 import { mapLimit } from 'async';
+// eslint-disable-next-line no-unused-vars
+import { BaseBatchProvider } from './batch-provider.js';
 
 /**
- * @typedef TraverserResult
+ * @typedef BatchResult
  * @property {number} duration
- * @property {Array<{method: string, node: any, error: Error}>} errors
+ * @property {Array<ErrorItem>} errors
  * @property {number} processed
- * @property {number} traversed
+ * @property {number} [traversed]
  */
 
 /**
- * @typedef TraverserConfig
- * @property {function(any):any} [formatForLog]
- * @property {function(any):Promise<Array<any>>} getChildrenFn
- * @property {function(any):Promise<boolean>} hasChildrenFn
+ * @typedef ErrorItem
+ * @property {string} method
+ * @property {any} node
+ * @property {Error|Object} error
+ */
+
+/**
+ * @typedef BatchConfig
  * @property {any} log
  * @property {number} [processBatchSize]
- * @property {function(any):Promise<void>} processFn
- * @property {function(any):Promise<boolean>} shouldProcessFn
  * @property {number} [traversalBatchSize]
  * @property {number} [waitDuration]
  */
 
-export class Traverser {
+/**
+ * @typedef ExecutionState
+ * @property {Array<ErrorItem>} [errors] errors during processing and traversing
+ * @property {number} [processed] the number of items already processed
+ * @property {Array<any>} [processingBatch] the items which are currently being processed
+ * @property {Array<any>} [processingQueue] the queue of items to process
+ * @property {number} [traversed] the items already traversed
+ * @property {Array<any>} [traversalBatch] the items currently being traversed
+ * @property {Array<any>} [traversalQueue] the items which are queued to be traversed
+ */
+
+const DEFAULT_BATCH_SIZE = 1;
+
+export class BatchExecutor {
   /**
-   * @type {TraverserConfig}
+   * @type {BatchConfig}
    */
   #config;
 
   #log;
 
-  #traversalBatch;
-
   #processingBatch;
+
+  /**
+   * @type {BaseBatchProvider}
+   */
+  #provider;
+
+  #traversalBatch;
 
   errors = [];
 
@@ -60,43 +83,27 @@ export class Traverser {
   traversalQueue = [];
 
   /**
-   * @param {TraverserConfig} config
+   * @param {BaseBatchProvider} provider
+   * @param {BatchConfig} [config]
    */
-  constructor(config, state) {
-    const missing = [
-      'getChildrenFn',
-      'hasChildrenFn',
-      'processFn',
-      'shouldProcessFn',
-    ].filter((k) => !(k in config));
-    if (missing.length > 0) {
-      throw new Error(
-        `Invalid TreeTraverserConfig, missing fields: ${missing.join(', ')}`,
-      );
+  constructor(provider, config) {
+    if (!provider) {
+      throw new Error('Batch provider required');
     }
+    this.#provider = provider;
     this.#config = {
       ...{
-        formatForLog: JSON.stringify,
-        processBatchSize: 1,
-        traversalBatchSize: 1,
         waitDuration: 100,
       },
-      ...config,
+      ...(config || {}),
     };
-    this.#log = config.log || console;
-
-    if (state) {
-      this.#log.info('Resuming from state', state);
-      this.errors = state.errors;
-      this.processed = state.processed;
-      this.processingQueue = state.processingQueue;
-      this.traversed = state.traversed;
-      this.traversalQueue = state.traversalQueue;
-      this.#processingBatch = state.processingBatch;
-      this.#traversalBatch = state.traversalBatch;
-    }
+    this.#log = config?.log || console;
   }
 
+  /**
+   * Gets the current state
+   * @returns {ExecutionState}
+   */
   getState() {
     return {
       errors: this.errors,
@@ -110,18 +117,77 @@ export class Traverser {
   }
 
   /**
+   *
+   * @param {ExecutionState} state
+   */
+  setState(state) {
+    this.errors = state.errors || [];
+    this.processed = state.processed || 0;
+    this.processingQueue = state.processingQueue || [];
+    this.traversed = state.traversed || 0;
+    this.traversalQueue = state.traversalQueue || [];
+    this.#processingBatch = state.processingBatch || [];
+    this.#traversalBatch = state.traversalBatch || [];
+  }
+
+  /**
+   * Processes the requested items
+   * @param {Array<any>} [toProcess]
+   * @returns {Promise<BatchResult>}
+   */
+  async processItems(toProcess) {
+    const start = Date.now();
+    this.running = true;
+    this.moreNodes = false;
+    let donePromise;
+    try {
+      if (toProcess) {
+        toProcess.forEach((it) => this.processingQueue.push(it));
+      }
+      donePromise = this.startProcessorQueueProcessor();
+      let interval = 0;
+      while (this.running) {
+        // eslint-disable-next-line no-await-in-loop
+        await this.#wait();
+        interval += 1;
+        if (interval % 10 === 0) {
+          this.#log.info('Processing in progress', {
+            duration: Date.now() - start,
+            errors: this.errors,
+            processed: this.processed,
+            processingQueueSize: this.processingQueue.length,
+          });
+        }
+      }
+      await donePromise;
+      const result = {
+        duration: Date.now() - start,
+        errors: this.errors,
+        processed: this.processed,
+      };
+      this.#log.info('Finished processing', result);
+      return result;
+    } finally {
+      this.running = false;
+    }
+  }
+
+  /**
    * Performs a depth first traversal of the tree
-   * @param {any} root
-   * @returns {Promise<TraverserResult>}
+   * @param {any} [root]
+   * @returns {Promise<BatchResult>}
    */
   async traverseTree(root) {
     const start = Date.now();
     this.running = true;
     this.moreNodes = true;
+    const donePromises = [];
     try {
-      this.traversalQueue.push(root);
-      this.startTraversalQueueProcessor();
-      this.startProcessorQueueProcessor();
+      if (root) {
+        this.traversalQueue.push(root);
+      }
+      donePromises.push(this.startTraversalQueueProcessor());
+      donePromises.push(this.startProcessorQueueProcessor());
       let interval = 0;
       while (this.running) {
         // eslint-disable-next-line no-await-in-loop
@@ -138,6 +204,7 @@ export class Traverser {
           });
         }
       }
+      await Promise.all(donePromises);
       const result = {
         duration: Date.now() - start,
         errors: this.errors,
@@ -155,6 +222,10 @@ export class Traverser {
   async startProcessorQueueProcessor() {
     const processingStart = Date.now();
     while (this.moreNodes || this.processingQueue.length > 0) {
+      if (this.processingQueue.length === 0) {
+        // eslint-disable-next-line no-await-in-loop
+        await this.#wait();
+      }
       const start = Date.now();
       this.#processingBatch = this.processingQueue.splice(
         0,
@@ -167,12 +238,12 @@ export class Traverser {
         // eslint-disable-next-line no-await-in-loop
         await mapLimit(
           this.#processingBatch,
-          this.#config.processBatchSize || 1,
+          this.#config.processBatchSize || DEFAULT_BATCH_SIZE,
           async (node) => {
             try {
-              const loggableNode = this.#config.formatForLog(node);
+              const loggableNode = this.#provider.formatForLog(node);
               this.#log.debug('Processing node', loggableNode);
-              await this.#config.processFn(node);
+              await this.#provider.process(node);
               this.processed += 1;
             } catch (err) {
               this.#log.warn('Failed to process node', { node, err });
@@ -185,13 +256,9 @@ export class Traverser {
           },
         );
         this.#log.info('Batch processed', {
-          batchSize: this.#traversalBatch.length,
+          batchSize: this.#processingBatch.length,
           duration: Date.now() - start,
         });
-      }
-      if (this.processingQueue.length === 0) {
-        // eslint-disable-next-line no-await-in-loop
-        await this.#wait();
       }
     }
     this.#log.info('Processing complete!', {
@@ -215,7 +282,7 @@ export class Traverser {
       // eslint-disable-next-line no-await-in-loop
       await mapLimit(
         this.#traversalBatch,
-        this.#config.traversalBatchSize || 1,
+        this.#config.traversalBatchSize || DEFAULT_BATCH_SIZE,
         async (node) => this.#traverseNode(node),
       );
       this.#log.info('Batch traversed', {
@@ -234,11 +301,11 @@ export class Traverser {
     let canRetry = typeof node.TRAVERSAL_RETRY === 'undefined';
     try {
       let children;
-      const loggableNode = this.#config.formatForLog(node);
+      const loggableNode = this.#provider.formatForLog(node);
       this.#log.debug('Traversing node', loggableNode);
-      const hasChildren = await this.#config.hasChildrenFn(node);
+      const hasChildren = await this.#provider.hasMore(node);
       if (hasChildren) {
-        children = await this.#config.getChildrenFn(node);
+        children = await this.#provider.getBatch(node);
         if (children.length > 0) {
           this.#log.debug('Found children', {
             node: loggableNode,
@@ -246,7 +313,7 @@ export class Traverser {
           });
         }
       }
-      const shouldProcess = await this.#config.shouldProcessFn(node);
+      const shouldProcess = await this.#provider.shouldProcess(node);
 
       canRetry = false; // done with read-only changes, any failures after this and we can't retry
 

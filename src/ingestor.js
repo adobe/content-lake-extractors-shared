@@ -10,11 +10,8 @@
  * governing permissions and limitations under the License.
  */
 
-import { fetch as originalFetch } from '@adobe/fetch';
-import fetchBuilder from 'fetch-retry';
+import { FetchRetry } from '@adobe/content-lake-commons';
 import { randomUUID } from 'crypto';
-
-const fetch = fetchBuilder(originalFetch);
 
 /**
  * @typedef {Object} IngestionRequest
@@ -66,15 +63,13 @@ const fetch = fetchBuilder(originalFetch);
  * @property {string} url the URL for calling the ingestor
  */
 
-// Constants for retry configuration
-const SEC_IN_MS = 1000;
-const DEFAULT_RETRIES = 3;
-
 /**
  * The ingestor client sends asset data to the Content Lake ingestion service to be ingested
  */
 export class IngestorClient {
   #config;
+
+  #client = new FetchRetry();
 
   #log;
 
@@ -128,7 +123,7 @@ export class IngestorClient {
       url: this.#config.url,
       ...requestInfo,
     });
-    const res = await fetch(this.#config.url, {
+    const res = await this.#client.fetch(this.#config.url, {
       headers: {
         'X-API-Key': this.#config.apiKey,
         'Content-Type': 'application/json',
@@ -141,26 +136,6 @@ export class IngestorClient {
         spaceId,
         requestId,
       }),
-      retries: DEFAULT_RETRIES,
-      retryDelay: (attempt, err, response) => {
-        let delay;
-        if (response?.headers?.has('Retry-After')) {
-          delay = response.headers.get('Retry-After') * SEC_IN_MS;
-        } else {
-          // calculate an exponential backoff, for some reason eslint prefers ** to Math.pow
-          delay = attempt ** 2 * SEC_IN_MS;
-        }
-        this.#log.info('Retrying request', {
-          err,
-          attempt,
-          delay,
-          status: `${response?.status}: ${response?.statusText}`,
-          url: response?.url,
-          ...requestInfo,
-        });
-        return delay;
-      },
-      retryOn: [429, 500, 502, 503],
     });
     if (res.ok) {
       this.#log.info('Asset submitted successfully', {

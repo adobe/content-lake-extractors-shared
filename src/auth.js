@@ -9,34 +9,9 @@
  * OF ANY KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
+/* eslint-disable class-methods-use-this */
 
-/**
- * Listener for updates to the refresh token.
- * @callback  RefreshListenerFn
- * @param {String} refreshToken the refresh token to use
- * @returns {Promise<void>}
- */
-
-/**
- * Get a url for authenticating with the Oauth service
- * @callback  AuthenticationUrlGeneratorFn
- * @param {String} redirectUri the uri to redirect to when done
- * @returns {Promise<string>} a promise resolving to the URL
- */
-
-/**
- * Handles the callback redirect from an OAuth request
- * @callback  CallbackHandlerFn
- * @param {Record<string,string>} queryParams the params parsed from the request
- * @returns {Promise<OauthCredentials>} the credentials from authenticating
- */
-
-/**
- * Refreshes the access token using the refresh token
- * @callback  RefreshAccessTokenFn
- * @param {string} refreshToken the refresh token
- * @returns {Promise<OauthCredentials>} the credentials from authenticating
- */
+import assert from 'assert';
 
 /**
  * @typedef OauthCredentials
@@ -48,27 +23,14 @@
  *  The current, long lived refresh token or undefined if no token is available
  */
 
-export class OauthAuthenticator {
-  /**
-   * @type {AuthenticationUrlGeneratorFn}
-   */
-  #authenticationUrlGenerator;
+/**
+ * @typedef {Object} OauthConfig
+ * @property {string} redirectUri the URI to which to redirect the user after
+ *      they authenticate with the OAuth server
+ * @property {string} [refreshToken] the refresh token to use if one is already available
+ */
 
-  /**
-   * @type {CallbackHandlerFn}
-   */
-  #callbackHandler;
-
-  /**
-   * @type {RefreshListenerFn}
-   */
-  #refreshTokenUpdateListener;
-
-  /**
-   * @type {RefreshAccessTokenFn}
-   */
-  #refreshAccessToken;
-
+export class BaseOauthAuthenticator {
   /**
    * the current access token or undefined
    * @type {string | undefined}
@@ -82,6 +44,12 @@ export class OauthAuthenticator {
   expiration;
 
   /**
+   * the URI to which to redirect the user after they authenticate with the OAuth server
+   * @type {string}
+   */
+  redirectUri;
+
+  /**
    * the long lived refresh token or undefined if not authenticated
    * @type {string | undefined}
    */
@@ -89,51 +57,76 @@ export class OauthAuthenticator {
 
   /**
    * Create a new OauthAutheticator
-   * @param {string | undefined} refreshToken
+   * @param {OauthConfig} config
    */
-  constructor(refreshToken) {
-    this.refreshToken = refreshToken;
+  constructor(config) {
+    assert.ok(config, 'Configuration must be provided');
+    this.refreshToken = config.refreshToken;
+    assert.ok(config.redirectUri, 'Property redirectUri must be provided');
+    this.redirectUri = config.redirectUri;
   }
 
   /**
    * Ensures that the request is authenticated.
    * If a new access token is required, will exchange the refesh token for a new access token.
+   * This method shouldn't need to be overridden by implementations.
    */
   async ensureAuthenticated() {
     const requiresReauth = this.requiresReauthentication();
     if (requiresReauth) {
-      throw new Error('Reauthentication requred');
+      throw new Error('Reauthentication required');
     }
     // add 5sec buffer
     const compare = new Date(new Date().getTime() + 5000);
     if (!this.accessToken || compare > this.expiration) {
-      const credentials = await this.#refreshAccessToken(this.refreshToken);
-      await this.updateTokens(credentials);
+      await this.refreshAccessToken(this.refreshToken);
     }
   }
 
   /**
-   * Gets the URL to direct the user to in order to authenticate with this connector
-   * @param {string} redirectUri the URI to which to redirect once the authentication is complete
-   * @returns {Promise<string>}
-   *    a promise which resolves to the URL to which to take the user to authenticate
+   * Gets an access token, ensuring it is authenticated and if required exchaning the
+   * refresh token for a new access token.
+   * This method shouldn't need to be overridden by implementations.
+   * @returns {Promise<string>} the access token
    */
-  async getAuthenticationUrl(redirectUri) {
-    return this.#authenticationUrlGenerator(redirectUri);
+  async getAccessToken() {
+    await this.ensureAuthenticated();
+    return this.accessToken;
   }
 
   /**
-   * Handles the oauth callback,
+   * Gets the URL to direct the user to in order to authenticate with this connector.
+   * This method must be overridden by implementations.
+   * @returns {Promise<string>}
+   *    a promise which resolves to the URL to which to take the user to authenticate
+   */
+  async getAuthenticationUrl() {
+    return Promise.resolve('AUTHENTICATION_URL');
+  }
+
+  /**
+   * Handles the oauth callback and updates the stored tokens.
+   * This method must be overridden by implementations.
    *
    * @param {Record<string,string>} query the query parameters passed to the callback URL
    */
-  async handleCallback(query) {
-    const credentials = await this.#callbackHandler(query);
-    await this.updateTokens(credentials);
+  // eslint-disable-next-line no-unused-vars
+  async handleCallback(_query) {
+    return Promise.resolve();
+  }
+
+  /**
+   * Refreshes the access token with the refreshToken
+   * This method must be overridden by implementations.
+   * @returns {Promise<void>}
+   */
+  async refreshAccessToken() {
+    return Promise.resolve();
   }
 
   /**
    * Returns true if the connector is not authenticated and must be reauthenticated to work
+   * This method shouldn't need to be overridden by implementations.
    * @returns true if the connector requires authentication, false otherwise
    */
   requiresReauthentication() {
@@ -142,6 +135,7 @@ export class OauthAuthenticator {
 
   /**
    * Updates the tokens stored in this authenticator
+   * This method shouldn't need to be overridden by implementations.
    * @param {OauthCredentials} credentials the oauth response
    */
   async updateTokens(credentials) {
@@ -152,53 +146,7 @@ export class OauthAuthenticator {
       && this.refreshToken !== credentials.refreshToken
     ) {
       this.refreshToken = credentials.refreshToken;
-      if (this.#refreshTokenUpdateListener) {
-        await this.#refreshTokenUpdateListener(this.refreshToken);
-      }
     }
-  }
-
-  /**
-   * Builder method for setting the authenticationUrlGenerator
-   * @param {AuthenticationUrlGeneratorFn} authenticationUrlGenerator a function for generating
-   *    an authenticated url
-   * @returns {OauthAuthenticator} the OauthAuthenticator instance
-   */
-  withAuthenticationUrlGenerator(authenticationUrlGenerator) {
-    this.#authenticationUrlGenerator = authenticationUrlGenerator;
-    return this;
-  }
-
-  /**
-   * Builder method for setting the callbackHandler
-   * @param {AuthenticationUrlGeneratorFn} callbackHandler a function handing the callback
-   * @returns {OauthAuthenticator} the OauthAuthenticator instance
-   */
-  withCallbackHandler(callbackHandler) {
-    this.#callbackHandler = callbackHandler;
-    return this;
-  }
-
-  /**
-   * Builder method for setting the refreshTokenUpdateListener
-   * @param {RefreshAccessTokenFn} refreshAccessToken a function to
-   *    call when the refresh token changes
-   * @returns {OauthAuthenticator} the OauthAuthenticator instance
-   */
-  withRefreshAccessToken(refreshAccessToken) {
-    this.#refreshAccessToken = refreshAccessToken;
-    return this;
-  }
-
-  /**
-   * Builder method for setting the refreshTokenUpdateListener
-   * @param {RefreshListenerFn} refreshTokenUpdateListener a function to
-   *    call when the refresh token changes
-   * @returns {OauthAuthenticator} the OauthAuthenticator instance
-   */
-  withRefreshTokenUpdateListener(refreshTokenUpdateListener) {
-    this.#refreshTokenUpdateListener = refreshTokenUpdateListener;
-    return this;
   }
 }
 

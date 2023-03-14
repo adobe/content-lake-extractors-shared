@@ -13,7 +13,7 @@
 /* eslint-env mocha */
 import assert from 'assert';
 import * as dotenv from 'dotenv';
-import { extractCredentials } from '../src/context.js';
+import { contextHelper } from '@adobe/content-lake-commons';
 import { FunctionRunner } from '../src/functions.js';
 
 dotenv.config();
@@ -21,7 +21,7 @@ const TEST_TIMEOUT = 60000;
 
 describe('Functions Integration Tests', async () => {
   it('can invoke function with result', async () => {
-    const runner = new FunctionRunner(extractCredentials(process.env));
+    const runner = new FunctionRunner(contextHelper.extractAwsConfig(process));
     const res = await runner.invokeFunctionWithResponse(
       'helix-services--content-lake-echo-test',
       {
@@ -36,7 +36,7 @@ describe('Functions Integration Tests', async () => {
   }).timeout(TEST_TIMEOUT);
 
   it('can handle error response', async () => {
-    const runner = new FunctionRunner(extractCredentials(process.env));
+    const runner = new FunctionRunner(contextHelper.extractAwsConfig(process));
     let caught;
     try {
       await runner.invokeFunctionWithResponse(
@@ -54,7 +54,7 @@ describe('Functions Integration Tests', async () => {
   }).timeout(TEST_TIMEOUT);
 
   it('can invoke function via event', async () => {
-    const runner = new FunctionRunner(extractCredentials(process.env));
+    const runner = new FunctionRunner(contextHelper.extractAwsConfig(process));
     await runner.invokeFunction('helix-services--content-lake-echo-test', {
       message: 'ping',
       nested: {
@@ -65,7 +65,7 @@ describe('Functions Integration Tests', async () => {
   }).timeout(TEST_TIMEOUT);
 
   it('event fails if not function', async () => {
-    const runner = new FunctionRunner(extractCredentials(process.env));
+    const runner = new FunctionRunner(contextHelper.extractAwsConfig(process));
     let caught;
     try {
       await runner.invokeFunction('helix-services--i-dont-exist', {

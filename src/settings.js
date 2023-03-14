@@ -50,7 +50,7 @@ export class SettingsStore {
    * @param {Object | undefined} config the configuration
    */
   constructor(config) {
-    this.#client = new DynamoDBClient({ region: 'us-east-1', ...config });
+    this.#client = new DynamoDBClient(config);
     this.#table = config.tableName || 'adobe-content-lake-extractors';
   }
 

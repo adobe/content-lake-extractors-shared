@@ -1,6 +1,11 @@
 ## Classes
 
 <dl>
+<dt><a href="#BaseBatchProvider">BaseBatchProvider</a></dt>
+<dd><p>A BatchProvider provides batches and items to process to the BatchExecutor. This implementation
+will do nothing.
+Implementations should implement this class, implementing the required methods for the use case.</p>
+</dd>
 <dt><a href="#IngestorClient">IngestorClient</a></dt>
 <dd><p>The ingestor client sends asset data to the Content Lake ingestion service to be ingested</p>
 </dd>
@@ -9,36 +14,25 @@
 ## Functions
 
 <dl>
-<dt><a href="#extractCredentials">extractCredentials(env)</a> ⇒</dt>
-<dd><p>Loads the configuration keys from an environment variable map</p>
-</dd>
 <dt><a href="#IngestorClient.">IngestorClient.(data, keys, toMerge)</a></dt>
 <dd><p>Filters the data to the specified keys and then merges with the toMerge object.</p>
-</dd>
-<dt><a href="#sendProblem">sendProblem(problem)</a> ⇒ <code>Response</code></dt>
-<dd><p>Creates an application/problem+json response</p>
-</dd>
-<dt><a href="#handleErrorAsProblem">handleErrorAsProblem(err, instance)</a> ⇒</dt>
-<dd><p>Attempts to send a reasonable problem response</p>
 </dd>
 </dl>
 
 ## Typedefs
 
 <dl>
-<dt><a href="#RefreshListenerFn">RefreshListenerFn</a> ⇒ <code>Promise.&lt;void&gt;</code></dt>
-<dd><p>Listener for updates to the refresh token.</p>
-</dd>
-<dt><a href="#AuthenticationUrlGeneratorFn">AuthenticationUrlGeneratorFn</a> ⇒ <code>Promise.&lt;string&gt;</code></dt>
-<dd><p>Get a url for authenticating with the Oauth service</p>
-</dd>
-<dt><a href="#CallbackHandlerFn">CallbackHandlerFn</a> ⇒ <code><a href="#OauthCredentials">Promise.&lt;OauthCredentials&gt;</a></code></dt>
-<dd><p>Handles the callback redirect from an OAuth request</p>
-</dd>
-<dt><a href="#RefreshAccessTokenFn">RefreshAccessTokenFn</a> ⇒ <code><a href="#OauthCredentials">Promise.&lt;OauthCredentials&gt;</a></code></dt>
-<dd><p>Refreshes the access token using the refresh token</p>
-</dd>
 <dt><a href="#OauthCredentials">OauthCredentials</a></dt>
+<dd></dd>
+<dt><a href="#OauthConfig">OauthConfig</a> : <code>Object</code></dt>
+<dd></dd>
+<dt><a href="#BatchResult">BatchResult</a></dt>
+<dd></dd>
+<dt><a href="#ErrorItem">ErrorItem</a></dt>
+<dd></dd>
+<dt><a href="#BatchConfig">BatchConfig</a></dt>
+<dd></dd>
+<dt><a href="#ExecutionState">ExecutionState</a></dt>
 <dd></dd>
 <dt><a href="#InvocationResponse">InvocationResponse</a></dt>
 <dd></dd>
@@ -54,34 +48,86 @@
 </dd>
 <dt><a href="#IngestorConfig">IngestorConfig</a></dt>
 <dd></dd>
-<dt><a href="#Problem">Problem</a></dt>
-<dd></dd>
-<dt><a href="#Handler">Handler</a> ⇒ <code>Promise.&lt;Response&gt;</code></dt>
-<dd><p>Function for handling a routes inside Frankin / Content Lake services</p>
-</dd>
 <dt><a href="#SettingsObject">SettingsObject</a> : <code>Objects</code></dt>
 <dd></dd>
 <dt><a href="#QueryOptions">QueryOptions</a> : <code>Object</code></dt>
 <dd></dd>
 <dt><a href="#QueryResult">QueryResult</a> : <code>Object</code></dt>
 <dd></dd>
-<dt><a href="#TraverserResult">TraverserResult</a></dt>
-<dd></dd>
-<dt><a href="#TraverserConfig">TraverserConfig</a></dt>
-<dd></dd>
 </dl>
 
-<a name="extractCredentials"></a>
+<a name="BaseBatchProvider"></a>
 
-## extractCredentials(env) ⇒
-Loads the configuration keys from an environment variable map
+## BaseBatchProvider
+A BatchProvider provides batches and items to process to the BatchExecutor. This implementation
+will do nothing.
+Implementations should implement this class, implementing the required methods for the use case.
 
-**Kind**: global function  
-**Returns**: the configuration to use  
+**Kind**: global class  
+
+* [BaseBatchProvider](#BaseBatchProvider)
+    * [.formatForLog(item)](#BaseBatchProvider+formatForLog) ⇒ <code>any</code>
+    * [.getBatch(item)](#BaseBatchProvider+getBatch) ⇒ <code>Promise.&lt;any&gt;</code>
+    * [.hasMore(item)](#BaseBatchProvider+hasMore) ⇒ <code>Promise.&lt;boolean&gt;</code>
+    * [.process(item)](#BaseBatchProvider+process) ⇒ <code>Promise.&lt;void&gt;</code>
+    * [.shouldProcess(item)](#BaseBatchProvider+shouldProcess) ⇒ <code>Promise.&lt;boolean&gt;</code>
+
+<a name="BaseBatchProvider+formatForLog"></a>
+
+### baseBatchProvider.formatForLog(item) ⇒ <code>any</code>
+Formats the item for logging
+
+**Kind**: instance method of [<code>BaseBatchProvider</code>](#BaseBatchProvider)  
+**Returns**: <code>any</code> - the formatted item to log  
 
 | Param | Type | Description |
 | --- | --- | --- |
-| env | <code>Record.&lt;string, string&gt;</code> | the environment variables map |
+| item | <code>any</code> | the item to format |
+
+<a name="BaseBatchProvider+getBatch"></a>
+
+### baseBatchProvider.getBatch(item) ⇒ <code>Promise.&lt;any&gt;</code>
+Returns the next batch of items
+
+**Kind**: instance method of [<code>BaseBatchProvider</code>](#BaseBatchProvider)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| item | <code>any</code> | the item from which to get the next batch |
+
+<a name="BaseBatchProvider+hasMore"></a>
+
+### baseBatchProvider.hasMore(item) ⇒ <code>Promise.&lt;boolean&gt;</code>
+Checks whether or not there are more items which can be retrieved from the current item
+
+**Kind**: instance method of [<code>BaseBatchProvider</code>](#BaseBatchProvider)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| item | <code>any</code> | the item to check if there are more items |
+
+<a name="BaseBatchProvider+process"></a>
+
+### baseBatchProvider.process(item) ⇒ <code>Promise.&lt;void&gt;</code>
+Processes the specified item
+
+**Kind**: instance method of [<code>BaseBatchProvider</code>](#BaseBatchProvider)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| item | <code>any</code> | the item to process |
+
+<a name="BaseBatchProvider+shouldProcess"></a>
+
+### baseBatchProvider.shouldProcess(item) ⇒ <code>Promise.&lt;boolean&gt;</code>
+Checks if the item should be processed.
+
+**Kind**: instance method of [<code>BaseBatchProvider</code>](#BaseBatchProvider)  
+**Returns**: <code>Promise.&lt;boolean&gt;</code> - true if the item should be processed  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| item | <code>any</code> | the item to evaluate if it should be processed |
 
 <a name="IngestorClient."></a>
 
@@ -96,78 +142,6 @@ Filters the data to the specified keys and then merges with the toMerge object.
 | keys | <code>Array.&lt;string&gt;</code> | 
 | toMerge | <code>Record.&lt;string, any&gt;</code> | 
 
-<a name="sendProblem"></a>
-
-## sendProblem(problem) ⇒ <code>Response</code>
-Creates an application/problem+json response
-
-**Kind**: global function  
-**Returns**: <code>Response</code> - the problem response  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| problem | [<code>Problem</code>](#Problem) | the problem json |
-
-<a name="handleErrorAsProblem"></a>
-
-## handleErrorAsProblem(err, instance) ⇒
-Attempts to send a reasonable problem response
-
-**Kind**: global function  
-**Returns**: Response  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| err | <code>\*</code> | the error to handle |
-| instance | <code>string</code> | an identifier for this error instance  to enable tracking back in the logs |
-
-<a name="RefreshListenerFn"></a>
-
-## RefreshListenerFn ⇒ <code>Promise.&lt;void&gt;</code>
-Listener for updates to the refresh token.
-
-**Kind**: global typedef  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| refreshToken | <code>String</code> | the refresh token to use |
-
-<a name="AuthenticationUrlGeneratorFn"></a>
-
-## AuthenticationUrlGeneratorFn ⇒ <code>Promise.&lt;string&gt;</code>
-Get a url for authenticating with the Oauth service
-
-**Kind**: global typedef  
-**Returns**: <code>Promise.&lt;string&gt;</code> - a promise resolving to the URL  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| redirectUri | <code>String</code> | the uri to redirect to when done |
-
-<a name="CallbackHandlerFn"></a>
-
-## CallbackHandlerFn ⇒ [<code>Promise.&lt;OauthCredentials&gt;</code>](#OauthCredentials)
-Handles the callback redirect from an OAuth request
-
-**Kind**: global typedef  
-**Returns**: [<code>Promise.&lt;OauthCredentials&gt;</code>](#OauthCredentials) - the credentials from authenticating  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| queryParams | <code>Record.&lt;string, string&gt;</code> | the params parsed from the request |
-
-<a name="RefreshAccessTokenFn"></a>
-
-## RefreshAccessTokenFn ⇒ [<code>Promise.&lt;OauthCredentials&gt;</code>](#OauthCredentials)
-Refreshes the access token using the refresh token
-
-**Kind**: global typedef  
-**Returns**: [<code>Promise.&lt;OauthCredentials&gt;</code>](#OauthCredentials) - the credentials from authenticating  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| refreshToken | <code>string</code> | the refresh token |
-
 <a name="OauthCredentials"></a>
 
 ## OauthCredentials
@@ -179,6 +153,71 @@ Refreshes the access token using the refresh token
 | accessToken | <code>string</code> \| <code>undefined</code> | The current access token or undefined if no token is available |
 | expiration | <code>Date</code> \| <code>undefined</code> | The date at which the access token will expire |
 | refreshToken | <code>string</code> \| <code>undefined</code> | The current, long lived refresh token or undefined if no token is available |
+
+<a name="OauthConfig"></a>
+
+## OauthConfig : <code>Object</code>
+**Kind**: global typedef  
+**Properties**
+
+| Name | Type | Description |
+| --- | --- | --- |
+| redirectUri | <code>string</code> | the URI to which to redirect the user after      they authenticate with the OAuth server |
+| [refreshToken] | <code>string</code> | the refresh token to use if one is already available |
+
+<a name="BatchResult"></a>
+
+## BatchResult
+**Kind**: global typedef  
+**Properties**
+
+| Name | Type |
+| --- | --- |
+| duration | <code>number</code> | 
+| errors | [<code>Array.&lt;ErrorItem&gt;</code>](#ErrorItem) | 
+| processed | <code>number</code> | 
+| [traversed] | <code>number</code> | 
+
+<a name="ErrorItem"></a>
+
+## ErrorItem
+**Kind**: global typedef  
+**Properties**
+
+| Name | Type |
+| --- | --- |
+| method | <code>string</code> | 
+| node | <code>any</code> | 
+| error | <code>Error</code> \| <code>Object</code> | 
+
+<a name="BatchConfig"></a>
+
+## BatchConfig
+**Kind**: global typedef  
+**Properties**
+
+| Name | Type |
+| --- | --- |
+| log | <code>any</code> | 
+| [processBatchSize] | <code>number</code> | 
+| [traversalBatchSize] | <code>number</code> | 
+| [waitDuration] | <code>number</code> | 
+
+<a name="ExecutionState"></a>
+
+## ExecutionState
+**Kind**: global typedef  
+**Properties**
+
+| Name | Type | Description |
+| --- | --- | --- |
+| [errors] | [<code>Array.&lt;ErrorItem&gt;</code>](#ErrorItem) | errors during processing and traversing |
+| [processed] | <code>number</code> | the number of items already processed |
+| [processingBatch] | <code>Array.&lt;any&gt;</code> | the items which are currently being processed |
+| [processingQueue] | <code>Array.&lt;any&gt;</code> | the queue of items to process |
+| [traversed] | <code>number</code> | the items already traversed |
+| [traversalBatch] | <code>Array.&lt;any&gt;</code> | the items currently being traversed |
+| [traversalQueue] | <code>Array.&lt;any&gt;</code> | the items which are queued to be traversed |
 
 <a name="InvocationResponse"></a>
 
@@ -264,33 +303,6 @@ A description of a HTTP request to make to retrieve a binary
 | spaceId | <code>string</code> | the id of the space into which this should be ingested |
 | url | <code>string</code> | the URL for calling the ingestor |
 
-<a name="Problem"></a>
-
-## Problem
-**Kind**: global typedef  
-**Properties**
-
-| Name | Type |
-| --- | --- |
-| status | <code>number</code> | 
-| title | <code>string</code> \| <code>undefined</code> | 
-| detail | <code>any</code> | 
-| instance | <code>string</code> \| <code>undefined</code> | 
-
-<a name="Handler"></a>
-
-## Handler ⇒ <code>Promise.&lt;Response&gt;</code>
-Function for handling a routes inside Frankin / Content Lake services
-
-**Kind**: global typedef  
-**Returns**: <code>Promise.&lt;Response&gt;</code> - the response from the request  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| req | <code>Request</code> | the request |
-| context | <code>UniversalContext</code> | the context of the request |
-| params | <code>Record.&lt;string, string&gt;</code> | the parameters parsed from the request |
-
 <a name="SettingsObject"></a>
 
 ## SettingsObject : <code>Objects</code>
@@ -327,35 +339,4 @@ Function for handling a routes inside Frankin / Content Lake services
 | items | [<code>Array.&lt;SettingsObject&gt;</code>](#SettingsObject) | 
 | count | <code>number</code> | 
 | cursor | <code>any</code> | 
-
-<a name="TraverserResult"></a>
-
-## TraverserResult
-**Kind**: global typedef  
-**Properties**
-
-| Name | Type |
-| --- | --- |
-| duration | <code>number</code> | 
-| errors | <code>Array.&lt;{method: string, node: any, error: Error}&gt;</code> | 
-| processed | <code>number</code> | 
-| traversed | <code>number</code> | 
-
-<a name="TraverserConfig"></a>
-
-## TraverserConfig
-**Kind**: global typedef  
-**Properties**
-
-| Name | Type |
-| --- | --- |
-| [formatForLog] | <code>function</code> | 
-| getChildrenFn | <code>function</code> | 
-| hasChildrenFn | <code>function</code> | 
-| log | <code>any</code> | 
-| [processBatchSize] | <code>number</code> | 
-| processFn | <code>function</code> | 
-| shouldProcessFn | <code>function</code> | 
-| [traversalBatchSize] | <code>number</code> | 
-| [waitDuration] | <code>number</code> | 
 

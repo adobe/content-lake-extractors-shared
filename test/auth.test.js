@@ -14,54 +14,61 @@
 /* eslint-disable no-unused-expressions */
 
 import assert from 'assert';
-import { OauthAuthenticator } from '../src/auth.js';
+import { BaseOauthAuthenticator } from '../src/auth.js';
 import { wait } from './util.js';
 
-describe('Auth Test', () => {
-  let refreshCount;
-  let refreshToken;
-  /**
-   * @type {OauthAuthenticator}
-   */
-  let mockAuthenticator;
+class MockOauthAuthenticator extends BaseOauthAuthenticator {
+  refreshCount = 0;
 
-  beforeEach(() => {
-    refreshCount = 0;
-    mockAuthenticator = new OauthAuthenticator()
-      .withAuthenticationUrlGenerator(
-        (redirect) => `http://localhost:8080/auth?redirect=${redirect}`,
-      )
-      .withCallbackHandler((params) => {
-        if (params.code === 'valid') {
-          return {
-            refreshToken: 'valid',
-          };
-        }
-        throw new Error('Invalid auth code');
-      })
-      .withRefreshAccessToken((token) => {
-        if (token === 'valid') {
-          refreshCount += 1;
-          return { accessToken: 'valid', expiration: new Date() };
-        }
-        throw new Error('Invalid refresh token');
-      })
-      .withRefreshTokenUpdateListener((newToken) => {
-        refreshToken = newToken;
+  async getAuthenticationUrl() {
+    return Promise.resolve(
+      `http://localhost:8080/auth?redirect=${this.redirectUri}`,
+    );
+  }
+
+  async refreshAccessToken() {
+    if (this.refreshToken === 'valid') {
+      this.refreshCount += 1;
+      this.updateTokens({ accessToken: 'valid', expiration: new Date() });
+      return Promise.resolve();
+    } else {
+      throw new Error('Invalid refresh token');
+    }
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  handleCallback(params) {
+    if (params.code === 'valid') {
+      this.updateTokens({
+        accessToken: 'valid',
+        refreshToken: 'valid',
+        expiration: new Date(),
       });
-  });
+      return Promise.resolve();
+    } else {
+      throw new Error('Invalid auth code');
+    }
+  }
+}
 
+describe('OAuth Authenticator Tests', () => {
   it('can check authentication', async () => {
-    assert(mockAuthenticator.requiresReauthentication());
-    mockAuthenticator.refreshToken = 'valid';
-    assert(!mockAuthenticator.requiresReauthentication());
+    const authenticator = new MockOauthAuthenticator({
+      redirectUri: 'http://findmy.media',
+    });
+    assert(authenticator.requiresReauthentication());
+    authenticator.refreshToken = 'valid';
+    assert(!authenticator.requiresReauthentication());
   });
 
   it('ensure requires authentication', async () => {
-    assert(mockAuthenticator.requiresReauthentication());
+    const authenticator = new MockOauthAuthenticator({
+      redirectUri: 'http://findmy.media',
+    });
+    assert(authenticator.requiresReauthentication());
     let err;
     try {
-      await mockAuthenticator.ensureAuthenticated();
+      await authenticator.ensureAuthenticated();
     } catch (caught) {
       err = caught;
     }
@@ -69,19 +76,47 @@ describe('Auth Test', () => {
   });
 
   it('can perform auth', async () => {
-    assert.ok(mockAuthenticator.requiresReauthentication());
+    const authenticator = new MockOauthAuthenticator({
+      redirectUri: 'http://findmy.media',
+    });
+    assert.ok(authenticator.requiresReauthentication());
 
-    const authUrl = await mockAuthenticator.getAuthenticationUrl('test');
-    assert.strictEqual(authUrl, 'http://localhost:8080/auth?redirect=test');
+    const authUrl = await authenticator.getAuthenticationUrl();
+    assert.strictEqual(
+      authUrl,
+      'http://localhost:8080/auth?redirect=http://findmy.media',
+    );
 
-    await mockAuthenticator.handleCallback({ code: 'valid' });
-    assert.strictEqual(mockAuthenticator.requiresReauthentication(), false);
-    assert.strictEqual(refreshToken, 'valid');
+    await authenticator.handleCallback({ code: 'valid' });
+    assert.strictEqual(authenticator.requiresReauthentication(), false);
+    assert.strictEqual(authenticator.refreshToken, 'valid');
 
-    await mockAuthenticator.ensureAuthenticated();
-    assert.strictEqual(refreshCount, 1);
+    await authenticator.ensureAuthenticated();
+    assert.strictEqual(authenticator.refreshCount, 1);
     await wait(100);
-    await mockAuthenticator.ensureAuthenticated();
-    assert.strictEqual(refreshCount, 2);
+    await authenticator.ensureAuthenticated();
+    assert.strictEqual(authenticator.refreshCount, 2);
+  });
+
+  it('can get access token', async () => {
+    const authenticator = new MockOauthAuthenticator({
+      redirectUri: 'http://findmy.media',
+      refreshToken: 'valid',
+    });
+    const accessToken = await authenticator.getAccessToken();
+    assert.ok(accessToken);
+  });
+
+  it('has noop OOTB methods', async () => {
+    const authenticator = new BaseOauthAuthenticator({
+      redirectUri: 'http://findmy.media',
+      refreshToken: 'valid',
+    });
+    const authUrl = await authenticator.getAuthenticationUrl();
+    assert.ok(authUrl);
+
+    await authenticator.handleCallback({});
+
+    await authenticator.refreshAccessToken();
   });
 });
