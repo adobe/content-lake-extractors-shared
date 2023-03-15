@@ -163,6 +163,7 @@ Filters the data to the specified keys and then merges with the toMerge object.
 | Name | Type | Description |
 | --- | --- | --- |
 | redirectUri | <code>string</code> | the URI to which to redirect the user after      they authenticate with the OAuth server |
+| sourceId | <code>string</code> | the identifer for the current source |
 | [refreshToken] | <code>string</code> | the refresh token to use if one is already available |
 
 <a name="BatchResult"></a>

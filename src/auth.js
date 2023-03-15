@@ -27,6 +27,7 @@ import assert from 'assert';
  * @typedef {Object} OauthConfig
  * @property {string} redirectUri the URI to which to redirect the user after
  *      they authenticate with the OAuth server
+ * @property {string} sourceId the identifer for the current source
  * @property {string} [refreshToken] the refresh token to use if one is already available
  */
 
@@ -56,6 +57,12 @@ export class BaseOauthAuthenticator {
   refreshToken;
 
   /**
+   * the ID of the current source
+   * @type {string}
+   */
+  sourceId;
+
+  /**
    * Create a new OauthAutheticator
    * @param {OauthConfig} config
    */
@@ -64,6 +71,8 @@ export class BaseOauthAuthenticator {
     this.refreshToken = config.refreshToken;
     assert.ok(config.redirectUri, 'Property redirectUri must be provided');
     this.redirectUri = config.redirectUri;
+    assert.ok(config.redirectUri, 'Property sourceId must be provided');
+    this.sourceId = config.sourceId;
   }
 
   /**
