@@ -183,7 +183,7 @@ export class BatchExecutor {
     this.moreNodes = true;
     const donePromises = [];
     try {
-      if (root) {
+      if (typeof root !== 'undefined') {
         this.traversalQueue.push(root);
       }
       donePromises.push(this.startTraversalQueueProcessor());
