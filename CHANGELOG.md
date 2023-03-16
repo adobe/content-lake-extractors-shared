@@ -1,3 +1,38 @@
+# [2.0.0](https://github.com/adobe/content-lake-extractors-shared/compare/v1.9.0...v2.0.0) (2023-03-16)
+
+
+### Bug Fixes
+
+* Fixing build ([5cff84e](https://github.com/adobe/content-lake-extractors-shared/commit/5cff84e5caba81f1de59fe6dbffec2f019ae2498))
+
+
+### Features
+
+* Refactor and split out ([#27](https://github.com/adobe/content-lake-extractors-shared/issues/27)) ([7cc1fe1](https://github.com/adobe/content-lake-extractors-shared/commit/7cc1fe1c77e535d4fc62ec9e294eba2eb408a8f6))
+
+
+### BREAKING CHANGES
+
+* Significantly refactored signatures and functionality split to @adobe/content-lake-commons
+
+* feat: refactoring and renaming module
+
+* Removing unnecessary build step
+
+* minor - improving timeout usage for IT's
+
+* reducing the scope of the ingestor to no longer deal with batch operations
+
+* adding a new feature to traverse a tree or recursive batching function and process items while limiting concurrency to avoid running into request limits
+
+* Removing function parameters, moving backend shared code to commons and reverting package name change
+
+* Cleaning up dependencies and adding a npm ci step to the makefile
+
+* Making sourceId also required
+
+* Updating to use released commons
+
 # [1.9.0](https://github.com/adobe/content-lake-extractors-shared/compare/v1.8.1...v1.9.0) (2023-03-03)
 
 
