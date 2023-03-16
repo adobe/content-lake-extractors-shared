@@ -14,26 +14,20 @@
 import * as dotenv from 'dotenv';
 import { randomUUID } from 'crypto';
 import assert from 'assert';
+import { contextHelper } from '@adobe/content-lake-commons';
 import { SettingsStore } from '../src/settings.js';
-import { extractCredentials } from '../src/context.js';
 
 dotenv.config();
 
 function loadSettings() {
   return {
-    ...extractCredentials(process.env),
+    ...contextHelper.extractAwsConfig(process),
     tableName: 'adobe-content-lake-extractors-dev',
   };
 }
 
-describe('Settings Store Integration Tests', async function () {
-  this.timeout(60000);
+describe('Settings Store Integration Tests', async () => {
   const instances = [];
-  before(function () {
-    if (!process.env.AWS_ACCESS_KEY_ID) {
-      this.skip();
-    }
-  });
   after(async () => {
     const store = new SettingsStore(loadSettings());
     for (const instance of instances) {
@@ -92,7 +86,9 @@ describe('Settings Store Integration Tests', async function () {
     });
     const value = await store.getSettings(sourceId);
     assert.ok(value);
-    const defaultStore = new SettingsStore(extractCredentials(process.env));
+    const defaultStore = new SettingsStore(
+      contextHelper.extractAwsConfig(process),
+    );
     const defaultValue = await defaultStore.getSettings(sourceId);
     assert.ok(!defaultValue);
   });
