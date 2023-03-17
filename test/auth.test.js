@@ -162,17 +162,35 @@ describe('OAuth Authenticator Tests', () => {
     assert.strictEqual(authenticator.sourceId, 'test');
   });
 
-  it('has noop OOTB methods', async () => {
+  it('throws on abstract methods', async () => {
     const authenticator = new BaseOauthAuthenticator({
       redirectUri: 'http://findmy.media',
       refreshToken: 'valid',
       sourceId: 'test',
     });
-    const authUrl = await authenticator.getAuthenticationUrl();
-    assert.ok(authUrl);
 
-    await authenticator.handleCallback({});
+    let caught;
+    try {
+      await authenticator.getAuthenticationUrl();
+    } catch (err) {
+      caught = err;
+    }
+    assert.ok(caught);
+    caught = undefined;
 
-    await authenticator.refreshAccessToken();
+    try {
+      await authenticator.handleCallback({});
+    } catch (err) {
+      caught = err;
+    }
+    assert.ok(caught);
+    caught = undefined;
+
+    try {
+      await authenticator.refreshAccessToken();
+    } catch (err) {
+      caught = err;
+    }
+    assert.ok(caught);
   });
 });
