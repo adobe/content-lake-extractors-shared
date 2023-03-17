@@ -1,6 +1,16 @@
 ## Classes
 
 <dl>
+<dt><a href="#BatchExecutor">BatchExecutor</a></dt>
+<dd><p>This class supports processing items in batches while limiting concurrency to avoid
+denial requests from downstream systems supporting both cursor-based and tree-based
+traversals as well as direct batch processing.</p>
+<p>It utilizes two queues to control the processing. The traversal queue manages the
+items which should be checked for additional derived batches or if they should be processed.
+The processing queue manages the items which should be processed.</p>
+<p>This library uses async&#39;s eachLimit to execute the functions asynchronously while
+limiting concurrency.</p>
+</dd>
 <dt><a href="#BaseBatchProvider">BaseBatchProvider</a></dt>
 <dd><p>A BatchProvider provides batches and items to process to the BatchExecutor. This implementation
 will do nothing.
@@ -109,7 +119,9 @@ Checks whether or not there are more items which can be retrieved from the curre
 <a name="BaseBatchProvider+process"></a>
 
 ### baseBatchProvider.process(item) ⇒ <code>Promise.&lt;void&gt;</code>
-Processes the specified item
+Processes the specified item. This is a terminal operation for the item.
+Examples could include sending the item to the ingestion service or logging the
+item for a report.
 
 **Kind**: instance method of [<code>BaseBatchProvider</code>](#BaseBatchProvider)  
 
@@ -197,12 +209,12 @@ Filters the data to the specified keys and then merges with the toMerge object.
 **Kind**: global typedef  
 **Properties**
 
-| Name | Type |
-| --- | --- |
-| log | <code>any</code> | 
-| [processBatchSize] | <code>number</code> | 
-| [traversalBatchSize] | <code>number</code> | 
-| [waitDuration] | <code>number</code> | 
+| Name | Type | Description |
+| --- | --- | --- |
+| log | <code>any</code> |  |
+| [processLimit] | <code>number</code> | the concurrency limit for process executions |
+| [traversalLimit] | <code>number</code> | the concurrency limit for traversal executions |
+| [waitDuration] | <code>number</code> | the duration to wait if the processing queue is empty |
 
 <a name="ExecutionState"></a>
 
