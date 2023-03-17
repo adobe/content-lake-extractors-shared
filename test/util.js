@@ -10,8 +10,37 @@
  * governing permissions and limitations under the License.
  */
 
+import assert from 'assert';
+
 export async function wait(ms) {
   return new Promise((resolve) => {
     setTimeout(resolve, ms);
+  });
+}
+
+/**
+ * Uses assert.throws() and verifies that the error thrown is a StockError with
+ * a given status code.
+ * @param {function} toAssert Function to execute, which will be passed to assert.throws().
+ * @param {number} status Status code that should be on the error.
+ */
+export function assertThrowsStatus(toAssert, status) {
+  assert.throws(toAssert, (e) => {
+    assert.strictEqual(e.status, status);
+    return true;
+  });
+}
+
+/**
+ * Uses assert.rejects() and verifies that the error thrown is a StockError with a given
+ * status code.
+ * @param {function} toAssert Function to execute, which will be passed to assert.rejects().
+ * @param {number} status Status code that should be on the error.
+ * @returns {Promise} Resolves when execution is complete.
+ */
+export function assertRejectsStatus(toAssert, status) {
+  return assert.rejects(toAssert, (e) => {
+    assert.strictEqual(e.status, status);
+    return true;
   });
 }

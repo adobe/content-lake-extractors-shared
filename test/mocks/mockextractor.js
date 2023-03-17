@@ -30,7 +30,16 @@ export class MockExtractor {
   }
 
   async getAssets(cursor) {
-    return this.batches[cursor || 0];
+    let index = cursor || 0;
+    if (cursor?.cursor) {
+      index = cursor.cursor;
+    }
+
+    if ((typeof index) !== 'number') {
+      index = 0;
+    }
+
+    return this.batches[index];
   }
 
   async getBinaryRequest() {
