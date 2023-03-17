@@ -236,10 +236,12 @@ export class HttpService {
       const credentials = extractCredentials(context.env);
       const responseBody = await extractProcess.extract({
         ...body,
-        credentials: credentials.credentials,
-        ingestorApiKey: HttpService.getIngestorApiKey(context),
-        ingestorUrl: HttpService.getIngestorUrl(context),
-        extractorId: context.func?.fqn,
+        process: {
+          credentials: credentials.credentials,
+          ingestorApiKey: HttpService.getIngestorApiKey(context),
+          ingestorUrl: HttpService.getIngestorUrl(context),
+          extractorId: context.func?.fqn,
+        },
       });
       return responseBody || {};
     }

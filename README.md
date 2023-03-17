@@ -120,11 +120,13 @@ Assuming a correct invocation, an extractor's method for retrieving assets to ex
   spaceId: 'ID of space to extract',
   sourceId: 'ID of source to extract',
   jobId: 'ID for the current extraction job',
-  ingestorApiKey: 'API key that will be provided to ingestor service',
-  ingestorUrl: 'URL of the ingestor service to use',
-  credentials: {
-    accessKeyId: 'AWS access key ID',
-    secretAccessKey: 'AWS access key secret',
+  process: {
+    ingestorApiKey: 'API key that will be provided to ingestor service',
+    ingestorUrl: 'URL of the ingestor service to use',
+    credentials: {
+        accessKeyId: 'AWS access key ID',
+        secretAccessKey: 'AWS access key secret',
+    },
   },
   ... //plus any other JSON properties from request body
 }

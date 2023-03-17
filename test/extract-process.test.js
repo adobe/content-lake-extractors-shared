@@ -43,12 +43,14 @@ describe('Extract Process Tests', () => {
       sourceId: 'source',
       spaceId: 'space',
       jobId: 'job',
-      ingestorApiKey: 'ingestorKey',
-      ingestorUrl: 'url',
-      extractorId: EXTRACTOR_ID,
-      credentials: {
-        accessKeyId: 'awsKey',
-        secretAccessKey: 'awsSecret',
+      process: {
+        ingestorApiKey: 'ingestorKey',
+        ingestorUrl: 'url',
+        extractorId: EXTRACTOR_ID,
+        credentials: {
+          accessKeyId: 'awsKey',
+          secretAccessKey: 'awsSecret',
+        },
       },
     };
   }
@@ -135,11 +137,11 @@ describe('Extract Process Tests', () => {
 
   it('test get ingestor client default', () => {
     const process = new ExtractProcess();
-    assert.ok(process.getIngestorClient(createExtractInfo()));
+    assert.ok(process.getIngestorClient(createExtractInfo().process));
   });
 
   it('test get function runner default', () => {
     const process = new ExtractProcess();
-    assert.ok(process.getFunctionRunner(createExtractInfo()));
+    assert.ok(process.getFunctionRunner(createExtractInfo().process));
   });
 });

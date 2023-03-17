@@ -33,12 +33,7 @@ import { FunctionRunner } from './functions.js';
  */
 
 /**
- * @typedef ExtractInfo
- * @property {string} spaceId Identifier for the space from which the assets should
- *  be extracted.
- * @property {string} sourceId Identifier for the source from which the assets should
- *  be extracted.
- * @property {string} jobId Identifier for the current extract job execution.
+ * @typedef ProcessInfo
  * @property {string} ingestorApiKey API key to use when ingesting extracted assets.
  * @property {string} ingestorUrl URL of the ingestion endpoint to use to ingest
  *  extracted assets.
@@ -46,6 +41,17 @@ import { FunctionRunner } from './functions.js';
  *  extractor should be used for subsequent pages.
  * @property {AwsCredentials} credentials Credentials to use when communicating
  *  with AWS.
+ */
+
+/**
+ * @typedef ExtractInfo
+ * @property {string} spaceId Identifier for the space from which the assets should
+ *  be extracted.
+ * @property {string} sourceId Identifier for the source from which the assets should
+ *  be extracted.
+ * @property {string} jobId Identifier for the current extract job execution.
+ * @property {ProcessInfo} process Information specific to and required by the
+ *  extraction process itself.
  */
 
 /**
@@ -102,17 +108,17 @@ export class ExtractProcess extends LoggingSupport {
   /**
    * Retrieves the client that the extraction process should use to interact with
    * the ingestion service.
-   * @param {ExtractInfo} extractInfo Information about the current extraction
-   *  operation.
+   * @param {ProcessInfo} processInfo Information about the current extraction
+   *  process.
    * @returns {import('./ingestor.js').IngestorClient} Client for ingesting
    *  assets.
    */
-  getIngestorClient(extractInfo) {
+  getIngestorClient(processInfo) {
     if (!this.#ingestorClient) {
       this.#ingestorClient = new IngestorClient({
         log: this.getLogger(),
-        apiKey: extractInfo.ingestorApiKey,
-        url: extractInfo.ingestorUrl,
+        apiKey: processInfo.ingestorApiKey,
+        url: processInfo.ingestorUrl,
       });
     }
     return this.#ingestorClient;
@@ -121,14 +127,14 @@ export class ExtractProcess extends LoggingSupport {
   /**
    * Retrieves a function runner that can be used to asynchronously invoke function
    * operations.
-   * @param {ExtractInfo} extractInfo Information about the current extraction
-   *  operation.
+   * @param {ProcessInfo} processInfo Information about the current extraction
+   *  process.
    * @returns {import('./functions.js').FunctionRunner} Can be used to invoke
    *  function executions.
    */
-  getFunctionRunner(extractInfo) {
+  getFunctionRunner(processInfo) {
     if (!this.#functionRunner) {
-      this.#functionRunner = new FunctionRunner(extractInfo);
+      this.#functionRunner = new FunctionRunner(processInfo);
     }
     return this.#functionRunner;
   }
@@ -144,7 +150,7 @@ export class ExtractProcess extends LoggingSupport {
    */
   async extract(extractInfo) {
     let nextInfo = false;
-    const ingestorClient = this.getIngestorClient(extractInfo);
+    const ingestorClient = this.getIngestorClient(extractInfo.process);
     const nextPage = await ingestorClient.submitBatch(this.#getExtractor(), extractInfo, 1);
     const cursor = nextPage?.cursor;
     const more = !!nextPage?.more;
@@ -176,7 +182,8 @@ export class ExtractProcess extends LoggingSupport {
    *  next page.
    */
   async queueNextPage(nextInfo) {
-    const functionName = nextInfo.extractorId;
+    const { process } = nextInfo;
+    const functionName = process.extractorId;
     this.getLogger().debug(`Invoking function ${functionName} with payload`);
 
     const payload = {
@@ -184,12 +191,9 @@ export class ExtractProcess extends LoggingSupport {
     };
 
     // remove sensitive information from the payload
-    delete payload.credentials;
-    delete payload.ingestorApiKey;
-    delete payload.ingestorUrl;
-    delete payload.extractorId;
+    delete payload.process;
 
-    await this.getFunctionRunner(nextInfo).invokeFunction(
+    await this.getFunctionRunner(process).invokeFunction(
       functionName,
       payload,
     );
