@@ -29,7 +29,10 @@ class MockOauthAuthenticator extends BaseOauthAuthenticator {
   async refreshAccessToken() {
     if (this.refreshToken === 'valid') {
       this.refreshCount += 1;
-      this.updateTokens({ accessToken: 'valid', expiration: new Date() });
+      this.updateTokens({
+        accessToken: 'valid',
+        expiration: new Date(Date.now() + 6000),
+      });
       return Promise.resolve();
     } else {
       throw new Error('Invalid refresh token');
@@ -42,7 +45,7 @@ class MockOauthAuthenticator extends BaseOauthAuthenticator {
       this.updateTokens({
         accessToken: 'valid',
         refreshToken: 'valid',
-        expiration: new Date(),
+        expiration: new Date(Date.now() + 6000),
       });
       return Promise.resolve();
     } else {
@@ -52,9 +55,32 @@ class MockOauthAuthenticator extends BaseOauthAuthenticator {
 }
 
 describe('OAuth Authenticator Tests', () => {
+  it('requires configuration', async () => {
+    let caught;
+    try {
+      const authenticator = new MockOauthAuthenticator();
+      assert.ok(authenticator);
+    } catch (err) {
+      caught = err;
+    }
+    assert.ok(caught);
+  });
+
+  it('requires source / redirect', async () => {
+    let caught;
+    try {
+      const authenticator = new MockOauthAuthenticator({});
+      assert.ok(authenticator);
+    } catch (err) {
+      caught = err;
+    }
+    assert.ok(caught);
+  });
+
   it('can check authentication', async () => {
     const authenticator = new MockOauthAuthenticator({
       redirectUri: 'http://findmy.media',
+      sourceId: 'test',
     });
     assert(authenticator.requiresReauthentication());
     authenticator.refreshToken = 'valid';
@@ -64,6 +90,7 @@ describe('OAuth Authenticator Tests', () => {
   it('ensure requires authentication', async () => {
     const authenticator = new MockOauthAuthenticator({
       redirectUri: 'http://findmy.media',
+      sourceId: 'test',
     });
     assert(authenticator.requiresReauthentication());
     let err;
@@ -75,9 +102,22 @@ describe('OAuth Authenticator Tests', () => {
     assert.ok(err);
   });
 
+  it('can ensure authenticated', async () => {
+    const authenticator = new MockOauthAuthenticator({
+      redirectUri: 'http://findmy.media',
+      sourceId: 'test',
+      refreshToken: 'valid',
+    });
+    let refreshed = await authenticator.ensureAuthenticated();
+    assert.ok(refreshed);
+    refreshed = await authenticator.ensureAuthenticated();
+    assert.ok(!refreshed);
+  });
+
   it('can perform auth', async () => {
     const authenticator = new MockOauthAuthenticator({
       redirectUri: 'http://findmy.media',
+      sourceId: 'test',
     });
     assert.ok(authenticator.requiresReauthentication());
 
@@ -92,31 +132,65 @@ describe('OAuth Authenticator Tests', () => {
     assert.strictEqual(authenticator.refreshToken, 'valid');
 
     await authenticator.ensureAuthenticated();
-    assert.strictEqual(authenticator.refreshCount, 1);
-    await wait(100);
+    assert.strictEqual(authenticator.refreshCount, 0);
+    await wait(2000);
     await authenticator.ensureAuthenticated();
-    assert.strictEqual(authenticator.refreshCount, 2);
-  });
+    assert.strictEqual(authenticator.refreshCount, 1);
+  }).timeout(5000);
 
   it('can get access token', async () => {
     const authenticator = new MockOauthAuthenticator({
       redirectUri: 'http://findmy.media',
       refreshToken: 'valid',
+      sourceId: 'test',
     });
     const accessToken = await authenticator.getAccessToken();
     assert.ok(accessToken);
   });
 
-  it('has noop OOTB methods', async () => {
+  it('can call getters', async () => {
+    const authenticator = new MockOauthAuthenticator({
+      redirectUri: 'http://findmy.media',
+      refreshToken: 'valid',
+      sourceId: 'test',
+    });
+    const accessToken = await authenticator.getAccessToken();
+    assert.strictEqual(authenticator.accessToken, accessToken);
+    assert.ok(authenticator.expiration);
+    assert.strictEqual(authenticator.redirectUri, 'http://findmy.media');
+    assert.strictEqual(authenticator.refreshToken, 'valid');
+    assert.strictEqual(authenticator.sourceId, 'test');
+  });
+
+  it('throws on abstract methods', async () => {
     const authenticator = new BaseOauthAuthenticator({
       redirectUri: 'http://findmy.media',
       refreshToken: 'valid',
+      sourceId: 'test',
     });
-    const authUrl = await authenticator.getAuthenticationUrl();
-    assert.ok(authUrl);
 
-    await authenticator.handleCallback({});
+    let caught;
+    try {
+      await authenticator.getAuthenticationUrl();
+    } catch (err) {
+      caught = err;
+    }
+    assert.ok(caught);
+    caught = undefined;
 
-    await authenticator.refreshAccessToken();
+    try {
+      await authenticator.handleCallback({});
+    } catch (err) {
+      caught = err;
+    }
+    assert.ok(caught);
+    caught = undefined;
+
+    try {
+      await authenticator.refreshAccessToken();
+    } catch (err) {
+      caught = err;
+    }
+    assert.ok(caught);
   });
 });

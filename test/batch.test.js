@@ -43,6 +43,8 @@ describe('Batch Tests', () => {
     };
     const executor = new batch.BatchExecutor(new BaseBatchProvider());
     executor.setState(state);
+
+    const newState = executor.getState();
     [
       'errors',
       'processed',
@@ -51,12 +53,11 @@ describe('Batch Tests', () => {
       'traversalQueue',
     ].forEach((k) => {
       assert.strictEqual(
-        executor[k],
+        newState[k],
         state[k],
         `Mismatched key ${k} in batch executor`,
       );
     });
-    const newState = executor.getState();
     Object.keys(state).forEach((k) => {
       assert.strictEqual(
         newState[k],
@@ -94,6 +95,25 @@ describe('Batch Tests', () => {
       const res = await executor.processItems(['hi']);
       assert.ok(res);
     }).timeout(3000);
+
+    it('can stop', async () => {
+      class SlowTraverser extends BaseBatchProvider {
+        hasMore() {
+          return true;
+        }
+
+        async getBatch() {
+          await sleep(2000);
+          return ['world'];
+        }
+      }
+      const executor = new batch.BatchExecutor(new SlowTraverser());
+      const promise = executor.traverseTree('hello');
+      executor.stop();
+      await promise;
+      const state = executor.getState();
+      assert.strictEqual(state.traversalQueue.length, 1);
+    }).timeout(6000);
   });
 
   describe('traversal', () => {
@@ -147,8 +167,9 @@ describe('Batch Tests', () => {
       });
       const res = await executor.traverseTree();
       assert.ok(res);
-      assert.strictEqual(executor.processingQueue.length, 0);
-      assert.strictEqual(executor.processed, 3);
+      const state = executor.getState();
+      assert.strictEqual(state.processingQueue.length, 0);
+      assert.strictEqual(state.processed, 3);
     }).timeout(2500);
 
     it('handles processor errors', async () => {
@@ -169,11 +190,13 @@ describe('Batch Tests', () => {
       });
       const res = await executor.traverseTree();
       assert.ok(res);
-      assert.strictEqual(executor.processingQueue.length, 0);
-      assert.strictEqual(executor.processed, 2);
-      assert.strictEqual(executor.errors.length, 1);
-      assert.strictEqual(executor.errors[0].node, 'file3');
-      assert.ok(executor.errors[0].err);
+
+      const state = executor.getState();
+      assert.strictEqual(state.processingQueue.length, 0);
+      assert.strictEqual(state.processed, 2);
+      assert.strictEqual(state.errors.length, 1);
+      assert.strictEqual(state.errors[0].node, 'file3');
+      assert.ok(state.errors[0].err);
     });
 
     it('can traverse tree', async () => {
@@ -229,11 +252,12 @@ describe('Batch Tests', () => {
       });
       const res = await executor.traverseTree(familyTree);
       assert.ok(res);
-      assert.strictEqual(executor.processingQueue.length, 0);
-      assert.strictEqual(executor.traversalQueue.length, 0);
-      assert.strictEqual(executor.processed, 8);
-      assert.strictEqual(executor.traversed, 16);
-      assert.strictEqual(executor.errors.length, 0);
+      const state = executor.getState();
+      assert.strictEqual(state.processingQueue.length, 0);
+      assert.strictEqual(state.traversalQueue.length, 0);
+      assert.strictEqual(state.processed, 8);
+      assert.strictEqual(state.traversed, 16);
+      assert.strictEqual(state.errors.length, 0);
       [
         'Sue',
         'Dan',
@@ -272,9 +296,10 @@ describe('Batch Tests', () => {
       });
       const res = await executor.traverseTree();
       assert.ok(res);
-      assert.strictEqual(executor.traversalQueue.length, 0);
-      assert.strictEqual(executor.traversed, 2);
-      assert.strictEqual(executor.errors.length, 1);
+      const state = executor.getState();
+      assert.strictEqual(state.traversalQueue.length, 0);
+      assert.strictEqual(state.traversed, 2);
+      assert.strictEqual(state.errors.length, 1);
     });
 
     it('will log in interval', async () => {
