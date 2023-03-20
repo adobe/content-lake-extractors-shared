@@ -14,13 +14,13 @@
 
 import assert from 'assert';
 import nock from 'nock';
+import { RestError } from '@adobe/content-lake-commons';
 
 import { HttpService } from '../src/http-service.js';
 import { MockExtractor } from './mocks/mockextractor.js';
 import { MockFunctionRunner } from './mocks/mock-function-runner.js';
 import { MockIngestorClient } from './mocks/mock-ingestor-client.js';
 import { assertRejectsStatus } from './util.js';
-import { ExtractError } from '../src/extract-error.js';
 
 const FUNCTION_NAME = 'mock-function';
 
@@ -204,7 +204,7 @@ describe('HTTP Service Tests', () => {
         url: 'testing',
       },
       createContext(),
-      ExtractError.badRequest('this is a test'),
+      new RestError(400, 'this is a test'),
     );
     assert.strictEqual(response.status, 400);
     assert.strictEqual(response.statusText, 'Bad Request');

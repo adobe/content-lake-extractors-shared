@@ -15,78 +15,11 @@ import assert from 'assert';
 import nock from 'nock';
 
 import { IngestorClient } from '../src/ingestor.js';
-import { MockExtractor } from './mocks/mockextractor.js';
 
 const TEST_INGESTOR_URL = 'http://localhost:8081';
 
-describe('Ingestor Client Tests', function () {
-  this.timeout(10000);
-  const mockExtractor = new MockExtractor([
-    {
-      assets: [
-        {
-          id: 1,
-          sourceId: 1,
-          sourceType: 'mock',
-        },
-        {
-          id: 2,
-          sourceId: 1,
-          sourceType: 'mock',
-        },
-      ],
-      more: true,
-      cursor: 1,
-    },
-    {
-      assets: [
-        {
-          id: 3,
-          sourceId: 1,
-          sourceType: 'mock',
-        },
-      ],
-      more: false,
-    },
-  ]);
-
-  it('Can ingest assets', async () => {
-    const scope = nock(TEST_INGESTOR_URL)
-      .post('/')
-      .matchHeader('x-api-key', 'test-api-key')
-      .twice()
-      .reply(200, 'Ok');
-    const client = new IngestorClient({
-      url: `${TEST_INGESTOR_URL}/`,
-      apiKey: 'test-api-key',
-      jobId: 'test-job-id',
-    }).withLog(console);
-    const res = await client.submitBatch(mockExtractor);
-    assert.ok(res.more);
-    assert.ok(res.cursor);
-    assert.ok(scope.isDone());
-  });
-
-  it('Can support inline binary info', async () => {
-    const inlineExtractor = new MockExtractor([
-      {
-        assets: [
-          {
-            id: 1,
-            sourceId: 1,
-            sourceType: 'mock',
-            binary: {
-              requestType: 'http',
-              url: 'https://www.adobe.com/content/dam/cc/icons/Adobe_Corporate_Horizontal_Red_HEX.svg',
-            },
-          },
-        ],
-        more: false,
-      },
-    ]);
-    inlineExtractor.getBinaryRequest = async () => {
-      throw new Error('unit test error!');
-    };
+describe('Ingestor Client Tests', () => {
+  it('Can ingest', async () => {
     const scope = nock(TEST_INGESTOR_URL)
       .post('/')
       .matchHeader('x-api-key', 'test-api-key')
@@ -95,39 +28,19 @@ describe('Ingestor Client Tests', function () {
       url: `${TEST_INGESTOR_URL}/`,
       apiKey: 'test-api-key',
       jobId: 'test-job-id',
-    }).withLog(console);
-    await client.submitBatch(inlineExtractor);
-    assert.ok(scope.isDone());
-  });
-
-  it('Can set cursor', async () => {
-    const scope = nock(TEST_INGESTOR_URL)
-      .post('/')
-      .matchHeader('x-api-key', 'test-api-key')
-      .reply(200, 'Ok');
-    const client = new IngestorClient({
-      url: `${TEST_INGESTOR_URL}/`,
-      apiKey: 'test-api-key',
-      jobId: 'test-job-id',
-    }).withLog(console);
-    await client.submitBatch(mockExtractor, 1);
-    assert.ok(scope.isDone());
-  });
-
-  it('Can set limit', async () => {
-    const scope = nock(TEST_INGESTOR_URL)
-      .post('/')
-      .matchHeader('x-api-key', 'test-api-key')
-      .twice()
-      .reply(200, 'Ok');
-    const client = new IngestorClient({
-      url: `${TEST_INGESTOR_URL}/`,
-      apiKey: 'test-api-key',
-      jobId: 'test-job-id',
-    }).withLog(console);
-    await client.submitBatch(mockExtractor, undefined, {
-      binaryRequestLimit: 2,
     });
+    const res = await client.submit({
+      data: {
+        sourceAssetId: 3,
+        sourceId: 1,
+        sourceType: 'mock',
+      },
+      binary: {
+        url: 'http://www.google.com',
+      },
+      batchId: 1,
+    });
+    assert.ok(res.accepted);
     assert.ok(scope.isDone());
   });
 
@@ -138,16 +51,27 @@ describe('Ingestor Client Tests', function () {
       .reply(502)
       .post('/')
       .matchHeader('x-api-key', 'test-api-key')
-      .twice()
       .reply(200, 'Ok');
     const client = new IngestorClient({
       url: `${TEST_INGESTOR_URL}/`,
       apiKey: 'test-api-key',
       jobId: 'test-job-id',
     });
-    await client.submitBatch(mockExtractor);
+    const res = await client.submit({
+      data: {
+        sourceAssetId: 3,
+        sourceId: 1,
+        sourceType: 'mock',
+      },
+      binary: {
+        url: 'http://www.google.com',
+      },
+      batchId: 1,
+    });
+    assert.ok(res.accepted);
     assert.ok(scope.isDone());
   });
+
   it('Can can read retry after header', async () => {
     const scope = nock(TEST_INGESTOR_URL)
       .post('/')
@@ -155,14 +79,24 @@ describe('Ingestor Client Tests', function () {
       .reply(502, '', { 'Retry-After': 1 })
       .post('/')
       .matchHeader('x-api-key', 'test-api-key')
-      .twice()
       .reply(200, 'Ok');
     const client = new IngestorClient({
       url: `${TEST_INGESTOR_URL}/`,
       apiKey: 'test-api-key',
       jobId: 'test-job-id',
     });
-    await client.submitBatch(mockExtractor);
+    const res = await client.submit({
+      data: {
+        sourceAssetId: 3,
+        sourceId: 1,
+        sourceType: 'mock',
+      },
+      binary: {
+        url: 'http://www.google.com',
+      },
+      batchId: 1,
+    });
+    assert.ok(res.accepted);
     assert.ok(scope.isDone());
   });
 
@@ -173,14 +107,25 @@ describe('Ingestor Client Tests', function () {
       .reply(400, 'Your request is bad and you should feel bad')
       .post('/')
       .matchHeader('x-api-key', 'test-api-key')
-      .twice()
       .reply(200, 'Ok');
     const client = new IngestorClient({
       url: `${TEST_INGESTOR_URL}/`,
       apiKey: 'test-api-key',
       jobId: 'test-job-id',
     });
-    await client.submitBatch(mockExtractor);
+    const res = await client.submit({
+      data: {
+        sourceAssetId: 3,
+        sourceId: 1,
+        sourceType: 'mock',
+      },
+      binary: {
+        url: 'http://www.google.com',
+      },
+      batchId: 1,
+    });
+    assert.ok(!res.accepted);
+    assert.ok(res.reason);
     assert.ok(!scope.isDone());
   });
 });

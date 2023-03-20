@@ -11,6 +11,10 @@
  */
 
 import URL from 'url';
+import {
+  RestError,
+  contextHelper,
+} from '@adobe/content-lake-commons';
 
 import {
   Methods,
@@ -19,9 +23,7 @@ import {
   Headers,
   ContentTypes,
 } from './constants.js';
-import { extractCredentials } from './context.js';
 import { LoggingSupport } from './logging-support.js';
-import { ExtractError } from './extract-error.js';
 import { ExtractProcess } from './extract-process.js';
 
 const ACTION_EXTRACT = 'extract';
@@ -104,7 +106,7 @@ export class HttpService {
   static getIngestorApiKey(context) {
     const apiKey = context.env.INGESTOR_API_KEY;
     if (!apiKey) {
-      throw ExtractError.badRequest('Extractor services require an ingestor API key');
+      throw new RestError(StatusCodes.INTERNAL_SERVER_ERROR, 'Extractor services require an ingestor API key');
     }
     return apiKey;
   }
@@ -118,7 +120,7 @@ export class HttpService {
   static getIngestorUrl(context) {
     const url = context.env.INGESTOR_URL;
     if (!url) {
-      throw ExtractError.badRequest('Extractor services require an ingestor URL');
+      throw new RestError(StatusCodes.INTERNAL_SERVER_ERROR, 'Extractor services require an ingestor URL');
     }
     return url;
   }
@@ -131,7 +133,7 @@ export class HttpService {
    */
   #getExtractor() {
     if (!this.#extractor) {
-      throw ExtractError.internalServerError('HTTP service is missing an extractor.');
+      throw new RestError(StatusCodes.INTERNAL_SERVER_ERROR, 'HTTP service is missing an extractor.');
     }
     return this.#extractor;
   }
@@ -161,7 +163,7 @@ export class HttpService {
       } else if (method === Methods.POST) {
         response = await this.handleRequest(request, context);
       } else {
-        throw ExtractError.badRequest('Unsupported method');
+        throw new RestError(StatusCodes.BAD_REQUEST, 'Unsupported method');
       }
       const { status = StatusCodes.OK } = response;
       log.info(`< ${method} ${status} ${url}`);
@@ -221,7 +223,7 @@ export class HttpService {
     try {
       body = await request.json();
     } catch (err) {
-      throw ExtractError.badRequest(`Invalid JSON received in request: ${err.message}`);
+      throw new RestError(StatusCodes.BAD_REQUEST, `Invalid JSON received in request: ${err.message}`);
     }
 
     const { action } = body;
@@ -233,7 +235,7 @@ export class HttpService {
         log,
       }, this.#ingestorClient, this.#functionRunner);
 
-      const credentials = extractCredentials(context.env);
+      const credentials = contextHelper.extractAwsConfig(context.env);
       const responseBody = await extractProcess.extract({
         ...body,
         process: {
@@ -246,6 +248,6 @@ export class HttpService {
       return responseBody || {};
     }
 
-    throw ExtractError.badRequest(`Invalid action ${action}`);
+    throw new RestError(StatusCodes.BAD_REQUEST, `Invalid action ${action}`);
   }
 }

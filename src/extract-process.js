@@ -10,10 +10,12 @@
  * governing permissions and limitations under the License.
  */
 
+import { RestError } from '@adobe/content-lake-commons';
+
 import { LoggingSupport } from './logging-support.js';
-import { ExtractError } from './extract-error.js';
 import { IngestorClient } from './ingestor.js';
 import { FunctionRunner } from './functions.js';
+import { StatusCodes } from './constants.js';
 
 /**
  * @typedef ExtractProcessConfig
@@ -100,7 +102,7 @@ export class ExtractProcess extends LoggingSupport {
    */
   #getExtractor() {
     if (!this.#extractor) {
-      throw ExtractError.internalServerError('Extract process requires an extractor.');
+      throw new RestError(StatusCodes.INTERNAL_SERVER_ERROR, 'Extract process requires an extractor.');
     }
     return this.#extractor;
   }

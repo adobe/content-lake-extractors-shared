@@ -2,7 +2,7 @@ version: 2.1
 executors:
   node18:
     docker:
-      - image: cimg/node:18.14
+      - image: cimg/node:18.15
 
 orbs:
   codecov: codecov/codecov@3.2.4
@@ -14,9 +14,6 @@ commands:
       # - restore_cache:
       #     keys:
       #     - v1-dependencies-{{ arch }}-{{ checksum "package-lock.json" }}
-      - run:
-          name: install latest npm
-          command: npm -g install npm
       - run:
           name: Installing Dependencies
           command: npm ci
