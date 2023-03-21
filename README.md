@@ -52,31 +52,21 @@ Make is available on most *nix environments can be installed on Mac via [homebre
 
 ## HTTP Service
 
-The shared library provides an `HttpService` class, which will add an HTTP interface on top of an extractor.
+The shared library provides an `HttpService` class, which will add an HTTP interface on top of a batch provider.
 
-To create a new HTTP service, provide the extractor to use in its constructor:
+To create a new HTTP service, provide the batch provider to use in its constructor:
 
 ```
-const httpService = new HttpService({ extractor: myExtractor });
+const httpService = new HttpService({ batchProvider: myProvider });
 ```
 
 Then use the service to generate responses based on an HTTP request and Helix context:
 
 ```
-const response = await httpService.generateResponse(fetchRequest, helixContext);
+const response = await httpService.generateResponse(fetchRequest);
 ```
 
-The service assumes that the request is a fetch-like request object. The response will be a simple object containing the major pieces of an HTTP response:
-
-```
-{
-  body: '{"hello": "world!"}',
-  status: 200,
-  headers: {
-    'Content-Type': 'application/json'
-  }
-}
-```
+The service assumes that the request is a fetch-like request object. The response will be a fetch `Response` object.
 
 ### Service Endpoints
 
@@ -87,7 +77,7 @@ The service provides the following endpoints:
 | `/` | Primary endpoint for the service. This path will only accept JSON `POST` requests. The posted JSON is expected to have an `action` property, which controls what the service will do. See the [Actions](#actions) section for more details. |
 | `/healthcheck` | Intended for consumers to use to determine that the service is healthy and ready to receive requests. This endpoint only accepts `GET` requests, and will respond with a 200 status code if the service is healthy. |
 
-All JSON that is POSTed to the HTTP service will be passed as-is to the underlying extractor. Which properties are required, and what each does is largely up to the extractor; however, the following values are generally required by the service itself:
+All JSON that is POSTed to the HTTP service will be passed as-is to the underlying batch provider. Which properties are required, and what each does is largely up to the provider; however, the following values are generally required by the service itself:
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
@@ -109,25 +99,18 @@ In addition to the generally required properties and environment variables, the 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | `jobId` | JSON property | ID that can be used to identify an individual extraction job execution. |
-| `cursor` | JSON property | Optional, but when provided, the location from which the current extract request should begin. When missing, the first location is assumed. |
+| `state` | JSON property | Optional, but when provided, the initial state that the provider will use to begin its processing. |
 | `INGESTOR_API_KEY` | Environment Variable | API key to use when sending ingestion requests to the ingestion service. |
 | `INGESTOR_URL` | Environment Variable | Full URL of the ingestor service to use when ingesting extracted assets. |
 
-Assuming a correct invocation, an extractor's method for retrieving assets to extract will include a payload similar to the following:
+Assuming a correct invocation, the provider's config will include data similar to the following:
 
 ```
 {
   spaceId: 'ID of space to extract',
   sourceId: 'ID of source to extract',
   jobId: 'ID for the current extraction job',
-  process: {
-    ingestorApiKey: 'API key that will be provided to ingestor service',
-    ingestorUrl: 'URL of the ingestor service to use',
-    credentials: {
-        accessKeyId: 'AWS access key ID',
-        secretAccessKey: 'AWS access key secret',
-    },
-  },
+  state: 'initial state, if provided',
   ... //plus any other JSON properties from request body
 }
 ```
