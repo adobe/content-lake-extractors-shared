@@ -18,11 +18,27 @@ const LOG_LEVEL = process.env.EXTRACTOR_LOG_LEVEL;
  * set to the log level to write.
  */
 export class DefaultLogger {
+  static #level = LOG_LEVEL;
+
+  /**
+   * The log level that the logger will use to determine whether to log messages.
+   */
+  static set logLevel(level) {
+    DefaultLogger.#level = level;
+  }
+
+  /**
+   * The log level that the logger will use to determine whether to log messages.
+   */
+  static get logLevel() {
+    return DefaultLogger.#level;
+  }
+
   /**
    * Logs a message at the debug level.
    */
   static debug(...theArguments) {
-    if (LOG_LEVEL === 'DEBUG') {
+    if (DefaultLogger.logLevel === 'DEBUG') {
       // eslint-disable-next-line no-console
       console.debug.apply(null, theArguments);
     }
@@ -32,7 +48,7 @@ export class DefaultLogger {
    * Logs a message at the info level.
    */
   static info(...theArguments) {
-    if (LOG_LEVEL === 'DEBUG' || LOG_LEVEL === 'INFO') {
+    if (DefaultLogger.logLevel === 'DEBUG' || DefaultLogger.logLevel === 'INFO') {
       // eslint-disable-next-line no-console
       console.info.apply(null, theArguments);
     }
@@ -42,7 +58,7 @@ export class DefaultLogger {
    * Logs a message at the warn level.
    */
   static warn(...theArguments) {
-    if (LOG_LEVEL === 'DEBUG' || LOG_LEVEL === 'INFO' || LOG_LEVEL === 'WARN') {
+    if (DefaultLogger.logLevel === 'DEBUG' || DefaultLogger.logLevel === 'INFO' || DefaultLogger.logLevel === 'WARN') {
       // eslint-disable-next-line no-console
       console.warn.apply(null, theArguments);
     }
@@ -52,7 +68,7 @@ export class DefaultLogger {
    * Logs a message at the error level.
    */
   static error(...theArguments) {
-    if (LOG_LEVEL === 'DEBUG' || LOG_LEVEL === 'INFO' || LOG_LEVEL === 'WARN' || LOG_LEVEL === 'ERROR') {
+    if (DefaultLogger.logLevel === 'DEBUG' || DefaultLogger.logLevel === 'INFO' || DefaultLogger.logLevel === 'WARN' || DefaultLogger.logLevel === 'ERROR') {
       // eslint-disable-next-line no-console
       console.error.apply(null, theArguments);
     }

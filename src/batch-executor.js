@@ -36,6 +36,7 @@ import { BaseBatchProvider } from './batch-provider.js';
  * @property {number} [processBatchSize]
  * @property {number} [traversalBatchSize]
  * @property {number} [waitDuration]
+ * @property {string} [state]
  */
 
 /**
@@ -97,6 +98,9 @@ export class BatchExecutor {
       },
       ...(config || {}),
     };
+    if (config?.state) {
+      this.setState(config.state);
+    }
     this.#log = config?.log || console;
   }
 
