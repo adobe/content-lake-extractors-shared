@@ -149,7 +149,7 @@ export class BaseOauthAuthenticator {
    * @param {Record<string,string>} query the query parameters passed to the callback URL
    */
   // eslint-disable-next-line no-unused-vars
-  async handleCallback(_query) {
+  async handleCallback(query) {
     throw new Error('Not Implemented');
   }
 
