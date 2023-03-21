@@ -46,7 +46,9 @@ export class BaseBatchProvider {
   }
 
   /**
-   * Processes the specified item
+   * Processes the specified item. This is a terminal operation for the item.
+   * Examples could include sending the item to the ingestion service or logging the
+   * item for a report.
    * @param {any} item the item to process
    * @returns {Promise<void>}
    */

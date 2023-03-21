@@ -11,8 +11,6 @@
  */
 /* eslint-disable class-methods-use-this */
 
-import assert from 'assert';
-
 /**
  * @typedef OauthCredentials
  * @property {string | undefined} accessToken
@@ -36,49 +34,54 @@ export class BaseOauthAuthenticator {
    * the current access token or undefined
    * @type {string | undefined}
    */
-  accessToken;
+  #accessToken;
 
   /**
    * the expiration date of the current access token or undefined
    * @type {Date | undefined}
    */
-  expiration;
+  #expiration;
 
   /**
    * the URI to which to redirect the user after they authenticate with the OAuth server
    * @type {string}
    */
-  redirectUri;
+  #redirectUri;
 
   /**
    * the long lived refresh token or undefined if not authenticated
    * @type {string | undefined}
    */
-  refreshToken;
+  #refreshToken;
 
   /**
    * the ID of the current source
    * @type {string}
    */
-  sourceId;
+  #sourceId;
 
   /**
    * Create a new OauthAutheticator
    * @param {OauthConfig} config
    */
   constructor(config) {
-    assert.ok(config, 'Configuration must be provided');
-    this.refreshToken = config.refreshToken;
-    assert.ok(config.redirectUri, 'Property redirectUri must be provided');
-    this.redirectUri = config.redirectUri;
-    assert.ok(config.redirectUri, 'Property sourceId must be provided');
-    this.sourceId = config.sourceId;
+    if (!config) {
+      throw new Error('Configuration must be provided');
+    }
+    const missing = ['redirectUri', 'sourceId'].filter((k) => !(k in config));
+    if (missing.length > 0) {
+      throw new Error(`Missing properties: [${missing.join(',')}]`);
+    }
+    this.#refreshToken = config.refreshToken;
+    this.#redirectUri = config.redirectUri;
+    this.#sourceId = config.sourceId;
   }
 
   /**
    * Ensures that the request is authenticated.
    * If a new access token is required, will exchange the refesh token for a new access token.
    * This method shouldn't need to be overridden by implementations.
+   * @returns {Promise<boolean>} true if the token was refreshed, false if not
    */
   async ensureAuthenticated() {
     const requiresReauth = this.requiresReauthentication();
@@ -87,9 +90,35 @@ export class BaseOauthAuthenticator {
     }
     // add 5sec buffer
     const compare = new Date(new Date().getTime() + 5000);
-    if (!this.accessToken || compare > this.expiration) {
-      await this.refreshAccessToken(this.refreshToken);
+    if (!this.#accessToken || compare > this.#expiration) {
+      await this.refreshAccessToken();
+      return true;
     }
+    return false;
+  }
+
+  get accessToken() {
+    return this.#accessToken;
+  }
+
+  get expiration() {
+    return this.#expiration;
+  }
+
+  get redirectUri() {
+    return this.#redirectUri;
+  }
+
+  get refreshToken() {
+    return this.#refreshToken;
+  }
+
+  set refreshToken(newRefreshToken) {
+    this.#refreshToken = newRefreshToken;
+  }
+
+  get sourceId() {
+    return this.#sourceId;
   }
 
   /**
@@ -100,7 +129,7 @@ export class BaseOauthAuthenticator {
    */
   async getAccessToken() {
     await this.ensureAuthenticated();
-    return this.accessToken;
+    return this.#accessToken;
   }
 
   /**
@@ -110,7 +139,7 @@ export class BaseOauthAuthenticator {
    *    a promise which resolves to the URL to which to take the user to authenticate
    */
   async getAuthenticationUrl() {
-    return Promise.resolve('AUTHENTICATION_URL');
+    throw new Error('Not Implemented');
   }
 
   /**
@@ -121,7 +150,7 @@ export class BaseOauthAuthenticator {
    */
   // eslint-disable-next-line no-unused-vars
   async handleCallback(_query) {
-    return Promise.resolve();
+    throw new Error('Not Implemented');
   }
 
   /**
@@ -130,7 +159,7 @@ export class BaseOauthAuthenticator {
    * @returns {Promise<void>}
    */
   async refreshAccessToken() {
-    return Promise.resolve();
+    throw new Error('Not Implemented');
   }
 
   /**
@@ -139,7 +168,7 @@ export class BaseOauthAuthenticator {
    * @returns true if the connector requires authentication, false otherwise
    */
   requiresReauthentication() {
-    return typeof this.refreshToken === 'undefined';
+    return typeof this.#refreshToken === 'undefined';
   }
 
   /**
@@ -148,13 +177,13 @@ export class BaseOauthAuthenticator {
    * @param {OauthCredentials} credentials the oauth response
    */
   async updateTokens(credentials) {
-    this.accessToken = credentials.accessToken;
-    this.expiration = credentials.expiration;
+    this.#accessToken = credentials.accessToken;
+    this.#expiration = credentials.expiration;
     if (
       credentials.refreshToken
-      && this.refreshToken !== credentials.refreshToken
+      && this.#refreshToken !== credentials.refreshToken
     ) {
-      this.refreshToken = credentials.refreshToken;
+      this.#refreshToken = credentials.refreshToken;
     }
   }
 }
