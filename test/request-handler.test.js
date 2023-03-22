@@ -12,7 +12,7 @@
 /* eslint-env mocha */
 /* eslint-disable max-classes-per-file */
 /* eslint-disable class-methods-use-this */
-
+import { createHash, randomUUID } from 'crypto';
 import assert from 'assert';
 import dotenv from 'dotenv';
 import { stub } from 'sinon';
@@ -32,21 +32,18 @@ function mockContext(event) {
 
 function mockSqsRecord(action) {
   return {
-    messageId: 'af88e691-c3a6-4b46-b4d2-1c897b41b600',
-    receiptHandle:
-      'AQEBJCLTpWgDm+oaeBAlSKWumzIoFRHeJglHCwWEfJANgc7GSWQBcYTiLPfbO1IuxAIkJagUIEkqgmszqnj2a7hLZjoIcv0AWCQfL0tmje/hhnDWYKdQmrUmfITdPDIg49XI+n+Ub/gKjXEy3VvunLsp0bxuF33OCsR8+N0Skff+U+zan+42GcHtn8lacm6ZQIF9msoFxszourA+zpJ/DJ1DTMlEpr9cSPxa6nsbg7JHOOwBzWknn7d3Zkimuo/J3shMyb+4fBYFRNpzXt9o9l8rfQpi9JZDwGIFRqDYFvpI0Emqv9ke1V2uBAJPiiGS0h1MIKO6dZZ/ejfWAR0Rug3zMEH9SEa6N+hT4gF5Pu2IN6WmcRhE4sh0jW/ImAAunuIo/OZ1FhNjqp+keK3AvBiPiQ==',
+    messageId: randomUUID(),
+    receiptHandle: 'SOME_JWT',
     body: `{"action":"${action}"}`,
     attributes: {
       ApproximateReceiveCount: '1',
-      SentTimestamp: '1678764328689',
-      SenderId: 'AIDAXXYBVS2FJDJXJ56HK',
-      ApproximateFirstReceiveTimestamp: '1678764328690',
+      SentTimestamp: Date.now(),
+      SenderId: randomUUID(),
+      ApproximateFirstReceiveTimestamp: Date.now(),
     },
     messageAttributes: {},
-    md5OfBody: 'd7e5fb40d1b43e304158449c3ecd6e5c',
+    md5OfBody: createHash('md5').update(`{"action":"${action}"}`).digest('hex'),
     eventSource: 'aws:sqs',
-    eventSourceARN: 'arn:aws:sqs:us-east-1:532042585738:content-lake-it',
-    awsRegion: 'us-east-1',
   };
 }
 
