@@ -22,6 +22,13 @@ import { helixStatus } from '@adobe/helix-status';
 import { logger } from '@adobe/helix-universal-logger';
 
 /**
+ * @callback HandlerFn
+ * @param {Record<string,any>} event the event to handle
+ * @param {contextHelper.UniversalishContext} context the current context
+ * @returns {Promise<Response>} the response from handling the request
+ */
+
+/**
  * A "wrapper" that handles requests for an extractor. The service interface
  * provides capabilities that allow the extractor to be executed and configured
  * through HTTP requests either using POST parameters or via SQS Records
@@ -34,7 +41,7 @@ export class RequestHandler {
   static ACTION_AUTHENTICATE = 'authenticate';
 
   /**
-   * @type {Record<string,function(any):Promise<Response>>}
+   * @type {HandlerFn}
    */
   #handlers = {};
 
@@ -116,22 +123,23 @@ export class RequestHandler {
       const records = helper.extractSqsRecords();
       log.debug('Handing SQS records', { count: records.length });
       await Promise.all(
-        records.map((qr) => this.handleSqsRecord(qr, queueClient, log)),
+        records.map((qr) => this.handleSqsRecord(context, qr, queueClient, log)),
       );
       return new Response();
     } else {
       log.debug('Handing POST payload');
       const event = helper.extractOriginalEvent();
-      return this.handleEvent(event);
+      return this.handleEvent(event, context);
     }
   }
 
   /**
    * Handles a single event
    * @param {Record<string,any>} event the event to handle
+   * @param {contextHelper.UniversalishContext} context the current context
    * @returns {Promise<Response>} the response from handling the event
    */
-  async handleEvent(event) {
+  async handleEvent(event, context) {
     const { action } = event;
     if (!action) {
       throw new RestError(400, 'Missing parameter [action]');
@@ -139,23 +147,24 @@ export class RequestHandler {
     if (!this.#handlers[action]) {
       throw new RestError(400, `Invalid action [${action}]`);
     }
-    return this.#handlers[action](event);
+    return this.#handlers[action](event, context);
   }
 
   /**
    * Handles a SQS event record
+   * @param {contextHelper.UniversalishContext} context
    * @param {contextHelper.QueueRecord} record
    * @param {QueueClient} queueClient
    * @param {contextHelper.Logger} log
    * @returns {Promise<void>}
    */
-  async handleSqsRecord(record, queueClient, log) {
+  async handleSqsRecord(context, record, queueClient, log) {
     try {
       log.debug('Handling SQS record', {
         record,
       });
       const event = JSON.parse(record.body);
-      const res = await this.handleEvent(event);
+      const res = await this.handleEvent(event, context);
       if (res.ok) {
         log.debug('Record handled successfully, removing from queue', {
           record,

@@ -63,6 +63,8 @@ through HTTP requests either using POST parameters or via SQS Records</p>
 </dd>
 <dt><a href="#IngestorConfig">IngestorConfig</a></dt>
 <dd></dd>
+<dt><a href="#HandlerFn">HandlerFn</a> ⇒ <code>Promise.&lt;Response&gt;</code></dt>
+<dd></dd>
 <dt><a href="#SettingsObject">SettingsObject</a> : <code>Objects</code></dt>
 <dd></dd>
 <dt><a href="#QueryOptions">QueryOptions</a> : <code>Object</code></dt>
@@ -160,8 +162,8 @@ through HTTP requests either using POST parameters or via SQS Records
     * [.getMain()](#RequestHandler+getMain) ⇒ <code>function</code>
     * [.getQueueClient(context)](#RequestHandler+getQueueClient) ⇒ <code>QueueClient</code>
     * [.handleRequest(context)](#RequestHandler+handleRequest) ⇒ <code>Promise.&lt;Reponse&gt;</code>
-    * [.handleEvent(event)](#RequestHandler+handleEvent) ⇒ <code>Promise.&lt;Response&gt;</code>
-    * [.handleSqsRecord(record, queueClient, log)](#RequestHandler+handleSqsRecord) ⇒ <code>Promise.&lt;void&gt;</code>
+    * [.handleEvent(event, context)](#RequestHandler+handleEvent) ⇒ <code>Promise.&lt;Response&gt;</code>
+    * [.handleSqsRecord(context, record, queueClient, log)](#RequestHandler+handleSqsRecord) ⇒ <code>Promise.&lt;void&gt;</code>
 
 <a name="RequestHandler+withHandler"></a>
 
@@ -209,7 +211,7 @@ Handles a request that comes into an extractor's HTTP service.
 
 <a name="RequestHandler+handleEvent"></a>
 
-### requestHandler.handleEvent(event) ⇒ <code>Promise.&lt;Response&gt;</code>
+### requestHandler.handleEvent(event, context) ⇒ <code>Promise.&lt;Response&gt;</code>
 Handles a single event
 
 **Kind**: instance method of [<code>RequestHandler</code>](#RequestHandler)  
@@ -218,16 +220,18 @@ Handles a single event
 | Param | Type | Description |
 | --- | --- | --- |
 | event | <code>Record.&lt;string, any&gt;</code> | the event to handle |
+| context | <code>contextHelper.UniversalishContext</code> | the current context |
 
 <a name="RequestHandler+handleSqsRecord"></a>
 
-### requestHandler.handleSqsRecord(record, queueClient, log) ⇒ <code>Promise.&lt;void&gt;</code>
+### requestHandler.handleSqsRecord(context, record, queueClient, log) ⇒ <code>Promise.&lt;void&gt;</code>
 Handles a SQS event record
 
 **Kind**: instance method of [<code>RequestHandler</code>](#RequestHandler)  
 
 | Param | Type |
 | --- | --- |
+| context | <code>contextHelper.UniversalishContext</code> | 
 | record | <code>contextHelper.QueueRecord</code> | 
 | queueClient | <code>QueueClient</code> | 
 | log | <code>contextHelper.Logger</code> | 
@@ -406,6 +410,17 @@ A description of a HTTP request to make to retrieve a binary
 | [log] | <code>any</code> | the logger |
 | spaceId | <code>string</code> | the id of the space into which this should be ingested |
 | url | <code>string</code> | the URL for calling the ingestor |
+
+<a name="HandlerFn"></a>
+
+## HandlerFn ⇒ <code>Promise.&lt;Response&gt;</code>
+**Kind**: global typedef  
+**Returns**: <code>Promise.&lt;Response&gt;</code> - the response from handling the request  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| event | <code>Record.&lt;string, any&gt;</code> | the event to handle |
+| context | <code>contextHelper.UniversalishContext</code> | the current context |
 
 <a name="SettingsObject"></a>
 

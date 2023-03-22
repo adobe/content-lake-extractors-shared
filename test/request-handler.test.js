@@ -88,7 +88,12 @@ describe('Request Handler Tests', () => {
       );
       let caught;
       try {
-        await requestHandler.handleEvent({ payload: 'Hello World' });
+        await requestHandler.handleEvent(
+          {
+            payload: 'Hello World',
+          },
+          mockContext(),
+        );
       } catch (err) {
         caught = err;
       }
@@ -103,7 +108,7 @@ describe('Request Handler Tests', () => {
       );
       let caught;
       try {
-        await requestHandler.handleEvent({ action: 'test2' });
+        await requestHandler.handleEvent({ action: 'test2' }, mockContext());
       } catch (err) {
         caught = err;
       }
@@ -151,7 +156,11 @@ describe('Request Handler Tests', () => {
       const res = await main(
         MOCK_REQUEST,
         mockContext({
-          Records: [mockSqsRecord('test'), mockSqsRecord('fail'), mockSqsRecord('throw')],
+          Records: [
+            mockSqsRecord('test'),
+            mockSqsRecord('fail'),
+            mockSqsRecord('throw'),
+          ],
         }),
       );
       assert.ok(res.ok);
