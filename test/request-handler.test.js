@@ -116,6 +116,21 @@ describe('Request Handler Tests', () => {
       assert.strictEqual(caught.status, 400);
     });
 
+    it('will not fail to destructure on undefined event', async () => {
+      const requestHandler = new RequestHandler().withHandler(
+        'test',
+        () => new Response(),
+      );
+      let caught;
+      try {
+        await requestHandler.handleEvent(undefined, mockContext());
+      } catch (err) {
+        caught = err;
+      }
+      assert.ok(caught);
+      assert.strictEqual(caught.status, 400);
+    });
+
     it('can add/invoke actions', async () => {
       let event;
       const requestHandler = new RequestHandler().withHandler('test', (evt) => {
