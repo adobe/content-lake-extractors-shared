@@ -163,7 +163,7 @@ through HTTP requests either using POST parameters or via SQS Records
     * [.getQueueClient(context)](#RequestHandler+getQueueClient) ⇒ <code>QueueClient</code>
     * [.handleRequest(context)](#RequestHandler+handleRequest) ⇒ <code>Promise.&lt;Reponse&gt;</code>
     * [.handleEvent(event, context)](#RequestHandler+handleEvent) ⇒ <code>Promise.&lt;Response&gt;</code>
-    * [.handleSqsRecord(context, record, queueClient, log)](#RequestHandler+handleSqsRecord) ⇒ <code>Promise.&lt;void&gt;</code>
+    * [.handleQueueRecord(context, record, queueClient, log)](#RequestHandler+handleQueueRecord) ⇒ <code>Promise.&lt;void&gt;</code>
 
 <a name="RequestHandler+withHandler"></a>
 
@@ -222,10 +222,10 @@ Handles a single event
 | event | <code>Record.&lt;string, any&gt;</code> | the event to handle |
 | context | <code>contextHelper.UniversalishContext</code> | the current context |
 
-<a name="RequestHandler+handleSqsRecord"></a>
+<a name="RequestHandler+handleQueueRecord"></a>
 
-### requestHandler.handleSqsRecord(context, record, queueClient, log) ⇒ <code>Promise.&lt;void&gt;</code>
-Handles a SQS event record
+### requestHandler.handleQueueRecord(context, record, queueClient, log) ⇒ <code>Promise.&lt;void&gt;</code>
+Handles a queue event record
 
 **Kind**: instance method of [<code>RequestHandler</code>](#RequestHandler)  
 
