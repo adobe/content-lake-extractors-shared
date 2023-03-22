@@ -118,12 +118,12 @@ export class RequestHandler {
     const helper = new ContextHelper(context);
     const log = helper.getLog();
 
-    if (helper.isSqsRequest()) {
+    if (helper.isQueueRequest()) {
       const queueClient = this.getQueueClient(context);
-      const records = helper.extractSqsRecords();
-      log.debug('Handing SQS records', { count: records.length });
+      const records = helper.extractQueueRecords();
+      log.debug('Handing queue records', { count: records.length });
       await Promise.all(
-        records.map((qr) => this.handleSqsRecord(context, qr, queueClient, log)),
+        records.map((qr) => this.handleQueueRecord(context, qr, queueClient, log)),
       );
       return new Response();
     } else {
@@ -140,7 +140,7 @@ export class RequestHandler {
    * @returns {Promise<Response>} the response from handling the event
    */
   async handleEvent(event, context) {
-    const { action } = event;
+    const { action } = event || {};
     if (!action) {
       throw new RestError(400, 'Missing parameter [action]');
     }
@@ -151,16 +151,16 @@ export class RequestHandler {
   }
 
   /**
-   * Handles a SQS event record
+   * Handles a queue event record
    * @param {contextHelper.UniversalishContext} context
    * @param {contextHelper.QueueRecord} record
    * @param {QueueClient} queueClient
    * @param {contextHelper.Logger} log
    * @returns {Promise<void>}
    */
-  async handleSqsRecord(context, record, queueClient, log) {
+  async handleQueueRecord(context, record, queueClient, log) {
     try {
-      log.debug('Handling SQS record', {
+      log.debug('Handling queue record', {
         record,
       });
       const event = JSON.parse(record.body);
@@ -177,7 +177,7 @@ export class RequestHandler {
         });
       }
     } catch (err) {
-      log.warn('Failed to handle SQS record', { record, err });
+      log.warn('Failed to handle queue record', { record, err });
     }
   }
 }
