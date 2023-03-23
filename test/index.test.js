@@ -15,16 +15,25 @@
 import assert from 'assert';
 import {
   auth,
-  ingestor,
-  batch,
   BaseBatchProvider,
+  batch,
+  ingestor,
   functions,
+  RequestHandler,
   settings,
 } from '../src/index.js';
 
 describe('Index Tests', () => {
   it('export auth is present', async () => {
     assert.ok(auth);
+  });
+
+  it('export BaseBatchProvider is present', async () => {
+    assert.ok(BaseBatchProvider);
+  });
+
+  it('export batch is present', async () => {
+    assert.ok(batch);
   });
 
   it('export ingestor is present', async () => {
@@ -35,12 +44,8 @@ describe('Index Tests', () => {
     assert.ok(functions);
   });
 
-  it('export batch is present', async () => {
-    assert.ok(batch);
-  });
-
-  it('export BaseBatchProvider is present', async () => {
-    assert.ok(BaseBatchProvider);
+  it('export RequestHandler is present', async () => {
+    assert.ok(RequestHandler);
   });
 
   it('export settings is present', async () => {

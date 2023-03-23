@@ -19,6 +19,11 @@ Implementations should implement this class, implementing the required methods f
 <dt><a href="#IngestorClient">IngestorClient</a></dt>
 <dd><p>The ingestor client sends asset data to the Content Lake ingestion service to be ingested</p>
 </dd>
+<dt><a href="#RequestHandler">RequestHandler</a></dt>
+<dd><p>A &quot;wrapper&quot; that handles requests for an extractor. The service interface
+provides capabilities that allow the extractor to be executed and configured
+through HTTP requests either using POST parameters or via SQS Records</p>
+</dd>
 </dl>
 
 ## Functions
@@ -57,6 +62,8 @@ Implementations should implement this class, implementing the required methods f
 <dd><p>A description of a HTTP request to make to retrieve a binary</p>
 </dd>
 <dt><a href="#IngestorConfig">IngestorConfig</a></dt>
+<dd></dd>
+<dt><a href="#HandlerFn">HandlerFn</a> ⇒ <code>Promise.&lt;Response&gt;</code></dt>
 <dd></dd>
 <dt><a href="#SettingsObject">SettingsObject</a> : <code>Objects</code></dt>
 <dd></dd>
@@ -140,6 +147,94 @@ Checks if the item should be processed.
 | Param | Type | Description |
 | --- | --- | --- |
 | item | <code>any</code> | the item to evaluate if it should be processed |
+
+<a name="RequestHandler"></a>
+
+## RequestHandler
+A "wrapper" that handles requests for an extractor. The service interface
+provides capabilities that allow the extractor to be executed and configured
+through HTTP requests either using POST parameters or via SQS Records
+
+**Kind**: global class  
+
+* [RequestHandler](#RequestHandler)
+    * [.withHandler(action, handler)](#RequestHandler+withHandler) ⇒ [<code>RequestHandler</code>](#RequestHandler)
+    * [.getMain()](#RequestHandler+getMain) ⇒ <code>function</code>
+    * [.getQueueClient(context)](#RequestHandler+getQueueClient) ⇒ <code>QueueClient</code>
+    * [.handleRequest(context)](#RequestHandler+handleRequest) ⇒ <code>Promise.&lt;Reponse&gt;</code>
+    * [.handleEvent(event, context)](#RequestHandler+handleEvent) ⇒ <code>Promise.&lt;Response&gt;</code>
+    * [.handleQueueRecord(context, record, queueClient, log)](#RequestHandler+handleQueueRecord) ⇒ <code>Promise.&lt;void&gt;</code>
+
+<a name="RequestHandler+withHandler"></a>
+
+### requestHandler.withHandler(action, handler) ⇒ [<code>RequestHandler</code>](#RequestHandler)
+Registers an action handler, replacing the existing handler (if any)
+
+**Kind**: instance method of [<code>RequestHandler</code>](#RequestHandler)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| action | <code>string</code> | the action name |
+| handler | <code>function</code> | the handler function |
+
+<a name="RequestHandler+getMain"></a>
+
+### requestHandler.getMain() ⇒ <code>function</code>
+Gets the main function for the extractor
+
+**Kind**: instance method of [<code>RequestHandler</code>](#RequestHandler)  
+**Returns**: <code>function</code> - the main function  
+<a name="RequestHandler+getQueueClient"></a>
+
+### requestHandler.getQueueClient(context) ⇒ <code>QueueClient</code>
+Get the queue client for the specified request
+
+**Kind**: instance method of [<code>RequestHandler</code>](#RequestHandler)  
+**Returns**: <code>QueueClient</code> - the queue client  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| context | <code>any</code> | Context for the current execution is running. |
+
+<a name="RequestHandler+handleRequest"></a>
+
+### requestHandler.handleRequest(context) ⇒ <code>Promise.&lt;Reponse&gt;</code>
+Handles a request that comes into an extractor's HTTP service.
+
+**Kind**: instance method of [<code>RequestHandler</code>](#RequestHandler)  
+**Returns**: <code>Promise.&lt;Reponse&gt;</code> - Resolves with the response that the service
+ will provide  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| context | <code>any</code> | Context for the current execution is running. |
+
+<a name="RequestHandler+handleEvent"></a>
+
+### requestHandler.handleEvent(event, context) ⇒ <code>Promise.&lt;Response&gt;</code>
+Handles a single event
+
+**Kind**: instance method of [<code>RequestHandler</code>](#RequestHandler)  
+**Returns**: <code>Promise.&lt;Response&gt;</code> - the response from handling the event  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| event | <code>Record.&lt;string, any&gt;</code> | the event to handle |
+| context | <code>contextHelper.UniversalishContext</code> | the current context |
+
+<a name="RequestHandler+handleQueueRecord"></a>
+
+### requestHandler.handleQueueRecord(context, record, queueClient, log) ⇒ <code>Promise.&lt;void&gt;</code>
+Handles a queue event record
+
+**Kind**: instance method of [<code>RequestHandler</code>](#RequestHandler)  
+
+| Param | Type |
+| --- | --- |
+| context | <code>contextHelper.UniversalishContext</code> | 
+| record | <code>contextHelper.QueueRecord</code> | 
+| queueClient | <code>QueueClient</code> | 
+| log | <code>contextHelper.Logger</code> | 
 
 <a name="IngestorClient."></a>
 
@@ -315,6 +410,17 @@ A description of a HTTP request to make to retrieve a binary
 | [log] | <code>any</code> | the logger |
 | spaceId | <code>string</code> | the id of the space into which this should be ingested |
 | url | <code>string</code> | the URL for calling the ingestor |
+
+<a name="HandlerFn"></a>
+
+## HandlerFn ⇒ <code>Promise.&lt;Response&gt;</code>
+**Kind**: global typedef  
+**Returns**: <code>Promise.&lt;Response&gt;</code> - the response from handling the request  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| event | <code>Record.&lt;string, any&gt;</code> | the event to handle |
+| context | <code>contextHelper.UniversalishContext</code> | the current context |
 
 <a name="SettingsObject"></a>
 
