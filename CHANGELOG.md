@@ -1,3 +1,10 @@
+# [2.1.0](https://github.com/adobe/content-lake-extractors-shared/compare/v2.0.5...v2.1.0) (2023-03-23)
+
+
+### Features
+
+* adding request handler ([#33](https://github.com/adobe/content-lake-extractors-shared/issues/33)) ([311f236](https://github.com/adobe/content-lake-extractors-shared/commit/311f2363153261bddbcb2987624e7d61829c25df))
+
 ## [2.0.5](https://github.com/adobe/content-lake-extractors-shared/compare/v2.0.4...v2.0.5) (2023-03-22)
 
 
