@@ -17,7 +17,7 @@ import assert from 'assert';
 import { contextHelper } from '@adobe/content-lake-commons';
 import { SettingsStore } from '../src/settings.js';
 
-const TIMEOUT_5_SEC = 5000;
+const TEST_TIMEOUT = 5000;
 
 dotenv.config();
 
@@ -46,7 +46,7 @@ describe('Settings Store Integration Tests', async () => {
       caught = err;
     }
     assert.ok(caught);
-  }).timeout(TIMEOUT_5_SEC);
+  }).timeout(TEST_TIMEOUT);
 
   it('can create, get and delete settings', async () => {
     const sourceId = randomUUID();
@@ -76,7 +76,7 @@ describe('Settings Store Integration Tests', async () => {
     await store.deleteSettings(sourceId);
     value = await store.getSettings(sourceId);
     assert.ok(!value);
-  }).timeout(TIMEOUT_5_SEC);
+  }).timeout(TEST_TIMEOUT);
 
   it('can change default table', async () => {
     const sourceId = randomUUID();
@@ -94,7 +94,7 @@ describe('Settings Store Integration Tests', async () => {
     );
     const defaultValue = await defaultStore.getSettings(sourceId);
     assert.ok(!defaultValue);
-  }).timeout(TIMEOUT_5_SEC);
+  }).timeout(TEST_TIMEOUT);
 
   it('can create, get and delete settings', async () => {
     const sourceId = randomUUID();
@@ -124,7 +124,7 @@ describe('Settings Store Integration Tests', async () => {
     await store.deleteSettings(sourceId);
     value = await store.getSettings(sourceId);
     assert.ok(!value);
-  }).timeout(TIMEOUT_5_SEC);
+  }).timeout(TEST_TIMEOUT);
 
   describe('search', () => {
     const store = new SettingsStore(loadSettings());
@@ -152,19 +152,19 @@ describe('Settings Store Integration Tests', async () => {
       }
       assert.ok(caught);
       assert.strictEqual(caught.status, 400);
-    }).timeout(TIMEOUT_5_SEC);
+    }).timeout(TEST_TIMEOUT);
 
     it('can search by tenant', async () => {
       const res = await store.findSettings({ spaceId: 'test1' });
       assert.ok(res);
       assert.ok(res.count > 0);
-    }).timeout(TIMEOUT_5_SEC);
+    }).timeout(TEST_TIMEOUT);
 
     it('can search by extractorType', async () => {
       const res = await store.findSettings({ sourceType: 'test1' });
       assert.ok(res);
       assert.ok(res.count > 0);
-    }).timeout(TIMEOUT_5_SEC);
+    }).timeout(TEST_TIMEOUT);
 
     it('can limit results', async () => {
       const res = await store.findSettings({
@@ -174,7 +174,7 @@ describe('Settings Store Integration Tests', async () => {
       assert.ok(res);
       assert.strictEqual(res.count, 1);
       assert.ok(res.cursor);
-    }).timeout(TIMEOUT_5_SEC);
+    }).timeout(TEST_TIMEOUT);
 
     it('can page results', async () => {
       let pages = 0;
@@ -193,6 +193,6 @@ describe('Settings Store Integration Tests', async () => {
         cursor = res.cursor;
       }
       assert.ok(pages > 1);
-    }).timeout(TIMEOUT_5_SEC);
+    }).timeout(TEST_TIMEOUT);
   });
 });

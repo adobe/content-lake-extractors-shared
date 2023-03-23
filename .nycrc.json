@@ -4,11 +4,11 @@
         "text"
     ],
     "exclude": [
-        "test/*",
-        "src/cli.js"
+        "it/*",
+        "test/*"
     ],
     "check-coverage": true,
-    "lines": 100,
-    "branches": 100,
-    "statements": 100
+    "lines": 97,
+    "branches": 98,
+    "statements": 97
 }

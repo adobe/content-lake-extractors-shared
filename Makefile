@@ -12,6 +12,7 @@
 build:
 	npm run lint
 	npm run test
+	npm run test:integration
 	npm run docs
 	npm ci
 

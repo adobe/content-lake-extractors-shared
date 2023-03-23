@@ -14,11 +14,8 @@
 /* eslint-disable class-methods-use-this */
 import { createHash, randomUUID } from 'crypto';
 import assert from 'assert';
-import dotenv from 'dotenv';
 import { stub } from 'sinon';
 import { RequestHandler } from '../src/index.js';
-
-dotenv.config();
 
 const MOCK_REQUEST = new Request('http://localhost', { method: 'POST' });
 function mockContext(event) {
@@ -26,7 +23,7 @@ function mockContext(event) {
     invocation: {
       event: event || {},
     },
-    env: process.env,
+    env: { QUEUE_URL: 'http://testqueue.com' },
   };
 }
 
