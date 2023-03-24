@@ -1,3 +1,10 @@
+## [2.1.1](https://github.com/adobe/content-lake-extractors-shared/compare/v2.1.0...v2.1.1) (2023-03-24)
+
+
+### Bug Fixes
+
+* separating the integration tests and improving unit test coverage of settings ([#36](https://github.com/adobe/content-lake-extractors-shared/issues/36)) ([8f233c9](https://github.com/adobe/content-lake-extractors-shared/commit/8f233c919ab3471fc50bce295724f06ab5d91450))
+
 # [2.1.0](https://github.com/adobe/content-lake-extractors-shared/compare/v2.0.5...v2.1.0) (2023-03-23)
 
 
