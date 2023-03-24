@@ -7,7 +7,6 @@ Shared libraries for extractors
 [![CircleCI](https://img.shields.io/circleci/project/github/adobe/content-lake-extractors-shared.svg)](https://circleci.com/gh/adobe/content-lake-extractors-shared)
 [![GitHub license](https://img.shields.io/github/license/adobe/content-lake-extractors-shared.svg)](https://github.com/adobe/content-lake-extractors-shared/blob/master/LICENSE.txt)
 [![GitHub issues](https://img.shields.io/github/issues/adobe/content-lake-extractors-shared.svg)](https://github.com/adobe/content-lake-extractors-shared/issues)
-[![LGTM Code Quality Grade: JavaScript](https://img.shields.io/lgtm/grade/javascript/g/adobe/content-lake-extractors-shared.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/adobe/content-lake-extractors-shared)
 [![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/semantic-release/semantic-release)
 
 ## Installation
@@ -32,6 +31,21 @@ $ npm install
 
 ```bash
 $ npm test
+```
+
+### Integration Test
+
+The integration tests require the following environment variables which can be set via a .env file:
+
+```
+AWS_REGION=
+AWS_ACCESS_KEY_ID=
+AWS_ACCESS_SECRET_KEY=
+QUEUE_URL=
+```
+
+```bash
+$ npm run test:integration
 ```
 
 ### Lint
