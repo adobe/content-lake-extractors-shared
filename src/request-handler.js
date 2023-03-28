@@ -102,14 +102,14 @@ export class RequestHandler {
     if (!queueUrl) {
       throw new Error('Missing ENV variable QUEUE_URL');
     }
+    let blobStorage;
     const queueStorageBucket = context.env.QUEUE_STORAGE_BUCKET;
-    if (!queueStorageBucket) {
-      throw new Error('Missing ENV variable QUEUE_STORAGE_BUCKET');
+    if (queueStorageBucket) {
+      blobStorage = new BlobStorage({
+        ...helper.extractAwsConfig(context),
+        bucket: queueStorageBucket,
+      });
     }
-    const blobStorage = new BlobStorage({
-      ...helper.extractAwsConfig(context),
-      bucket: queueStorageBucket,
-    });
     return new QueueClient({
       ...helper.extractAwsConfig(context),
       queueUrl,

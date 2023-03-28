@@ -189,6 +189,16 @@ describe('Request Handler Tests', () => {
       assert.ok(queueClient);
     });
 
+    it('can get queue client without bucket', async () => {
+      const requestHandler = new RequestHandler();
+      const queueClient = requestHandler.getQueueClient({
+        env: {
+          QUEUE_URL: 'http://test.queue.com',
+        },
+      });
+      assert.ok(queueClient);
+    });
+
     it('getQueueClient requires queue url', async () => {
       const requestHandler = new RequestHandler();
       let caught;
