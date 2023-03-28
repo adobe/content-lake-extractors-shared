@@ -12,8 +12,6 @@
 
 /* eslint-disable max-classes-per-file */
 import { eachLimit } from 'async';
-// eslint-disable-next-line no-unused-vars
-import { BaseBatchProvider } from './batch-provider.js';
 
 /**
  * @typedef BatchResult
@@ -74,7 +72,7 @@ export class BatchExecutor {
   #processingBatch;
 
   /**
-   * @type {BaseBatchProvider}
+   * @type {import('./batch-provider.js').BaseBatchProvider}
    */
   #provider;
 

@@ -15,8 +15,6 @@ import {
   ContextHelper,
   QueueClient,
   RestError,
-  // eslint-disable-next-line no-unused-vars
-  contextHelper,
 } from '@adobe/content-lake-commons';
 import wrap from '@adobe/helix-shared-wrap';
 import { helixStatus } from '@adobe/helix-status';
@@ -25,7 +23,8 @@ import { logger } from '@adobe/helix-universal-logger';
 /**
  * @callback HandlerFn
  * @param {Record<string,any>} event the event to handle
- * @param {contextHelper.UniversalishContext} context the current context
+ * @param {import('@adobe/content-lake-commons').contextHelper.UniversalishContext} context
+ *  the current context
  * @returns {Promise<Response>} the response from handling the request
  */
 

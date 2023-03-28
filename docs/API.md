@@ -420,7 +420,7 @@ A description of a HTTP request to make to retrieve a binary
 | Param | Type | Description |
 | --- | --- | --- |
 | event | <code>Record.&lt;string, any&gt;</code> | the event to handle |
-| context | <code>contextHelper.UniversalishContext</code> | the current context |
+| context | <code>module:@adobe/content-lake-commons~contextHelper.UniversalishContext</code> | the current context |
 
 <a name="SettingsObject"></a>
 
