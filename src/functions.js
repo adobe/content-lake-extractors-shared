@@ -10,7 +10,6 @@
  * governing permissions and limitations under the License.
  */
 
-// eslint-disable-next-line no-unused-vars
 import { LambdaClient, InvokeCommand } from '@aws-sdk/client-lambda';
 
 /**

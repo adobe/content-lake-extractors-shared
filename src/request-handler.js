@@ -11,11 +11,10 @@
  */
 
 import {
+  BlobStorage,
   ContextHelper,
   QueueClient,
   RestError,
-  // eslint-disable-next-line no-unused-vars
-  contextHelper,
 } from '@adobe/content-lake-commons';
 import wrap from '@adobe/helix-shared-wrap';
 import { helixStatus } from '@adobe/helix-status';
@@ -24,14 +23,15 @@ import { logger } from '@adobe/helix-universal-logger';
 /**
  * @callback HandlerFn
  * @param {Record<string,any>} event the event to handle
- * @param {contextHelper.UniversalishContext} context the current context
+ * @param {import('@adobe/content-lake-commons').contextHelper.UniversalishContext} context
+ *  the current context
  * @returns {Promise<Response>} the response from handling the request
  */
 
 /**
  * A "wrapper" that handles requests for an extractor. The service interface
  * provides capabilities that allow the extractor to be executed and configured
- * through HTTP requests either using POST parameters or via SQS Records
+ * through HTTP requests either using POST parameters or via Queue Records
  */
 export class RequestHandler {
   static ACTION_EXTRACT = 'extract';
@@ -102,9 +102,18 @@ export class RequestHandler {
     if (!queueUrl) {
       throw new Error('Missing ENV variable QUEUE_URL');
     }
+    let blobStorage;
+    const queueStorageBucket = context.env.QUEUE_STORAGE_BUCKET;
+    if (queueStorageBucket) {
+      blobStorage = new BlobStorage({
+        ...helper.extractAwsConfig(context),
+        bucket: queueStorageBucket,
+      });
+    }
     return new QueueClient({
       ...helper.extractAwsConfig(context),
       queueUrl,
+      blobStorage,
     });
   }
 
@@ -122,6 +131,7 @@ export class RequestHandler {
       const queueClient = this.getQueueClient(context);
       const records = helper.extractQueueRecords();
       log.debug('Handing queue records', { count: records.length });
+
       await Promise.all(
         records.map((qr) => this.handleQueueRecord(context, qr, queueClient, log)),
       );
@@ -163,7 +173,7 @@ export class RequestHandler {
       log.debug('Handling queue record', {
         record,
       });
-      const event = JSON.parse(record.body);
+      const event = await queueClient.readMessageBody(record.body);
       const res = await this.handleEvent(event, context);
       if (res.ok) {
         log.debug('Record handled successfully, removing from queue', {
