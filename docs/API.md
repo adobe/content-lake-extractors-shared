@@ -22,7 +22,7 @@ Implementations should implement this class, implementing the required methods f
 <dt><a href="#RequestHandler">RequestHandler</a></dt>
 <dd><p>A &quot;wrapper&quot; that handles requests for an extractor. The service interface
 provides capabilities that allow the extractor to be executed and configured
-through HTTP requests either using POST parameters or via SQS Records</p>
+through HTTP requests either using POST parameters or via Queue Records</p>
 </dd>
 </dl>
 
@@ -153,7 +153,7 @@ Checks if the item should be processed.
 ## RequestHandler
 A "wrapper" that handles requests for an extractor. The service interface
 provides capabilities that allow the extractor to be executed and configured
-through HTTP requests either using POST parameters or via SQS Records
+through HTTP requests either using POST parameters or via Queue Records
 
 **Kind**: global class  
 

@@ -59,7 +59,7 @@
     "*.cjs": "eslint"
   },
   "dependencies": {
-    "@adobe/content-lake-commons": "^1.2.0",
+    "@adobe/content-lake-commons": "file:../content-lake-commons",
     "@adobe/helix-shared-wrap": "^2.0.0",
     "@adobe/helix-status": "^10.0.4",
     "@adobe/helix-universal-logger": "^3.0.5",

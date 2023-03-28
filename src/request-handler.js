@@ -11,6 +11,7 @@
  */
 
 import {
+  BlobStorage,
   ContextHelper,
   QueueClient,
   RestError,
@@ -31,7 +32,7 @@ import { logger } from '@adobe/helix-universal-logger';
 /**
  * A "wrapper" that handles requests for an extractor. The service interface
  * provides capabilities that allow the extractor to be executed and configured
- * through HTTP requests either using POST parameters or via SQS Records
+ * through HTTP requests either using POST parameters or via Queue Records
  */
 export class RequestHandler {
   static ACTION_EXTRACT = 'extract';
@@ -102,9 +103,18 @@ export class RequestHandler {
     if (!queueUrl) {
       throw new Error('Missing ENV variable QUEUE_URL');
     }
+    const queueStorageBucket = context.env.QUEUE_STORAGE_BUCKET;
+    if (!queueStorageBucket) {
+      throw new Error('Missing ENV variable QUEUE_STORAGE_BUCKET');
+    }
+    const blobStorage = new BlobStorage({
+      ...helper.extractAwsConfig(context),
+      bucket: queueStorageBucket,
+    });
     return new QueueClient({
       ...helper.extractAwsConfig(context),
       queueUrl,
+      blobStorage,
     });
   }
 
@@ -122,6 +132,7 @@ export class RequestHandler {
       const queueClient = this.getQueueClient(context);
       const records = helper.extractQueueRecords();
       log.debug('Handing queue records', { count: records.length });
+
       await Promise.all(
         records.map((qr) => this.handleQueueRecord(context, qr, queueClient, log)),
       );
@@ -163,7 +174,7 @@ export class RequestHandler {
       log.debug('Handling queue record', {
         record,
       });
-      const event = JSON.parse(record.body);
+      const event = await queueClient.readMessageBody(record.body);
       const res = await this.handleEvent(event, context);
       if (res.ok) {
         log.debug('Record handled successfully, removing from queue', {

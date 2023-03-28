@@ -23,7 +23,10 @@ function mockContext(event) {
     invocation: {
       event: event || {},
     },
-    env: { QUEUE_URL: 'http://testqueue.com' },
+    env: {
+      QUEUE_URL: 'http://testqueue.com',
+      QUEUE_STORAGE_BUCKET: 'queue-test',
+    },
   };
 }
 
@@ -160,6 +163,7 @@ describe('Request Handler Tests', () => {
       const removed = [];
       stub(requestHandler, 'getQueueClient').returns({
         removeMessage: (handle) => removed.push(handle),
+        readMessageBody: (msgBody) => JSON.parse(msgBody),
       });
       const main = requestHandler.getMain();
       const res = await main(
