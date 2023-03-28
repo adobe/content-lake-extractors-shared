@@ -1,3 +1,10 @@
+## [2.1.5](https://github.com/adobe/content-lake-extractors-shared/compare/v2.1.4...v2.1.5) (2023-03-28)
+
+
+### Bug Fixes
+
+* use queue blob storage to store oversized messages ([#42](https://github.com/adobe/content-lake-extractors-shared/issues/42)) ([0da9e3f](https://github.com/adobe/content-lake-extractors-shared/commit/0da9e3fb0ab806cb73ca27fe85c7787f323e528a))
+
 ## [2.1.4](https://github.com/adobe/content-lake-extractors-shared/compare/v2.1.3...v2.1.4) (2023-03-25)
 
 
