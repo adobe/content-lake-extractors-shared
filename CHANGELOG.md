@@ -1,3 +1,10 @@
+## [2.1.6](https://github.com/adobe/content-lake-extractors-shared/compare/v2.1.5...v2.1.6) (2023-04-01)
+
+
+### Bug Fixes
+
+* **deps:** update external fixes ([b250f44](https://github.com/adobe/content-lake-extractors-shared/commit/b250f44db99ca82095df1e4c0def8d48caa46c8c))
+
 ## [2.1.5](https://github.com/adobe/content-lake-extractors-shared/compare/v2.1.4...v2.1.5) (2023-03-28)
 
 
