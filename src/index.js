@@ -11,7 +11,6 @@
  */
 
 export * as auth from './auth.js';
-export * from './csv.js';
 export * from './script.js';
 export * as functions from './functions.js';
 export * as ingestor from './ingestor.js';
