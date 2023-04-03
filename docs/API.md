@@ -65,6 +65,10 @@ through HTTP requests either using POST parameters or via Queue Records</p>
 <dd></dd>
 <dt><a href="#HandlerFn">HandlerFn</a> ⇒ <code>Promise.&lt;Response&gt;</code></dt>
 <dd></dd>
+<dt><a href="#CliConfig">CliConfig</a> : <code>Object</code></dt>
+<dd></dd>
+<dt><a href="#Option">Option</a> : <code>Object</code></dt>
+<dd></dd>
 <dt><a href="#SettingsObject">SettingsObject</a> : <code>Objects</code></dt>
 <dd></dd>
 <dt><a href="#QueryOptions">QueryOptions</a> : <code>Object</code></dt>
@@ -421,6 +425,31 @@ A description of a HTTP request to make to retrieve a binary
 | --- | --- | --- |
 | event | <code>Record.&lt;string, any&gt;</code> | the event to handle |
 | context | <code>module:@adobe/content-lake-commons~contextHelper.UniversalishContext</code> | the current context |
+
+<a name="CliConfig"></a>
+
+## CliConfig : <code>Object</code>
+**Kind**: global typedef  
+**Properties**
+
+| Name | Type |
+| --- | --- |
+| name | <code>string</code> | 
+| options | [<code>Array.&lt;Option&gt;</code>](#Option) | 
+| [logger] | <code>module:@adobe/content-lake-commons~commonTypes.Logger</code> | 
+
+<a name="Option"></a>
+
+## Option : <code>Object</code>
+**Kind**: global typedef  
+**Properties**
+
+| Name | Type | Description |
+| --- | --- | --- |
+| name | <code>string</code> | the name of the option |
+| [display] | <code>string</code> | an optional display value for the option |
+| [env] | <code>string</code> | the environment variable from which the default value will be read |
+| [defaultValue] | <code>string</code> | a static default value |
 
 <a name="SettingsObject"></a>
 

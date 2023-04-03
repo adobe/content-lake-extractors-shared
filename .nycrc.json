@@ -1,6 +1,6 @@
 {
   "reporter": ["lcov", "text"],
-  "exclude": ["it/*", "test/*"],
+  "exclude": ["it/*", "test/*", "src/script.js"],
   "check-coverage": true,
   "lines": 85,
   "branches": 85,

@@ -20,12 +20,17 @@ import {
   ingestor,
   functions,
   RequestHandler,
+  ScriptHelper,
   settings,
 } from '../src/index.js';
 
 describe('Index Tests', () => {
   it('export auth is present', async () => {
     assert.ok(auth);
+  });
+
+  it('export ScriptHelper is present', async () => {
+    assert.ok(ScriptHelper);
   });
 
   it('export BaseBatchProvider is present', async () => {
