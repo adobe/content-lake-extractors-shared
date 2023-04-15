@@ -1,6 +1,6 @@
 {
   "name": "@adobe/content-lake-extractors-shared",
-  "version": "2.1.10",
+  "version": "2.1.11",
   "description": "Content Lake - Extractors Shared",
   "main": "src/index.js",
   "type": "module",
