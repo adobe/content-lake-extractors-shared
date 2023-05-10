@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Adobe. All rights reserved.
+ * Copyright 2023 Adobe. All rights reserved.
  * This file is licensed to you under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License. You may obtain a copy
  * of the License at http://www.apache.org/licenses/LICENSE-2.0
@@ -10,11 +10,23 @@
  * governing permissions and limitations under the License.
  */
 
-export * as auth from './auth.js';
-export * as functions from './functions.js';
-export * as ingestor from './ingestor.js';
-export * from './request-handler.js';
-export * as settings from './settings.js';
-export * as batch from './batch-executor.js';
-export * from './batch-provider.js';
-export * as mocks from './mocks/index.js';
+export class MockSettingsStore {
+  settings = {};
+
+  reset() {
+    this.settings = {};
+  }
+
+  deleteSettings(sourceId) {
+    delete this.settings[sourceId];
+  }
+
+  getSettings(sourceId) {
+    return this.settings[sourceId];
+  }
+
+  putSettings(settings) {
+    const { sourceId } = settings;
+    this.settings[sourceId] = settings;
+  }
+}

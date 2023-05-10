@@ -10,11 +10,5 @@
  * governing permissions and limitations under the License.
  */
 
-export * as auth from './auth.js';
-export * as functions from './functions.js';
-export * as ingestor from './ingestor.js';
-export * from './request-handler.js';
-export * as settings from './settings.js';
-export * as batch from './batch-executor.js';
-export * from './batch-provider.js';
-export * as mocks from './mocks/index.js';
+export * from './functions.js';
+export * from './settings.js';
