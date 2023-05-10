@@ -442,8 +442,8 @@ A description of a HTTP request to make to retrieve a binary
 
 | Name | Type |
 | --- | --- |
-| spaceId | <code>string</code> \| <code>undefined</code> | 
-| sourceType | <code>string</code> \| <code>undefined</code> | 
+| filterKey | <code>string</code> | 
+| filterValue | <code>string</code> | 
 | cursor | <code>any</code> | 
 | limit | <code>number</code> \| <code>undefined</code> | 
 

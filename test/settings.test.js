@@ -73,6 +73,7 @@ describe('SettingsStore Unit Tests', () => {
         caught = err;
       }
       assert.ok(caught);
+      assert.equal(caught.status, 400);
     });
 
     it('can findSettings by sourceType', async () => {
@@ -83,7 +84,10 @@ describe('SettingsStore Unit Tests', () => {
         LastEvaluatedKey: 'cursor',
       };
       const store = new SettingsStore({ client: mockClient });
-      const res = await store.findSettings({ sourceType: 'test' });
+      const res = await store.findSettings({
+        filterKey: 'sourceType',
+        filterValue: 'test',
+      });
 
       assert.strictEqual(res.items[0].key, 'value');
       assert.strictEqual(res.count, 1);
@@ -91,10 +95,10 @@ describe('SettingsStore Unit Tests', () => {
 
       assert.strictEqual(
         mockClient.req.input.KeyConditionExpression,
-        'sourceType=:sourceType',
+        'sourceType=:value',
       );
       assert.strictEqual(
-        mockClient.req.input.ExpressionAttributeValues[':sourceType'].S,
+        mockClient.req.input.ExpressionAttributeValues[':value'].S,
         'test',
       );
     });
@@ -108,7 +112,8 @@ describe('SettingsStore Unit Tests', () => {
       };
       const store = new SettingsStore({ client: mockClient });
       const res = await store.findSettings({
-        spaceId: 'test',
+        filterKey: 'spaceId',
+        filterValue: 'test',
       });
 
       assert.strictEqual(res.items[0].key, 'value');
@@ -116,10 +121,10 @@ describe('SettingsStore Unit Tests', () => {
       assert.strictEqual(res.cursor, 'cursor');
       assert.strictEqual(
         mockClient.req.input.KeyConditionExpression,
-        'spaceId=:spaceId',
+        'spaceId=:value',
       );
       assert.strictEqual(
-        mockClient.req.input.ExpressionAttributeValues[':spaceId'].S,
+        mockClient.req.input.ExpressionAttributeValues[':value'].S,
         'test',
       );
     });
@@ -135,7 +140,8 @@ describe('SettingsStore Unit Tests', () => {
         client: mockClient,
       });
       await store.findSettings({
-        spaceId: 'test',
+        filterKey: 'spaceId',
+        filterValue: 'test',
         limit: 10,
         cursor: 'test-cursor',
       });

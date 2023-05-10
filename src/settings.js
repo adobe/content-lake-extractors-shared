@@ -27,8 +27,8 @@ import {
 
 /**
  * @typedef {Object} QueryOptions
- * @property {string | undefined} spaceId
- * @property {string | undefined} sourceType
+ * @property {string} filterKey
+ * @property {string} filterValue
  * @property {any} cursor
  * @property {number | undefined} limit
  */
@@ -116,26 +116,17 @@ export class SettingsStore {
       TableName: this.#table,
     };
 
-    let field = 'sourceId';
-    if (options.sourceType) {
-      field = 'sourceType';
-      cmdInput.IndexName = 'sourceType-index';
-      cmdInput.KeyConditionExpression = `${field}=:sourceType`;
-      cmdInput.ExpressionAttributeValues = {
-        ':sourceType': { S: options.sourceType },
-      };
-    } else if (options.spaceId) {
-      field = 'spaceId';
-      cmdInput.IndexName = 'spaceId-index';
-      cmdInput.KeyConditionExpression = `${field}=:spaceId`;
-      cmdInput.ExpressionAttributeValues = {
-        ':spaceId': { S: options.spaceId },
-      };
-    } else {
-      const err = new Error('Either [sourceType] or [spaceId] are required');
+    if (!options.filterKey || !options.filterValue) {
+      const err = new Error('The filter key and value are required');
       err.status = 400;
       throw err;
     }
+
+    cmdInput.IndexName = `${options.filterKey}-index`;
+    cmdInput.KeyConditionExpression = `${options.filterKey}=:value`;
+    cmdInput.ExpressionAttributeValues = {
+      ':value': { S: options.filterValue },
+    };
 
     if (options.cursor) {
       cmdInput.ExclusiveStartKey = options.cursor;
