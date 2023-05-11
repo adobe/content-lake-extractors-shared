@@ -19,24 +19,52 @@
  * @see {SettingsStore}
  */
 export class MockSettingsStore {
+  /**
+   * The settings in the store
+   */
   settings = {};
+
+  /**
+   * The cursor to return from the findSettings call
+   */
+  findCursor;
+
+  /**
+   * True if the conditional request should fail
+   */
+  conditionalFail = false;
 
   /**
    * Resets the mock to it's original state
    */
   reset() {
     this.settings = {};
+    this.findCursor = undefined;
+    this.conditionalFail = false;
   }
 
-  deleteSettings(sourceId) {
+  async deleteSettings(sourceId) {
     delete this.settings[sourceId];
   }
 
-  getSettings(sourceId) {
+  async getSettings(sourceId) {
     return this.settings[sourceId];
   }
 
-  putSettings(settings) {
+  async findSettings() {
+    const items = Object.values(this.settings);
+    return { items, count: items.length, cursor: this.findCursor };
+  }
+
+  async putSettings(settings) {
+    const { sourceId } = settings;
+    this.settings[sourceId] = settings;
+  }
+
+  async conditionalPutSettings(settings) {
+    if (this.conditionalFail) {
+      throw new Error('Failed conditional check');
+    }
     const { sourceId } = settings;
     this.settings[sourceId] = settings;
   }
