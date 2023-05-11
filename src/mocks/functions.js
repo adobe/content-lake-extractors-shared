@@ -10,9 +10,25 @@
  * governing permissions and limitations under the License.
  */
 
+/**
+ * A mock for the FunctionRunner.
+ *
+ * Set the property `response` on this class to set the response returned from the
+ * function runner.
+ *
+ * The invocation data can be asserted from the array of invocations.
+ *
+ * @see {FunctionRunner}
+ */
 export class MockFunctionRunner {
+  /**
+   * The invocations performed on this mock
+   */
   invocations = [];
 
+  /**
+   * the response to return upon invocation
+   */
   response;
 
   invokeFunctionWithResponse(name, params) {
@@ -25,6 +41,9 @@ export class MockFunctionRunner {
     return Promise.resolve();
   }
 
+  /**
+   * Resets the mock to it's original state, should be called between each test
+   */
   reset() {
     this.invocations = [];
     this.response = undefined;

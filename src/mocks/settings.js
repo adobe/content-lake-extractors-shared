@@ -10,9 +10,20 @@
  * governing permissions and limitations under the License.
  */
 
+/**
+ * A mock for the SettingsStore.
+ *
+ * Either call the put method or set the settings property of this class
+ * directly to set the settings
+ *
+ * @see {SettingsStore}
+ */
 export class MockSettingsStore {
   settings = {};
 
+  /**
+   * Resets the mock to it's original state
+   */
   reset() {
     this.settings = {};
   }
