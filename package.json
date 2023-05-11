@@ -1,6 +1,6 @@
 {
   "name": "@adobe/content-lake-extractors-shared",
-  "version": "2.1.6",
+  "version": "2.1.18",
   "description": "Content Lake - Extractors Shared",
   "main": "src/index.js",
   "type": "module",
@@ -37,7 +37,7 @@
     "@adobe/eslint-config-helix": "^2.0.1",
     "@semantic-release/changelog": "6.0.3",
     "@semantic-release/git": "10.0.1",
-    "@semantic-release/npm": "10.0.2",
+    "@semantic-release/npm": "10.0.3",
     "c8": "7.13.0",
     "codecov": "3.8.3",
     "dotenv": "16.0.3",
@@ -51,7 +51,7 @@
     "lint-staged": "^13.1.2",
     "mocha": "10.2.0",
     "mocha-multi-reporters": "1.5.1",
-    "nock": "13.3.0",
+    "nock": "13.3.1",
     "semantic-release": "^21.0.0",
     "sinon": "^15.0.2"
   },

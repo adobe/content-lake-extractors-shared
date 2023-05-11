@@ -1,3 +1,87 @@
+## [2.1.18](https://github.com/adobe/content-lake-extractors-shared/compare/v2.1.17...v2.1.18) (2023-05-11)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @adobe/content-lake-commons to v1.4.0 ([6f05bc2](https://github.com/adobe/content-lake-extractors-shared/commit/6f05bc24892332f9cfed5eb0621b85cad2e7dd5a))
+
+## [2.1.17](https://github.com/adobe/content-lake-extractors-shared/compare/v2.1.16...v2.1.17) (2023-05-09)
+
+
+### Bug Fixes
+
+* **deps:** update adobe fixes ([7dee12a](https://github.com/adobe/content-lake-extractors-shared/commit/7dee12a3c67376ad6af7bd1bfe5fd43fbbceeeba))
+
+## [2.1.16](https://github.com/adobe/content-lake-extractors-shared/compare/v2.1.15...v2.1.16) (2023-05-06)
+
+
+### Bug Fixes
+
+* **deps:** update external fixes ([cd32b6c](https://github.com/adobe/content-lake-extractors-shared/commit/cd32b6c2aeab1f76738dc51d03658758d2953a2a))
+
+## [2.1.15](https://github.com/adobe/content-lake-extractors-shared/compare/v2.1.14...v2.1.15) (2023-04-29)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @adobe/content-lake-commons to v1.3.4 ([4816c97](https://github.com/adobe/content-lake-extractors-shared/commit/4816c97b90a9926bb93c55654441a0efc95b5bc9))
+
+## [2.1.14](https://github.com/adobe/content-lake-extractors-shared/compare/v2.1.13...v2.1.14) (2023-04-29)
+
+
+### Bug Fixes
+
+* **deps:** update external fixes ([5bb8959](https://github.com/adobe/content-lake-extractors-shared/commit/5bb8959a132a63f98b07b148b409cb199fb17a7c))
+
+## [2.1.13](https://github.com/adobe/content-lake-extractors-shared/compare/v2.1.12...v2.1.13) (2023-04-22)
+
+
+### Bug Fixes
+
+* **deps:** update adobe fixes ([60675c6](https://github.com/adobe/content-lake-extractors-shared/commit/60675c6cbcc0e186d42856930827e0ae2c0df52f))
+
+## [2.1.12](https://github.com/adobe/content-lake-extractors-shared/compare/v2.1.11...v2.1.12) (2023-04-22)
+
+
+### Bug Fixes
+
+* **deps:** update external fixes ([e0b315c](https://github.com/adobe/content-lake-extractors-shared/commit/e0b315c9a854b3516130439f81d0403ce5493b5f))
+
+## [2.1.11](https://github.com/adobe/content-lake-extractors-shared/compare/v2.1.10...v2.1.11) (2023-04-15)
+
+
+### Bug Fixes
+
+* **deps:** update external fixes ([e851386](https://github.com/adobe/content-lake-extractors-shared/commit/e851386a57b4691d9cfad4f0de44f4a5b23dceaf))
+
+## [2.1.10](https://github.com/adobe/content-lake-extractors-shared/compare/v2.1.9...v2.1.10) (2023-04-13)
+
+
+### Bug Fixes
+
+* **deps:** update adobe fixes ([bda59fe](https://github.com/adobe/content-lake-extractors-shared/commit/bda59febeea7b0832bf68a3c49b0443edff4464c))
+
+## [2.1.9](https://github.com/adobe/content-lake-extractors-shared/compare/v2.1.8...v2.1.9) (2023-04-12)
+
+
+### Bug Fixes
+
+* **deps:** update adobe fixes ([4f9780a](https://github.com/adobe/content-lake-extractors-shared/commit/4f9780a3e78ca619091517e6e64495aa2c4d556b))
+
+## [2.1.8](https://github.com/adobe/content-lake-extractors-shared/compare/v2.1.7...v2.1.8) (2023-04-08)
+
+
+### Bug Fixes
+
+* **deps:** update external fixes ([84e0eb0](https://github.com/adobe/content-lake-extractors-shared/commit/84e0eb06890aca38caafb02a2f8dedf2b45a1a75))
+
+## [2.1.7](https://github.com/adobe/content-lake-extractors-shared/compare/v2.1.6...v2.1.7) (2023-04-08)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @adobe/content-lake-commons to v1.3.1 ([136d06c](https://github.com/adobe/content-lake-extractors-shared/commit/136d06c8eb6477ed7c7d75fd709eb51514da9b4e))
+
 ## [2.1.6](https://github.com/adobe/content-lake-extractors-shared/compare/v2.1.5...v2.1.6) (2023-04-01)
 
 
