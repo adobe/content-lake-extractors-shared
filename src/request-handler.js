@@ -34,11 +34,25 @@ import { logger } from '@adobe/helix-universal-logger';
  * through HTTP requests either using POST parameters or via Queue Records
  */
 export class RequestHandler {
+  /**
+   * An initial extraction event, must be supported
+   */
   static ACTION_EXTRACT = 'extract';
 
+  /**
+   * An OAuth callback event, only supported for handlers with OAuth support
+   */
   static ACTION_CALLBACK = 'callback';
 
+  /**
+   * An OAuth authentication event, only supported for handlers with OAuth support
+   */
   static ACTION_AUTHENTICATE = 'authenticate';
+
+  /**
+   * An update event from the source, must be supported
+   */
+  static ACTION_UPDATE = 'update';
 
   /**
    * @type {HandlerFn}
