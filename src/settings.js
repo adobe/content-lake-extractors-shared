@@ -19,7 +19,7 @@ import {
 } from '@aws-sdk/client-dynamodb';
 
 /**
- * @typedef {Objects} SettingsObject
+ * @typedef {Object} SettingsObject
  * @property {string} sourceId
  * @property {string} spaceId
  * @property {string} sourceType
@@ -71,6 +71,19 @@ export class SettingsStore {
   }
 
   /**
+   *
+   * @param {Record<string, string>} item the item to serialize
+   * @returns {Record<string,AttributeValue>} the serialized item
+   */
+  static serializeItem(item) {
+    const newItem = {};
+    Object.keys(item).forEach((k) => {
+      newItem[k] = { S: item[k] };
+    });
+    return newItem;
+  }
+
+  /**
    * Deletes the settings
    * @param {string} sourceId the sourceId
    */
@@ -78,11 +91,7 @@ export class SettingsStore {
     await this.#client.send(
       new DeleteItemCommand({
         TableName: this.#table,
-        Key: {
-          sourceId: {
-            S: sourceId,
-          },
-        },
+        Key: SettingsStore.serializeItem({ sourceId }),
       }),
     );
   }
@@ -96,11 +105,7 @@ export class SettingsStore {
     const res = await this.#client.send(
       new GetItemCommand({
         TableName: this.#table,
-        Key: {
-          sourceId: {
-            S: sourceId,
-          },
-        },
+        Key: SettingsStore.serializeItem({ sourceId }),
       }),
     );
     return SettingsStore.deserializeItem(res.Item);
@@ -148,16 +153,27 @@ export class SettingsStore {
    * @param {SettingsObject} settings the settings to persist
    */
   async putSettings(settings) {
-    const Item = {};
-    Object.keys(settings).forEach((k) => {
-      Item[k] = {
-        S: settings[k],
-      };
-    });
     const command = new PutItemCommand({
       TableName: this.#table,
-      Item,
+      Item: SettingsStore.serializeItem(settings),
     });
     await this.#client.send(command);
+  }
+
+  /**
+   * Puts the settings only if the condition matches
+   * @param {SettingsObject} settings the settings to persist
+   * @param {string} expression the conditional expression
+   * @param {Record<string,String>} the values for the conditional expression
+   */
+  async conditionalPutSettings(settings, expression, expressionValues) {
+    await this.#client.send(
+      new PutItemCommand({
+        TableName: this.#table,
+        Item: SettingsStore.serializeItem(settings),
+        ConditionExpression: expression,
+        ExpressionAttributeValues: SettingsStore.serializeItem(expressionValues),
+      }),
+    );
   }
 }
