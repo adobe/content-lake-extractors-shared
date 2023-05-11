@@ -19,6 +19,18 @@ $ npm install @adobe/content-lake-extractors-shared
 
 See the [API documentation](docs/API.md).
 
+## Mocks
+
+This library provides mocks. Mocks can be imported and used as follows:
+
+```
+import { mocks } from '@adobe/content-lake-extractors-shared';
+
+[...]
+
+const mockSettingsStore = new mocks.MockSettingsStore(); 
+```
+
 ## Development
 
 ### Build
