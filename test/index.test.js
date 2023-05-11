@@ -21,6 +21,7 @@ import {
   functions,
   RequestHandler,
   settings,
+  mocks,
 } from '../src/index.js';
 
 describe('Index Tests', () => {
@@ -36,12 +37,16 @@ describe('Index Tests', () => {
     assert.ok(batch);
   });
 
+  it('export functions is present', async () => {
+    assert.ok(functions);
+  });
+
   it('export ingestor is present', async () => {
     assert.ok(ingestor);
   });
 
-  it('export functions is present', async () => {
-    assert.ok(functions);
+  it('export mocks is present', async () => {
+    assert.ok(mocks);
   });
 
   it('export RequestHandler is present', async () => {
