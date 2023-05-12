@@ -149,5 +149,62 @@ describe('SettingsStore Unit Tests', () => {
       assert.strictEqual(mockClient.req.input.Limit, 10);
       assert.strictEqual(mockClient.req.input.ExclusiveStartKey, 'test-cursor');
     });
+
+    it('can perform conditional put', async () => {
+      const mockClient = new MockClient();
+      mockClient.resp = {
+        Items: [{ key: { S: 'value' } }],
+        Count: 1,
+        LastEvaluatedKey: 'cursor',
+      };
+      const store = new SettingsStore({
+        client: mockClient,
+      });
+      await store.conditionalPutSettings(
+        {
+          sourceId: 'test',
+          sourceType: 'test',
+        },
+        'field=:value',
+        { value: 'test' },
+      );
+
+      assert.strictEqual(
+        mockClient.req.input.ConditionExpression,
+        'field=:value',
+      );
+      assert.strictEqual(
+        mockClient.req.input.ExpressionAttributeValues.value.S,
+        'test',
+      );
+    });
+
+    it('can perform conditional put without value', async () => {
+      const mockClient = new MockClient();
+      mockClient.resp = {
+        Items: [{ key: { S: 'value' } }],
+        Count: 1,
+        LastEvaluatedKey: 'cursor',
+      };
+      const store = new SettingsStore({
+        client: mockClient,
+      });
+      await store.conditionalPutSettings(
+        {
+          sourceId: 'test',
+          sourceType: 'test',
+        },
+        'field=:value',
+      );
+
+      assert.strictEqual(
+        mockClient.req.input.ConditionExpression,
+        'field=:value',
+      );
+      assert.strictEqual(
+        mockClient.req.input.ExpressionAttributeValues,
+        undefined,
+      );
+    });
   });
 });

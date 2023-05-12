@@ -19,6 +19,7 @@ import {
 import wrap from '@adobe/helix-shared-wrap';
 import { helixStatus } from '@adobe/helix-status';
 import { logger } from '@adobe/helix-universal-logger';
+import { Response } from 'node-fetch';
 
 /**
  * @callback HandlerFn

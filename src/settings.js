@@ -167,13 +167,14 @@ export class SettingsStore {
    * @param {Record<string,String>} the values for the conditional expression
    */
   async conditionalPutSettings(settings, expression, expressionValues) {
-    await this.#client.send(
-      new PutItemCommand({
-        TableName: this.#table,
-        Item: SettingsStore.serializeItem(settings),
-        ConditionExpression: expression,
-        ExpressionAttributeValues: SettingsStore.serializeItem(expressionValues),
-      }),
-    );
+    const options = {
+      TableName: this.#table,
+      Item: SettingsStore.serializeItem(settings),
+      ConditionExpression: expression,
+    };
+    if (expressionValues) {
+      options.ExpressionAttributeValues = SettingsStore.serializeItem(expressionValues);
+    }
+    await this.#client.send(new PutItemCommand(options));
   }
 }

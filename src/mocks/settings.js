@@ -30,6 +30,11 @@ export class MockSettingsStore {
   findCursor;
 
   /**
+   * The query used to find settings
+   */
+  findQuery;
+
+  /**
    * True if the conditional request should fail
    */
   conditionalFail = false;
@@ -40,6 +45,7 @@ export class MockSettingsStore {
   reset() {
     this.settings = {};
     this.findCursor = undefined;
+    this.findQuery = undefined;
     this.conditionalFail = false;
   }
 
@@ -51,7 +57,8 @@ export class MockSettingsStore {
     return this.settings[sourceId];
   }
 
-  async findSettings() {
+  async findSettings(query) {
+    this.findQuery = query;
     const items = Object.values(this.settings);
     return { items, count: items.length, cursor: this.findCursor };
   }
