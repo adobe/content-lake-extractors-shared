@@ -1,3 +1,10 @@
+## [2.1.21](https://github.com/adobe/content-lake-extractors-shared/compare/v2.1.20...v2.1.21) (2023-05-16)
+
+
+### Bug Fixes
+
+* adding JSDoc and constant for updates ([#64](https://github.com/adobe/content-lake-extractors-shared/issues/64)) ([d7ceb8c](https://github.com/adobe/content-lake-extractors-shared/commit/d7ceb8c053d0b1d0a6b059a02c8c3b20e2772228))
+
 ## [2.1.20](https://github.com/adobe/content-lake-extractors-shared/compare/v2.1.19...v2.1.20) (2023-05-13)
 
 
