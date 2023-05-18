@@ -1,3 +1,10 @@
+## [2.1.22](https://github.com/adobe/content-lake-extractors-shared/compare/v2.1.21...v2.1.22) (2023-05-18)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @adobe/helix-status to v10.0.9 ([b6c8fd7](https://github.com/adobe/content-lake-extractors-shared/commit/b6c8fd74f895ae52485c8276b5b833c92be2bfef))
+
 ## [2.1.21](https://github.com/adobe/content-lake-extractors-shared/compare/v2.1.20...v2.1.21) (2023-05-16)
 
 
