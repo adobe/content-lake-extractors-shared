@@ -1,3 +1,21 @@
+# [3.0.0](https://github.com/adobe/content-lake-extractors-shared/compare/v2.1.25...v3.0.0) (2023-05-23)
+
+
+* feat!: making the settings store search more flexible and adding support for conditional put - NOTE: changes the API contract (#62) ([ccbc854](https://github.com/adobe/content-lake-extractors-shared/commit/ccbc854d4567a6d59d4f4686b1581a7248558e0b)), closes [#62](https://github.com/adobe/content-lake-extractors-shared/issues/62)
+
+
+### BREAKING CHANGES
+
+* changes the API contract for storage search
+
+* Adding support for conditional puts
+
+* fix: adding JSDoc and constant for updates
+
+* Updating to match capabilities and return promises as to be more accurate
+
+* Fixing issues found during rollout
+
 ## [2.1.25](https://github.com/adobe/content-lake-extractors-shared/compare/v2.1.24...v2.1.25) (2023-05-20)
 
 
