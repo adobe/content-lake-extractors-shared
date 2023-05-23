@@ -65,7 +65,7 @@ through HTTP requests either using POST parameters or via Queue Records</p>
 <dd></dd>
 <dt><a href="#HandlerFn">HandlerFn</a> ⇒ <code>Promise.&lt;Response&gt;</code></dt>
 <dd></dd>
-<dt><a href="#SettingsObject">SettingsObject</a> : <code>Objects</code></dt>
+<dt><a href="#SettingsObject">SettingsObject</a> : <code>Object</code></dt>
 <dd></dd>
 <dt><a href="#QueryOptions">QueryOptions</a> : <code>Object</code></dt>
 <dd></dd>
@@ -158,6 +158,10 @@ through HTTP requests either using POST parameters or via Queue Records
 **Kind**: global class  
 
 * [RequestHandler](#RequestHandler)
+    * [.ACTION_EXTRACT](#RequestHandler+ACTION_EXTRACT)
+    * [.ACTION_CALLBACK](#RequestHandler+ACTION_CALLBACK)
+    * [.ACTION_AUTHENTICATE](#RequestHandler+ACTION_AUTHENTICATE)
+    * [.ACTION_UPDATE](#RequestHandler+ACTION_UPDATE)
     * [.withHandler(action, handler)](#RequestHandler+withHandler) ⇒ [<code>RequestHandler</code>](#RequestHandler)
     * [.getMain()](#RequestHandler+getMain) ⇒ <code>function</code>
     * [.getQueueClient(context)](#RequestHandler+getQueueClient) ⇒ <code>QueueClient</code>
@@ -165,6 +169,30 @@ through HTTP requests either using POST parameters or via Queue Records
     * [.handleEvent(event, context)](#RequestHandler+handleEvent) ⇒ <code>Promise.&lt;Response&gt;</code>
     * [.handleQueueRecord(context, record, queueClient, log)](#RequestHandler+handleQueueRecord) ⇒ <code>Promise.&lt;void&gt;</code>
 
+<a name="RequestHandler+ACTION_EXTRACT"></a>
+
+### requestHandler.ACTION\_EXTRACT
+An initial extraction event, must be supported
+
+**Kind**: instance property of [<code>RequestHandler</code>](#RequestHandler)  
+<a name="RequestHandler+ACTION_CALLBACK"></a>
+
+### requestHandler.ACTION\_CALLBACK
+An OAuth callback event, only supported for handlers with OAuth support
+
+**Kind**: instance property of [<code>RequestHandler</code>](#RequestHandler)  
+<a name="RequestHandler+ACTION_AUTHENTICATE"></a>
+
+### requestHandler.ACTION\_AUTHENTICATE
+An OAuth authentication event, only supported for handlers with OAuth support
+
+**Kind**: instance property of [<code>RequestHandler</code>](#RequestHandler)  
+<a name="RequestHandler+ACTION_UPDATE"></a>
+
+### requestHandler.ACTION\_UPDATE
+An update event from the source, must be supported
+
+**Kind**: instance property of [<code>RequestHandler</code>](#RequestHandler)  
 <a name="RequestHandler+withHandler"></a>
 
 ### requestHandler.withHandler(action, handler) ⇒ [<code>RequestHandler</code>](#RequestHandler)
@@ -424,7 +452,7 @@ A description of a HTTP request to make to retrieve a binary
 
 <a name="SettingsObject"></a>
 
-## SettingsObject : <code>Objects</code>
+## SettingsObject : <code>Object</code>
 **Kind**: global typedef  
 **Properties**
 
@@ -442,8 +470,8 @@ A description of a HTTP request to make to retrieve a binary
 
 | Name | Type |
 | --- | --- |
-| spaceId | <code>string</code> \| <code>undefined</code> | 
-| sourceType | <code>string</code> \| <code>undefined</code> | 
+| filterKey | <code>string</code> | 
+| filterValue | <code>string</code> | 
 | cursor | <code>any</code> | 
 | limit | <code>number</code> \| <code>undefined</code> | 
 

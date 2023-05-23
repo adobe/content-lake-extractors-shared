@@ -155,20 +155,27 @@ describe('Settings Store Integration Tests', async () => {
     }).timeout(TEST_TIMEOUT);
 
     it('can search by tenant', async () => {
-      const res = await store.findSettings({ spaceId: 'test1' });
+      const res = await store.findSettings({
+        filterKey: 'spaceId',
+        filterValue: 'test1',
+      });
       assert.ok(res);
       assert.ok(res.count > 0);
     }).timeout(TEST_TIMEOUT);
 
     it('can search by extractorType', async () => {
-      const res = await store.findSettings({ sourceType: 'test1' });
+      const res = await store.findSettings({
+        filterKey: 'sourceType',
+        filterValue: 'test1',
+      });
       assert.ok(res);
       assert.ok(res.count > 0);
     }).timeout(TEST_TIMEOUT);
 
     it('can limit results', async () => {
       const res = await store.findSettings({
-        sourceType: 'test1',
+        filterKey: 'sourceType',
+        filterValue: 'test1',
         limit: 1,
       });
       assert.ok(res);
@@ -179,14 +186,16 @@ describe('Settings Store Integration Tests', async () => {
     it('can page results', async () => {
       let pages = 0;
       let res = await store.findSettings({
-        sourceType: 'test1',
+        filterKey: 'sourceType',
+        filterValue: 'test1',
         limit: 1,
       });
       let { cursor } = res;
       while (cursor) {
         pages += 1;
         res = await store.findSettings({
-          sourceType: 'test1',
+          filterKey: 'sourceType',
+          filterValue: 'test1',
           limit: 1,
           cursor,
         });

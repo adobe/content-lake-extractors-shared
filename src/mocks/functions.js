@@ -31,12 +31,12 @@ export class MockFunctionRunner {
    */
   response;
 
-  invokeFunctionWithResponse(name, params) {
+  async invokeFunctionWithResponse(name, params) {
     this.invocations.push({ name, params });
     return Promise.resolve(this.response);
   }
 
-  invokeFunction(name, params) {
+  async invokeFunction(name, params) {
     this.invocations.push({ name, params });
     return Promise.resolve();
   }
