@@ -1,3 +1,38 @@
+## [2.1.25](https://github.com/adobe/content-lake-extractors-shared/compare/v2.1.24...v2.1.25) (2023-05-20)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @adobe/content-lake-commons to v1.5.1 ([cbaca2c](https://github.com/adobe/content-lake-extractors-shared/commit/cbaca2c18a2567d6554426b65429766ae012eb6d))
+
+## [2.1.24](https://github.com/adobe/content-lake-extractors-shared/compare/v2.1.23...v2.1.24) (2023-05-20)
+
+
+### Bug Fixes
+
+* **deps:** update external fixes ([d7d871b](https://github.com/adobe/content-lake-extractors-shared/commit/d7d871b52b28efd6d6d351cb25838ca134cb8b39))
+
+## [2.1.23](https://github.com/adobe/content-lake-extractors-shared/compare/v2.1.22...v2.1.23) (2023-05-19)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @adobe/helix-universal-logger to v3.0.10 ([2d91b51](https://github.com/adobe/content-lake-extractors-shared/commit/2d91b51a7bd26875315b7150fa575753b2ab80a3))
+
+## [2.1.22](https://github.com/adobe/content-lake-extractors-shared/compare/v2.1.21...v2.1.22) (2023-05-18)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @adobe/helix-status to v10.0.9 ([b6c8fd7](https://github.com/adobe/content-lake-extractors-shared/commit/b6c8fd74f895ae52485c8276b5b833c92be2bfef))
+
+## [2.1.21](https://github.com/adobe/content-lake-extractors-shared/compare/v2.1.20...v2.1.21) (2023-05-16)
+
+
+### Bug Fixes
+
+* adding JSDoc and constant for updates ([#64](https://github.com/adobe/content-lake-extractors-shared/issues/64)) ([d7ceb8c](https://github.com/adobe/content-lake-extractors-shared/commit/d7ceb8c053d0b1d0a6b059a02c8c3b20e2772228))
+
 ## [2.1.20](https://github.com/adobe/content-lake-extractors-shared/compare/v2.1.19...v2.1.20) (2023-05-13)
 
 
