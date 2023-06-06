@@ -77,9 +77,7 @@ export class FunctionRunner {
       const resultData = FunctionRunner.resultData(result, data);
       const err = new Error('Invalid response body from function');
       err.status = 502;
-      err.detail = `Invalid response body from function: ${JSON.stringify(
-        resultData,
-      )}`;
+      err.detail = JSON.stringify(resultData);
       throw err;
     }
     return data;
@@ -113,9 +111,7 @@ export class FunctionRunner {
       this.#log.warn('Invalid result from function invocation', resultData);
       const err = new Error('Invalid result from function invocation');
       err.status = 502;
-      err.detail = `Invalid result from function invocation: ${JSON.stringify(
-        resultData,
-      )}`;
+      err.detail = JSON.stringify(resultData);
       throw err;
     }
   }
