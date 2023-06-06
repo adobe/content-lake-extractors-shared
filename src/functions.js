@@ -40,7 +40,7 @@ export class FunctionRunner {
    * Invokes a function
    * @param {string} name the name of the lambda function to invoke
    * @param {Record<string,any>} payload the payload for the invocation
-   * @returns {Promise<void>} when the invocation completes
+   * @returns {Promise<invocationId>} follow up invocationId when the async invocation completes
    */
   async invokeFunction(name, payload) {
     this.#log.debug('Invoking function with response', { name, payload });
@@ -52,6 +52,8 @@ export class FunctionRunner {
       }),
     );
     this.verifyResult(result, name);
+    this.#log.debug('Successfully invoked function', { name, invocationId: result.$metadata.requestId });
+    return result.$metadata.requestId;
   }
 
   /**
@@ -71,7 +73,7 @@ export class FunctionRunner {
     );
     this.verifyResult(result, name);
     const data = this.parseResponsePayload(result.Payload, name);
-    this.#log.debug('Successfully retrieved response', data);
+    this.#log.debug(`Successfully retrieved response from invocationId: ${result.$metadata.requestId} with data:`, data);
 
     if (data.status >= 400) {
       const resultData = FunctionRunner.resultData(result, data);
@@ -80,7 +82,10 @@ export class FunctionRunner {
       err.detail = JSON.stringify(resultData);
       throw err;
     }
-    return data;
+    return {
+      data,
+      invocationId: result.$metadata.requestId,
+    };
   }
 
   /**
