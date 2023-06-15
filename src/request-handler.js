@@ -17,6 +17,7 @@ import {
   RestError,
 } from '@adobe/content-lake-commons';
 import wrap from '@adobe/helix-shared-wrap';
+import secrets from '@adobe/helix-shared-secrets';
 import { helixStatus } from '@adobe/helix-status';
 import { logger } from '@adobe/helix-universal-logger';
 import { Response } from 'node-fetch';
@@ -100,6 +101,7 @@ export class RequestHandler {
       log.info(`< ${method} ${res.status} ${url} ${Date.now() - start}ms`);
       return res;
     })
+      .with(secrets)
       .with(helixStatus)
       .with(logger.trace)
       .with(logger);
