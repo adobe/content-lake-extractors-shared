@@ -1,3 +1,10 @@
+# [3.1.0](https://github.com/adobe/content-lake-extractors-shared/compare/v3.0.7...v3.1.0) (2023-06-21)
+
+
+### Features
+
+* add support for aws secret manager to request handler ([#81](https://github.com/adobe/content-lake-extractors-shared/issues/81)) ([e4b7929](https://github.com/adobe/content-lake-extractors-shared/commit/e4b792902e92e502f50e5da3e53ffe943a59fae6))
+
 ## [3.0.7](https://github.com/adobe/content-lake-extractors-shared/compare/v3.0.6...v3.0.7) (2023-06-18)
 
 
