@@ -91,8 +91,8 @@ export class RequestHandler {
       };
       const start = Date.now();
       try {
-        log.info(`> ${method} ${url}`);
-        log.debug('Handing request', loggableRequest);
+        log.debug(`> ${method} ${url}`);
+        log.debug('Handling request', loggableRequest);
         res = await this.handleRequest(context);
       } catch (err) {
         log.warn('Exception handling request', { ...loggableRequest, err });
