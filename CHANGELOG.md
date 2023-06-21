@@ -1,3 +1,10 @@
+## [3.1.1](https://github.com/adobe/content-lake-extractors-shared/compare/v3.1.0...v3.1.1) (2023-06-21)
+
+
+### Bug Fixes
+
+* remove logging the request handler request ([#84](https://github.com/adobe/content-lake-extractors-shared/issues/84)) ([9d7ebc4](https://github.com/adobe/content-lake-extractors-shared/commit/9d7ebc448e25f5902ff363376e8ca96fba7442ee))
+
 # [3.1.0](https://github.com/adobe/content-lake-extractors-shared/compare/v3.0.7...v3.1.0) (2023-06-21)
 
 
