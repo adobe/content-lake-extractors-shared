@@ -1,3 +1,10 @@
+## [3.1.2](https://github.com/adobe/content-lake-extractors-shared/compare/v3.1.1...v3.1.2) (2023-06-24)
+
+
+### Bug Fixes
+
+* **deps:** update external fixes ([c2918fe](https://github.com/adobe/content-lake-extractors-shared/commit/c2918fe1c4203c3eb8efb994434c6097bf0c2c70))
+
 ## [3.1.1](https://github.com/adobe/content-lake-extractors-shared/compare/v3.1.0...v3.1.1) (2023-06-21)
 
 
