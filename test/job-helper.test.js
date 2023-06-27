@@ -56,11 +56,7 @@ describe('JobHelper Unit Tests', () => {
     });
 
     it('complete skips non-current job', async () => {
-      await jobHelper.complete(
-        'FULL::test-job2',
-        'test-source',
-        'test-cursor',
-      );
+      await jobHelper.complete('FULL::test-job2', 'test-source', 'test-cursor');
       const settings = await settingsStore.getSettings('test-source');
       assert.ok(!settings.cursor);
       assert.strictEqual(
@@ -68,6 +64,33 @@ describe('JobHelper Unit Tests', () => {
         JobHelper.JOB_STATUS.RUNNING,
       );
       assert.ok(!settings.currentJobDone);
+    });
+  });
+
+  describe('shouldStop', () => {
+    it('should not stop when current job', async () => {
+      const shouldStop = await jobHelper.shouldStop(
+        'FULL::test-job',
+        'test-source',
+      );
+      assert.ok(!shouldStop);
+    });
+
+    it('should not stop when update', async () => {
+      const shouldStop = await jobHelper.shouldStop(
+        'UPDATE::test-job',
+        'test-source',
+      );
+      assert.ok(!shouldStop);
+    });
+
+    it('should stop when job stopped', async () => {
+      await jobHelper.stop('FULL::test-job', 'test-source');
+      const shouldStop = await jobHelper.shouldStop(
+        'FULL::test-job',
+        'test-source',
+      );
+      assert.ok(shouldStop);
     });
   });
 

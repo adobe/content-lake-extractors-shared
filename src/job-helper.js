@@ -20,10 +20,10 @@ export class JobHelper {
   });
 
   /**
-   * True if the jobId is a full job, matches the currentJobId and is in a RUNNING state.
    * @param {import("./settings.js").SettingsObject} sourceSettings
    * @param {string} jobId
-   * @returns {boolean}
+   * @returns {boolean} True if the jobId is a full job, matches the
+   *  currentJobId and is in a RUNNING state.
    */
   static isCurrentRunningJob(sourceSettings, jobId) {
     return (
@@ -31,6 +31,14 @@ export class JobHelper {
       && sourceSettings.currentJobId === jobId
       && sourceSettings.currentJobStatus === JobHelper.JOB_STATUS.RUNNING
     );
+  }
+
+  /**
+   * @param {string} jobId
+   * @returns {boolean} true if the jobId is for an update job, false otherwise
+   */
+  static isUpdateJob(jobId) {
+    return jobId.startsWith('UPDATE::');
   }
 
   /**
@@ -42,6 +50,14 @@ export class JobHelper {
   }
 
   /**
+   * Gets the settings
+   * @param {string} sourceId
+   */
+  async #getSettings(sourceId) {
+    return this.#settingsStore.getSettings(sourceId);
+  }
+
+  /**
    * Sets the currentJobId to completed if the passed jobId matches the currentJobId for the source.
    * Otherwise it will update the cursor if the job is an update job.
    *
@@ -50,16 +66,33 @@ export class JobHelper {
    * @param {string} cursor
    */
   async complete(jobId, sourceId, cursor) {
-    const sourceSettings = await this.#settingsStore.getSettings(sourceId);
-    const currentRunningJob = JobHelper.isCurrentRunningJob(sourceSettings, jobId);
+    const sourceSettings = await this.#getSettings(sourceId);
+    const currentRunningJob = JobHelper.isCurrentRunningJob(
+      sourceSettings,
+      jobId,
+    );
     if (currentRunningJob) {
       sourceSettings.currentJobStatus = JobHelper.JOB_STATUS.COMPLETE;
       sourceSettings.currentJobDone = new Date().toISOString();
     }
-    if (currentRunningJob || jobId.startsWith('UPDATE::')) {
+    if (currentRunningJob || JobHelper.isUpdateJob(jobId)) {
       sourceSettings.cursor = cursor;
       await this.#settingsStore.putSettings(sourceSettings);
     }
+  }
+
+  /**
+   * Checks if the job should be stopped
+   * @param {string} jobId
+   * @param {string} sourceId
+   * @returns {Promise<boolean>} true if processing should be stopped, false otherwise
+   */
+  async shouldStop(jobId, sourceId) {
+    if (JobHelper.isUpdateJob(jobId)) {
+      return false;
+    }
+    const sourceSettings = await this.#getSettings(sourceId);
+    return !JobHelper.isCurrentRunningJob(sourceSettings, jobId);
   }
 
   /**
@@ -68,7 +101,7 @@ export class JobHelper {
    * @param {string} sourceId
    */
   async stop(jobId, sourceId) {
-    const sourceSettings = await this.#settingsStore.getSettings(sourceId);
+    const sourceSettings = await this.#getSettings(sourceId);
     if (JobHelper.isCurrentRunningJob(sourceSettings, jobId)) {
       sourceSettings.currentJobStatus = JobHelper.JOB_STATUS.STOPPED;
       sourceSettings.currentJobDone = new Date().toISOString();
