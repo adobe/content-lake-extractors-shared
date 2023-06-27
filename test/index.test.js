@@ -19,6 +19,7 @@ import {
   batch,
   ingestor,
   functions,
+  JobHelper,
   RequestHandler,
   settings,
   mocks,
@@ -43,6 +44,10 @@ describe('Index Tests', () => {
 
   it('export ingestor is present', async () => {
     assert.ok(ingestor);
+  });
+
+  it('export JobHelper is present', async () => {
+    assert.ok(JobHelper);
   });
 
   it('export mocks is present', async () => {

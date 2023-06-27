@@ -14,6 +14,7 @@ export * as auth from './auth.js';
 export * as functions from './functions.js';
 export * as ingestor from './ingestor.js';
 export * from './request-handler.js';
+export * from './job-helper.js';
 export * as settings from './settings.js';
 export * as batch from './batch-executor.js';
 export * from './batch-provider.js';
