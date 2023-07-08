@@ -1,3 +1,10 @@
+## [3.1.7](https://github.com/adobe/content-lake-extractors-shared/compare/v3.1.6...v3.1.7) (2023-07-08)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @adobe/content-lake-commons to v1.8.3 ([03d2ac2](https://github.com/adobe/content-lake-extractors-shared/commit/03d2ac24c47cdb6c3de10779d680fa7316e97fd8))
+
 ## [3.1.6](https://github.com/adobe/content-lake-extractors-shared/compare/v3.1.5...v3.1.6) (2023-07-05)
 
 
