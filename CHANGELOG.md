@@ -1,3 +1,10 @@
+## [3.1.10](https://github.com/adobe/content-lake-extractors-shared/compare/v3.1.9...v3.1.10) (2023-07-16)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @adobe/helix-shared-secrets to v2.1.1 ([7de9d3b](https://github.com/adobe/content-lake-extractors-shared/commit/7de9d3bbc746a64dea0e1ac62169e9f76a8040e7))
+
 ## [3.1.9](https://github.com/adobe/content-lake-extractors-shared/compare/v3.1.8...v3.1.9) (2023-07-15)
 
 
