@@ -13,6 +13,7 @@
 /* eslint-disable max-classes-per-file */
 /* eslint-disable class-methods-use-this */
 import { createHash, randomUUID } from 'crypto';
+import { Request, Response, Headers } from 'node-fetch';
 import assert from 'assert';
 import { stub } from 'sinon';
 import { RequestHandler } from '../src/index.js';
@@ -75,6 +76,18 @@ describe('Request Handler Tests', () => {
       const res = await main(MOCK_REQUEST, mockContext({ action: 'throw' }));
       assert.strictEqual(res.status, 500);
     });
+
+    it('main adds request headers to context', async () => {
+      const requestHandler = new RequestHandler().withHandler('handle', (event, context) => {
+        assert.ok(context?.headers);
+        assert.strictEqual(context.headers['if-none-match'], 'abc123');
+        return new Response({ }, { status: 200 });
+      });
+      const main = requestHandler.getMain();
+      const req = new Request('http://localhost', { method: 'POST', headers: new Headers({ 'if-none-match': 'abc123' })});
+      const res = await main(req, mockContext({ action: 'handle' }));
+      assert.strictEqual(res.status, 200);
+    })
   });
 
   describe('handler', () => {
