@@ -84,10 +84,10 @@ describe('Request Handler Tests', () => {
         return new Response({ }, { status: 200 });
       });
       const main = requestHandler.getMain();
-      const req = new Request('http://localhost', { method: 'POST', headers: new Headers({ 'if-none-match': 'abc123' })});
+      const req = new Request('http://localhost', { method: 'POST', headers: new Headers({ 'if-none-match': 'abc123' }) });
       const res = await main(req, mockContext({ action: 'handle' }));
       assert.strictEqual(res.status, 200);
-    })
+    });
   });
 
   describe('handler', () => {
