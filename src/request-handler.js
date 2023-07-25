@@ -82,10 +82,15 @@ export class RequestHandler {
       const log = helper.getLog();
       let res;
       const { method, url } = request;
+      const headers = Object.fromEntries(request.headers);
+      const forwardedContext = {
+        headers,
+        ...context,
+      };
       const loggableRequest = {
         method,
         url,
-        headers: Object.fromEntries(request.headers),
+        headers,
         invocation: context?.invocation,
         event: helper.extractOriginalEvent(),
       };
@@ -93,7 +98,7 @@ export class RequestHandler {
       try {
         log.debug(`> ${method} ${url}`);
         log.debug('Handling request', loggableRequest);
-        res = await this.handleRequest(context);
+        res = await this.handleRequest(forwardedContext);
       } catch (err) {
         log.warn('Exception handling request', { ...loggableRequest, err });
         res = RestError.toProblemResponse(err);
