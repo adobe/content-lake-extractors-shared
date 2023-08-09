@@ -1,3 +1,7 @@
+# Archived!
+
+All of the functionality in this repository has been ported to [contentlake-shared](https://github.com/adobe/contentlake-shared)
+
 # Content Lake - Extractors Shared
 
 Shared libraries for extractors
